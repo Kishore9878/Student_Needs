@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
-import Student from "../models/StudentModel.js";
-import College from "../models/CollegeModel.js";
+import Student from "../../models/Referrals/StudentModel.js";
+import College from "../../models/Referrals/CollegeModel.js";
 import jwt from "jsonwebtoken";
-import { handleAuthSuccess } from "../utils/tokenGenerator.js";
+import { handleAuthSuccess } from "../../utils/Referrals/tokenGenerator.js";
 import dotenv from "dotenv";
 import validator from "validator";
-import { calculateProfileCompleteness } from "../utils/calculateProfileScore.js";
+import { calculateProfileCompleteness } from "../../utils/Referrals/calculateProfileScore.js";
 
 dotenv.config();
 

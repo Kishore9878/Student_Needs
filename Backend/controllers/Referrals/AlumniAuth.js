@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
-import Alumni from "../models/AlumniModel.js";
-import College from "../models/CollegeModel.js";
-import { handleAuthSuccess } from "../utils/tokenGenerator.js";
+import Alumni from "../../models/Referrals/AlumniModel.js";
+import College from "../../models/Referrals/CollegeModel.js";
+import { handleAuthSuccess } from "../../utils/Referrals/tokenGenerator.js";
 import dotenv from "dotenv";
 import validator from "validator";
 

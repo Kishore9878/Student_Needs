@@ -1,6 +1,6 @@
-import Student from "../models/StudentModel.js";
-import { uploadPdfToMongoDB } from "../utils/getStringFromPdf.js";
-import { calculateProfileCompleteness } from "../utils/calculateProfileScore.js";
+import Student from "../../models/Referrals/StudentModel.js";
+import { uploadPdfToMongoDB } from "../../utils/Referrals/getStringFromPdf.js";
+import { calculateProfileCompleteness } from "../../utils/Referrals/calculateProfileScore.js";
 
 export const uploadLinkedIn = async (req, res) => {
   try {
@@ -48,7 +48,7 @@ export const uploadLinkedIn = async (req, res) => {
         fileName: student.linkedIn.fileName,
         fileSize: student.linkedIn.fileSize,
         uploadedAt: student.linkedIn.uploadedAt,
-        linkedInUrl: student.linkedIn.linkedIn,
+        linkedInUrl: student.linkedIn.linkedInUrl,
         profileCompleteness: student.profileCompleteness,
       },
       message: "LinkedIn PDF uploaded successfully",

@@ -8,10 +8,10 @@ import {
     deleteOpportunity,
     getOpportunities,
     getMyOpportunities,
-} from "../controllers/OpportunityController.js";
+} from "../../controllers/Referrals/OpportunityController.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Opportunity routes

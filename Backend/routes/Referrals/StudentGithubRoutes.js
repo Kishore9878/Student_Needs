@@ -7,10 +7,10 @@ import {
     updateGithubUrl,
     getGithubUrl,
     deleteGithubUrl,
-} from "../controllers/StudentgithubUrl.js";
+} from "../../controllers/Referrals/StudentgithubUrl.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Student GitHub URL routes

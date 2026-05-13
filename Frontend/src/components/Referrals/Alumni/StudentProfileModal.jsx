@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/Referrals/ui/button.jsx";
 import {
   X,
   User,
@@ -17,9 +17,9 @@ import {
   Award,
   ExternalLink,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { applicationsApi } from "@/services/application";
-import { showToast } from "@/components/TransactionToast";
+import { cn } from "@/lib/Referrals/utils.js";
+import { applicationsApi } from "@/services/Referrals/application.js";
+import { showToast } from "@/components/Referrals/TransactionToast.jsx";
 
 /**
  * Modal component to display a detailed student profile to alumni/verifiers.

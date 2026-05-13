@@ -5,11 +5,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/Referrals/ui/card.jsx";
+import { Button } from "@/components/Referrals/ui/button.jsx";
+import { Input } from "@/components/Referrals/ui/input.jsx";
+import { Label } from "@/components/Referrals/ui/label.jsx";
+import { Badge } from "@/components/Referrals/ui/badge.jsx";
 
 import {
   Link,
@@ -25,11 +25,11 @@ import {
   Save,
 } from "lucide-react";
 
-import { linkedInApi } from "@/services/studentProfile";
+import { linkedInApi } from "@/services/Referrals/studentProfile.js";
 import {
   showTransactionToast,
   dismissToast,
-} from "@/components/TransactionToast";
+} from "@/components/Referrals/TransactionToast";
 
 export function LinkedInSection({ Link, onLinkChange }) {
   const [uploading, setUploading] = useState(false);

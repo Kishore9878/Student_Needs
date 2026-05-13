@@ -1,5 +1,5 @@
-import Student from "../models/StudentModel.js";
-import { calculateProfileCompleteness } from "../utils/calculateProfileScore.js";
+import Student from "../../models/Referrals/StudentModel.js";
+import { calculateProfileCompleteness } from "../../utils/Referrals/calculateProfileScore.js";
 
 // Add GitHub URL (first time)
 export const addGithubUrl = async (req, res) => {

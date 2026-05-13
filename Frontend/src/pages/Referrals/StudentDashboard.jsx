@@ -1,30 +1,30 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
-import { storage } from "@/lib/storage.js";
-import { Button } from "@/components/ui/button.jsx";
-import { StatusBadge } from "@/components/StatusBadge.jsx";
+import { storage } from "@/lib/Referrals/storage.js";
+import { Button } from "@/components/Referrals/ui/button.jsx";
+import { StatusBadge } from "@/components/Referrals/StatusBadge.jsx";
 import {
   showToast,
   dismissToast,
-} from "@/components/TransactionToast";
-import { ProfileForm } from "@/components/Student/ProfileForm.jsx";
-import { ResumeUpload } from "@/components/Student/ResumeUpload.jsx";
-import { JobsList } from "@/components/Student/JobsList.jsx";
-import { ReferralsList } from "@/components/Student/ReferralsList.jsx";
-import { OpportunitiesList } from "@/components/Student/OpportunitiesList.jsx";
-import { QRCodeSection } from "@/components/Student/QRCodeSection.jsx";
-import { TabNavigation } from "@/components/Student/TabNavigation.jsx";
-import { ExternalJobsList } from "@/components/Student/ExternalJobsList.jsx";
-import { StudentProfilePage } from "@/pages/StudentProfile.jsx";
-import { ProfileCompletionModal } from "@/components/Student/ProfileCompletionModal.jsx";
-import { OpportunityDetailModal } from "@/components/Student/OpportunityDetailModal.jsx";
-import { AppliedJobsList } from "@/components/Student/AppliedJobsList.jsx";
+} from "@/components/Referrals/TransactionToast";
+import { ProfileForm } from "@/components/Referrals/Student/ProfileForm.jsx";
+import { ResumeUpload } from "@/components/Referrals/Student/ResumeUpload.jsx";
+import { JobsList } from "@/components/Referrals/Student/JobsList.jsx";
+import { ReferralsList } from "@/components/Referrals/Student/ReferralsList.jsx";
+import { OpportunitiesList } from "@/components/Referrals/Student/OpportunitiesList.jsx";
+import { QRCodeSection } from "@/components/Referrals/Student/QRCodeSection.jsx";
+import { TabNavigation } from "@/components/Referrals/Student/TabNavigation.jsx";
+import { ExternalJobsList } from "@/components/Referrals/Student/ExternalJobsList.jsx";
+import { StudentProfilePage } from "@/pages/Referrals/StudentProfile.jsx";
+import { ProfileCompletionModal } from "@/components/Referrals/Student/ProfileCompletionModal.jsx";
+import { OpportunityDetailModal } from "@/components/Referrals/Student/OpportunityDetailModal.jsx";
+import { AppliedJobsList } from "@/components/Referrals/Student/AppliedJobsList.jsx";
 import { ArrowLeft } from "lucide-react";
-import { cn } from "@/lib/utils.js";
-import { externalJobsApi } from "@/services/externalJobs.js";
-import { opportunitiesApi } from "@/services/opportunities.js";
-import { studentProfileApi } from "@/services/studentProfile.js";
+import { cn } from "@/lib/Referrals/utils.js";
+import { externalJobsApi } from "@/services/Referrals/externalJobs.js";
+import { opportunitiesApi } from "@/services/Referrals/opportunities.js";
+import { studentProfileApi } from "@/services/Referrals/studentProfile.js";
 
 export function StudentDashboard() {
   const location = useLocation();

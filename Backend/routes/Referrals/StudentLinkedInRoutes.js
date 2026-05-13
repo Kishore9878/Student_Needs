@@ -8,10 +8,10 @@ import {
     updateLinkedInPdf,
     getLinkedIn,
     deleteLinkedIn,
-} from "../controllers/StudentLinkedIn.js";
+} from "../../controllers/Referrals/StudentLinkedIn.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Student LinkedIn routes

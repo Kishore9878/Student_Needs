@@ -1,7 +1,7 @@
-import Application from "../models/ApplicationModel.js";
-import Opportunity from "../models/OpportunityModel.js";
-import Student from "../models/StudentModel.js";
-import Alumni from "../models/AlumniModel.js";
+import Application from "../../models/Referrals/ApplicationModel.js";
+import Opportunity from "../../models/Referrals/OpportunityModel.js";
+import Student from "../../models/Referrals/StudentModel.js";
+import Alumni from "../../models/Referrals/AlumniModel.js";
 
 // =====================================================
 // ALUMNI SIDE - Management Endpoints

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button.jsx';
-import { StatusBadge } from '@/components/StatusBadge.jsx';
+import { Button } from '@/components/Referrals/ui/button.jsx';
+import { StatusBadge } from '@/components/Referrals/StatusBadge.jsx';
 import { toast } from 'sonner';
 import {
   Loader2,

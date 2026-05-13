@@ -1,11 +1,11 @@
-import { Toaster } from "@/components/ui/toaster.jsx";
-import { Toaster as Sonner } from "@/components/ui/sonner.jsx";
-import { TooltipProvider } from "@/components/ui/tooltip.jsx";
+import { Toaster } from "@/components/Referrals/ui/toaster.jsx";
+import { Toaster as Sonner } from "@/components/Referrals/ui/sonner.jsx";
+import { TooltipProvider } from "@/components/Referrals/ui/tooltip.jsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "@/contexts/ThemeContext.jsx";
-import { AuthProvider } from "@/services/Auth/AuthContext.jsx";
-import Index from "@/pages/Index.jsx";
+import { ThemeProvider } from "@/contexts/Referrals/ThemeContext.jsx";
+import { AuthProvider } from "@/services/Referrals/Auth/AuthContext.jsx";
+import Index from "@/pages/Referrals/Index.jsx";
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

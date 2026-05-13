@@ -1,8 +1,8 @@
 // controllers/StudentResume.js
 
-import Student from "../models/StudentModel.js";
-import { uploadPdfToMongoDB } from "../utils/getStringFromPdf.js";
-import { calculateProfileCompleteness } from "../utils/calculateProfileScore.js";
+import Student from "../../models/Referrals/StudentModel.js";
+import { uploadPdfToMongoDB } from "../../utils/Referrals/getStringFromPdf.js";
+import { calculateProfileCompleteness } from "../../utils/Referrals/calculateProfileScore.js";
 
 // Upload Resume
 export const uploadResume = async (req, res) => {

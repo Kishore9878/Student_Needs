@@ -5,10 +5,10 @@ const router = express.Router();
 import {
     updateProfile,
     getProfile,
-} from "../controllers/AlumniProfile.js";
+} from "../../controllers/Referrals/AlumniProfile.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // All routes require authentication
 router.use(auth);

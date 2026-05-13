@@ -1,24 +1,24 @@
 import express from "express";
-import { dbconnect } from "./config/database.js";
-import cloudinary from "./config/cloudinary.js";
+import { dbconnect } from "./config/Referrals/database.js";
+import cloudinary from "./config/Referrals/cloudinary.js";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import dotenv from "dotenv";
 import cors from "cors";
 
 // Routes
-import studentAuthRoutes from "./routes/StudentAuthRoutes.js";
-import profileRoutes from "./routes/StudentProfileRoutes.js";
-import resumeRoutes from "./routes/StudentResumeRoutes.js";
-import linkedInRoutes from "./routes/StudentLinkedInRoutes.js";
-import githubRoutes from "./routes/StudentGithubRoutes.js";
-import alumniAuthRoutes from "./routes/AlumniAuthRoutes.js";
-import alumniProfileRoutes from "./routes/AlumniProfileRoutes.js";
-import opportunityRoutes from "./routes/OpportunityRoutes.js";
-import applicationRoutes from "./routes/ApplicationRoutes.js";
-import externalJobRoutes from "./routes/ExternalJobRoutes.js";
-import interviewRoutes from "./routes/InterviewRoutes.js";
-import profileAnalysisRoutes from "./routes/ProfileAnalysisRoutes.js";
+import studentAuthRoutes from "./routes/Referrals/StudentAuthRoutes.js";
+import profileRoutes from "./routes/Referrals/StudentProfileRoutes.js";
+import resumeRoutes from "./routes/Referrals/StudentResumeRoutes.js";
+import linkedInRoutes from "./routes/Referrals/StudentLinkedInRoutes.js";
+import githubRoutes from "./routes/Referrals/StudentGithubRoutes.js";
+import alumniAuthRoutes from "./routes/Referrals/AlumniAuthRoutes.js";
+import alumniProfileRoutes from "./routes/Referrals/AlumniProfileRoutes.js";
+import opportunityRoutes from "./routes/Referrals/OpportunityRoutes.js";
+import applicationRoutes from "./routes/Referrals/ApplicationRoutes.js";
+import externalJobRoutes from "./routes/Referrals/ExternalJobRoutes.js";
+import interviewRoutes from "./routes/Referrals/InterviewRoutes.js";
+import profileAnalysisRoutes from "./routes/Referrals/ProfileAnalysisRoutes.js";
 
 // Configuration
 dotenv.config();

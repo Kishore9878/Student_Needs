@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/lib/Referrals/utils.js';
 import { Users, CheckCircle } from 'lucide-react';
 
 /**

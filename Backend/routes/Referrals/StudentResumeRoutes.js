@@ -7,10 +7,10 @@ import {
     updateResume,
     getResume,
     deleteResume,
-} from "../controllers/StudentResume.js";
+} from "../../controllers/Referrals/StudentResume.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Student Resume routes

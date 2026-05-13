@@ -5,10 +5,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/Referrals/ui/card.jsx";
+import { Button } from "@/components/Referrals/ui/button.jsx";
+import { Input } from "@/components/Referrals/ui/input.jsx";
+import { Badge } from "@/components/Referrals/ui/badge.jsx";
 import {
   Code,
   Trash2,
@@ -19,11 +19,11 @@ import {
   Save,
   Edit2,
 } from "lucide-react";
-import { githubApi } from "@/services/studentProfile";
+import { githubApi } from "@/services/Referrals/studentProfile.js";
 import {
   showTransactionToast,
   dismissToast,
-} from "@/components/TransactionToast";
+} from "@/components/Referrals/TransactionToast";
 
 /**
  * CodeSection Component

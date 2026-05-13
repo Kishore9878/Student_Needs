@@ -1,4 +1,4 @@
-import { useToast } from "@/hooks/use-toast.js";
+import { useToast } from "@/hooks/Referrals/use-toast.js";
 import { 
   Toast, 
   ToastClose, 
@@ -6,7 +6,7 @@ import {
   ToastProvider, 
   ToastTitle, 
   ToastViewport 
-} from "@/components/ui/toast.jsx";
+} from "@/components/Referrals/ui/toast.jsx";
 
 /**
  * Toaster Component

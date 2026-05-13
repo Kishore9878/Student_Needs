@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button.jsx';
-import { cn } from '@/lib/utils.js';
+import { Button } from '@/components/Referrals/ui/button.jsx';
+import { cn } from '@/lib/Referrals/utils.js';
 import {
   Briefcase,
   Plus,

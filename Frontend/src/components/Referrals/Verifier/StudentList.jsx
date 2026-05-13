@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
-import { StatusBadge } from '@/components/StatusBadge.jsx';
-import { cn } from '@/lib/utils.js';
+import { StatusBadge } from '@/components/Referrals/StatusBadge.jsx';
+import { cn } from '@/lib/Referrals/utils.js';
 
 /**
  * StudentList Component

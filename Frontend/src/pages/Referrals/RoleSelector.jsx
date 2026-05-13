@@ -6,7 +6,7 @@ import {
   Briefcase,
   ChevronRight,
 } from "lucide-react";
-import { cn } from "@/lib/utils.js";
+import { cn } from "@/lib/Referrals/utils.js";
 
 const roles = [
   {

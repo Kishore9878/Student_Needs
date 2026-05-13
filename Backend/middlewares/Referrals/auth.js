@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import Student from "../models/StudentModel.js";
+import Student from "../../models/Referrals/StudentModel.js";
 
 dotenv.config();
 

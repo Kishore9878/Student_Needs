@@ -3,10 +3,10 @@ const router = express.Router();
 
 // Import controllers
 // import { signup, login, getAlumniData } from "../controllers/AlumniAuth.js";
-import { signup, login } from "../controllers/AlumniAuth.js";
+import { signup, login } from "../../controllers/Referrals/AlumniAuth.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Alumni Authentication routes

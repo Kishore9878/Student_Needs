@@ -12,10 +12,10 @@ import {
     getMyApplications,
     getApplicationDetails,
     downloadStudentResume,
-} from "../controllers/ApplicationController.js";
+} from "../../controllers/Referrals/ApplicationController.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Application Review routes (Alumni)

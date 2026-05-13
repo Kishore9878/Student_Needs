@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { interviewApi } from '@/services/interview.js';
-import { opportunitiesApi } from '@/services/opportunities.js';
-import { analyzeApi } from '@/services/analyze.js';
-import { useAuth } from '@/services/Auth/AuthContext.jsx';
-import { Button } from '@/components/ui/button.jsx';
-import { cn } from '@/lib/utils.js';
+import { interviewApi } from '@/services/Referrals/interview.js';
+import { opportunitiesApi } from '@/services/Referrals/opportunities.js';
+import { analyzeApi } from '@/services/Referrals/analyze.js';
+import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { Button } from '@/components/Referrals/ui/button.jsx';
+import { cn } from '@/lib/Referrals/utils.js';
 import {
   Mic,
   MicOff,
@@ -23,7 +23,7 @@ import {
   Briefcase,
   Loader2,
 } from 'lucide-react';
-import { showToast } from '@/components/TransactionToast';
+import { showToast } from '@/components/Referrals/TransactionToast.jsx';
 
 export default function InterviewPage() {
   const [searchParams] = useSearchParams();

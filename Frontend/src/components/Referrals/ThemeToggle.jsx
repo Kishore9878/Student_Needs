@@ -1,6 +1,6 @@
 import React from 'react';
 import { Moon, Sun } from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext.jsx';
+import { useTheme } from '@/contexts/Referrals/ThemeContext.jsx';
 import { motion } from 'framer-motion';
 
 /**

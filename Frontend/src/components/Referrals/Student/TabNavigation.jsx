@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/lib/Referrals/utils.js';
 import {
   FileText,
   Briefcase,

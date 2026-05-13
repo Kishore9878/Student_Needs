@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/Referrals/ui/input.jsx";
+import { Label } from "@/components/Referrals/ui/label.jsx";
+import { Button } from "@/components/Referrals/ui/button.jsx";
+import { Textarea } from "@/components/Referrals/ui/textarea.jsx";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/Referrals/ui/card.jsx";
+import { Badge } from "@/components/Referrals/ui/badge.jsx";
 import {
   Loader2,
   Save,
@@ -23,15 +23,15 @@ import {
   X,
   Award,
 } from "lucide-react";
-import { studentProfileApi } from "@/services/studentProfile";
+import { studentProfileApi } from "@/services/Referrals/studentProfile.js";
 import {
   showTransactionToast,
   dismissToast,
-} from "@/components/TransactionToast";
+} from "@/components/Referrals/TransactionToast.jsx";
 // Import new profile section components
-import { ResumeSection } from "@/components/Student/ResumeSection";
-import { LinkedInSection } from "@/components/Student/LinkedInSection";
-import { GitHubSection } from "@/components/Student/GitHubSection";
+import { ResumeSection } from "@/components/Referrals/Student/ResumeSection.jsx";
+import { LinkedInSection } from "@/components/Referrals/Student/LinkedInSection.jsx";
+import { GitHubSection } from "@/components/Referrals/Student/GitHubSection.jsx";
 
 export function StudentProfilePage() {
   const navigate = useNavigate();

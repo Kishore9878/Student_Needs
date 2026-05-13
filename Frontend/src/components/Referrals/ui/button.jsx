@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 
-import { cn } from "@/lib/utils.js";
+import { cn } from "@/lib/Referrals/utils.js";
 
 /**
  * Defines the styling variants for the Button component.

@@ -5,10 +5,10 @@ const router = express.Router();
 import {
     getExternalJobs,
     searchExternalJobs
-} from "../controllers/ExternalJobController.js";
+} from "../../controllers/Referrals/ExternalJobController.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      External Job routes

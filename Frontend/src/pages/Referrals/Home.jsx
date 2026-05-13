@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LandingHero from '@/components/Home/LandingHero.jsx';
-import { useAuth } from '@/services/Auth/AuthContext.jsx';
-import Navbar from '@/components/Navbar.jsx';
-import Features from '@/components/Home/Features.jsx';
-import WorkProcess from '@/components/Home/WorkProcess.jsx';
-import Footer from '@/components/Footer.jsx';
+import LandingHero from '@/components/Referrals/Home/LandingHero.jsx';
+import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import Navbar from '@/components/Referrals/Navbar.jsx';
+import Features from '@/components/Referrals/Home/Features.jsx';
+import WorkProcess from '@/components/Referrals/Home/WorkProcess.jsx';
+import Footer from '@/components/Referrals/Footer.jsx';
 
 const Home = () => {
   const { isAuthenticated, user, isLoading } = useAuth();

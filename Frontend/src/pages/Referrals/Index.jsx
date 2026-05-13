@@ -1,22 +1,22 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Home from '@/pages/Home.jsx';
-import About from '@/pages/About.jsx';
-import { StudentDashboard } from '@/pages/StudentDashboard.jsx';
-import { AlumniDashboard } from '@/pages/AlumniDashboard.jsx';
-import { VerifierDashboard } from '@/pages/VerifierDashboard.jsx';
-import InterviewPage from '@/pages/InterviewPage.jsx';
-import NotFound from '@/pages/NotFound.jsx';
-import { RoleSelector } from '@/pages/RoleSelector.jsx';
-import Navbar from '@/components/Navbar.jsx';
-import { useAuth } from '@/services/Auth/AuthContext.jsx';
-import { StudentLoginPage } from '@/components/Student/Auth/StudentLogin.jsx';
-import { StudentSignupPage } from '@/components/Student/Auth/StudentSignup.jsx';
-import { AlumniLoginPage } from '@/components/Alumni/Auth/AlumniLogin.jsx';
-import { AlumniSignupPage } from '@/components/Alumni/Auth/AlumniSignup.jsx';
-import { VerifierLoginPage } from '@/components/Verifier/Auth/VerifierLogin.jsx';
-import { VerifierSignupPage } from '@/components/Verifier/Auth/VerifierSignup.jsx';
-import LandingPage from "@/pages/LandingPage";
+import Home from '@/pages/Referrals/Home.jsx';
+import About from '@/pages/Referrals/About.jsx';
+import { StudentDashboard } from '@/pages/Referrals/StudentDashboard.jsx';
+import { AlumniDashboard } from '@/pages/Referrals/AlumniDashboard.jsx';
+import { VerifierDashboard } from '@/pages/Referrals/VerifierDashboard.jsx';
+import InterviewPage from '@/pages/Referrals/InterviewPage.jsx';
+import NotFound from '@/pages/Referrals/NotFound.jsx';
+import { RoleSelector } from '@/pages/Referrals/RoleSelector.jsx';
+import Navbar from '@/components/Referrals/Navbar.jsx';
+import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { StudentLoginPage } from '@/components/Referrals/Student/Auth/StudentLogin.jsx';
+import { StudentSignupPage } from '@/components/Referrals/Student/Auth/StudentSignup.jsx';
+import { AlumniLoginPage } from '@/components/Referrals/Alumni/Auth/AlumniLogin.jsx';
+import { AlumniSignupPage } from '@/components/Referrals/Alumni/Auth/AlumniSignup.jsx';
+import { VerifierLoginPage } from '@/components/Referrals/Verifier/Auth/VerifierLogin.jsx';
+import { VerifierSignupPage } from '@/components/Referrals/Verifier/Auth/VerifierSignup.jsx';
+import LandingPage from "@/pages/Referrals/LandingPage";
 
 function DashboardLayout({ children }) {
   return (

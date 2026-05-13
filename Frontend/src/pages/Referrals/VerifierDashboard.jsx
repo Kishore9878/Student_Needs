@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/services/Auth/AuthContext.jsx';
-import { storage } from '@/lib/storage.js';
-import { VerifierStats } from '@/components/Verifier/VerifierStats.jsx';
-import { StudentList } from '@/components/Verifier/StudentList.jsx';
-import { StudentDetails } from '@/components/Verifier/StudentDetails.jsx';
-import { showToast, dismissToast } from '@/components/TransactionToast.jsx';
+import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { storage } from '@/lib/Referrals/storage.js';
+import { VerifierStats } from '@/components/Referrals/Verifier/VerifierStats.jsx';
+import { StudentList } from '@/components/Referrals/Verifier/StudentList.jsx';
+import { StudentDetails } from '@/components/Referrals/Verifier/StudentDetails.jsx';
+import { showToast, dismissToast } from '@/components/Referrals/TransactionToast.jsx';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button.jsx';
+import { Button } from '@/components/Referrals/ui/button.jsx';
 import { useNavigate } from 'react-router-dom';
 
 export function VerifierDashboard() {

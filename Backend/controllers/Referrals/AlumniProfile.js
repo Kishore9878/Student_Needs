@@ -1,4 +1,4 @@
-import Alumni from "../models/AlumniModel.js";
+import Alumni from "../../models/Referrals/AlumniModel.js";
 
 // Create / Update Profile
 export const updateProfile = async (req, res) => {

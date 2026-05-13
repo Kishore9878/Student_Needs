@@ -1,6 +1,6 @@
-import Opportunity from "../models/OpportunityModel.js";
-import Alumni from "../models/AlumniModel.js";
-import Student from "../models/StudentModel.js"; // Moved from dynamic require
+import Opportunity from "../../models/Referrals/OpportunityModel.js";
+import Alumni from "../../models/Referrals/AlumniModel.js";
+import Student from "../../models/Referrals/StudentModel.js"; // Moved from dynamic require
 
 // Post Referral Opportunity
 export const createOpportunity = async (req, res) => {

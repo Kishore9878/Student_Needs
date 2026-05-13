@@ -2,10 +2,10 @@ import express from "express";
 const router = express.Router();
 
 // Import controllers
-import { getSignedUrl } from "../controllers/interview.js";
+import { getSignedUrl } from "../../controllers/Referrals/interview.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Interview routes (ElevenLabs AI)

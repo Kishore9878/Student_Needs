@@ -6,10 +6,10 @@ import {
     updateProfile,
     getProfile,
     getProfileStatus,
-} from "../controllers/StudentProfile.js";
+} from "../../controllers/Referrals/StudentProfile.js";
 
 // Import middleware
-import { auth } from "../middlewares/auth.js";
+import { auth } from "../../middlewares/Referrals/auth.js";
 
 // ********************************************************************************************************
 //                                      Student Profile routes

@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/services/Auth/AuthContext.jsx';
-import { Button } from '@/components/ui/button.jsx';
-import { cn } from '@/lib/utils.js';
-import { showToast, dismissToast } from '@/components/TransactionToast.jsx';
-import { AlumniStats } from '@/components/Alumni/AlumniStats.jsx';
-import { AlumniTabNavigation } from '@/components/Alumni/AlumniTabNavigation.jsx';
-import { CreateJobModal } from '@/components/Alumni/CreateJobModal.jsx';
-import { PostReferralModal } from '@/components/Alumni/PostReferralModal.jsx';
-import { BackendOpportunitiesList } from '@/components/Alumni/BackendOpportunitiesList.jsx';
-import { EditOpportunityModal } from '@/components/Alumni/EditOpportunityModal.jsx';
-import { StudentProfileModal } from '@/components/Alumni/StudentProfileModal.jsx';
-import { ApplicationCard } from '@/components/Alumni/ApplicationCard.jsx';
+import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { Button } from '@/components/Referrals/ui/button.jsx';
+import { cn } from '@/lib/Referrals/utils.js';
+import { showToast, dismissToast } from '@/components/Referrals/TransactionToast.jsx';
+import { AlumniStats } from '@/components/Referrals/Alumni/AlumniStats.jsx';
+import { AlumniTabNavigation } from '@/components/Referrals/Alumni/AlumniTabNavigation.jsx';
+import { CreateJobModal } from '@/components/Referrals/Alumni/CreateJobModal.jsx';
+import { PostReferralModal } from '@/components/Referrals/Alumni/PostReferralModal.jsx';
+import { BackendOpportunitiesList } from '@/components/Referrals/Alumni/BackendOpportunitiesList.jsx';
+import { EditOpportunityModal } from '@/components/Referrals/Alumni/EditOpportunityModal.jsx';
+import { StudentProfileModal } from '@/components/Referrals/Alumni/StudentProfileModal.jsx';
+import { ApplicationCard } from '@/components/Referrals/Alumni/ApplicationCard.jsx';
 import { Briefcase, Plus, ArrowLeft, Star, Eye } from 'lucide-react';
-import { opportunitiesApi } from '@/services/opportunities.js';
-import { applicationsApi } from '@/services/application.js';
+import { opportunitiesApi } from '@/services/Referrals/opportunities.js';
+import { applicationsApi } from '@/services/Referrals/application.js';
 
 export function AlumniDashboard() {
   const { user, isAuthenticated } = useAuth();
