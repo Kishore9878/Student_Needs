@@ -83,9 +83,12 @@ const AttendanceRoutes = () => {
         }
       />
 
+      {/* ================= REFERRALS HOME ================= */}
+      <Route path="/" element={<Index />} />
+
       {/* ================= ROOT REDIRECT ================= */}
       <Route
-        path="/"
+        path="/home"
         element={
           <ProtectedRoute>
             <Navigate
