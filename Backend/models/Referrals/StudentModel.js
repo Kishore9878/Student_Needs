@@ -132,4 +132,8 @@ const studentSchema = new mongoose.Schema({
 }, { timestamps: true }
 )
 
-export default mongoose.model("Student", studentSchema);
+const ReferralStudent =
+  mongoose.models.ReferralStudent ||
+  mongoose.model("ReferralStudent", studentSchema);
+
+export default ReferralStudent;
