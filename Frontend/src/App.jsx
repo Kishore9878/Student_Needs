@@ -86,6 +86,18 @@ import TutorAcceptPage from "./pages/Tutorials/TutorAcceptPage";
 import TutorEditProfilePage from "./pages/Tutorials/TutorEditProfilePage";
 
 // ======================================================
+//                    EXPENSES
+// ======================================================
+
+import Home from "./pages/Expenses/Home";
+import ExpenseLogin from "./pages/Expenses/Login";
+import Signup from "./pages/Expenses/Signup";
+import RecurringTransactions from "./pages/Expenses/RecurringTransactions";
+import Analytics from "./pages/Expenses/Analytics";
+import Settings from "./pages/Expenses/Settings";
+import AppLayout from "./components/Expenses/layout/AppLayout";
+
+// ======================================================
 //                    LAZY LOAD
 // ======================================================
 
@@ -387,6 +399,39 @@ const AttendanceRoutes = () => {
       {/* ======================================================
                         FALLBACK
       ====================================================== */}
+
+            {/* ======================================================
+                        EXPENSE TRACKER
+      ====================================================== */}
+
+      <Route element={<AppLayout />}>
+        <Route path="/expenses-tracker" element={<Home />} />
+
+        <Route
+          path="/expenses-tracker/recurring"
+          element={<RecurringTransactions />}
+        />
+
+        <Route
+          path="/expenses-tracker/analytics"
+          element={<Analytics />}
+        />
+
+        <Route
+          path="/expenses-tracker/settings"
+          element={<Settings />}
+        />
+      </Route>
+
+      <Route
+        path="/expenses-tracker/login"
+        element={<ExpenseLogin />}
+      />
+
+      <Route
+        path="/expenses-tracker/signup"
+        element={<Signup />}
+      />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

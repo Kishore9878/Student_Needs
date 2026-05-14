@@ -2,6 +2,8 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
+@import url('https://fonts.googleapis.com/css2?family=Handjet:wght@500&family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -635,4 +637,109 @@ button {
 ::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 10px;
+}
+
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0F172A; /* Slate 900 */
+  color: #F8FAFC; /* Slate 50 */
+  overflow-x: hidden;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-mont {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.font-handjet {
+  font-family: 'Handjet', cursive;
+}
+
+@layer components {
+  /* Glassmorphism panel for cards */
+  .glass-panel {
+    @apply bg-slate-800/60 backdrop-blur-md border border-white/10 shadow-lg rounded-2xl;
+  }
+
+  .focus-animation {
+    @apply focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300;
+  }
+
+  /* Premium inputs */
+  .premium-input {
+    @apply w-full h-12 bg-slate-900/50 border border-white/10 rounded-xl px-4 text-white placeholder-slate-400 outline-none transition-all duration-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500;
+  }
+}
+
+input[type="date"] {
+  background-color: rgba(30, 41, 59, 0.5); /* brand-800 with opacity */
+  padding: 10px 15px;
+  height: 45px;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  font-size: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  outline: none;
+  border-radius: 12px;
+  color-scheme: dark;
+}
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0F172A;
+}
+
+/* Chrome, Edge and Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: #0F172A;
+}
+*::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: #334155;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #475569;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  display: none;
+}
+
+@media (max-width: 1085px) {
+  .smr {
+    @apply grid grid-flow-row gap-2 justify-center;
+  }
+  .category {
+    @apply bg-slate-700 text-white w-fit p-1 px-3 rounded-full;
+  }
+}
+
+@media (max-width: 940px) {
+  .listrr {
+    @apply grid-cols-1;
+  }
+  .flexing {
+    @apply flex-col;
+  }
 }

@@ -2,7 +2,9 @@ import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
+import "./index.css";
 import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 
 // ======================================================
 //                    PROVIDERS
@@ -31,9 +33,6 @@ import "./styles/Tutorials/Login.css";
 // Attendance Styles
 import "./styles/Attendance/main.css";
 
-// Global Styles
-import "./index.css";
-
 // ======================================================
 //                    ROOT
 // ======================================================
@@ -55,3 +54,7 @@ root.render(
     </ThemeProvider>
   </StrictMode>
 );
+
+// If you want to start measuring performance in your app,
+// pass a function to log results
+reportWebVitals();
