@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import budgetModel from "../db/budgetModel.js";
-import expenseModel from "../db/expenseModel.js";
-import { success, error } from "../utils/handler.js";
+import budgetModel from "../../models/Expenses/budgetModel.js";
+import expenseModel from "../../models/Expenses/expenseModel.js";
+import { success, error } from "../../utils/Expenses/handler.js";
 
 export const createBudget = async (req, res) => {
   try {

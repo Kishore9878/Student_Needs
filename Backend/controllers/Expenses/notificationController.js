@@ -1,5 +1,5 @@
-import Notification from "../db/notificationModel.js";
-import { success, error } from "../utils/handler.js";
+import Notification from "../../models/Expenses/notificationModel.js";
+import { success, error } from "../../utils/Expenses/handler.js";
 
 export const updateSettings = async (req, res) => {
   try {

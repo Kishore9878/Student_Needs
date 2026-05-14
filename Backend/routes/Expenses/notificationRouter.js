@@ -1,6 +1,6 @@
 import express from "express";
-import { updateSettings } from "../controller/notificationController.js";
-import { verifyToken } from "../middleware/authMiddleware.js";
+import { updateSettings } from "../../controllers/Expenses/notificationController.js";
+import { verifyToken } from "../../middlewares/Expenses/authMiddleware.js";
 
 const router = express.Router();
 

@@ -8,8 +8,8 @@ import {
   getRecentExpenses,
   getMonthlyExpenses,
   emailSender,
-} from "../controller/expenseController.js";
-import { verifyToken } from "../middleware/authMiddleware.js";
+} from "../../controllers/Expenses/expenseController.js";
+import { verifyToken } from "../../middlewares/Expenses/authMiddleware.js";
 
 const router = express.Router();
 

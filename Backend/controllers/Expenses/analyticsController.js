@@ -1,5 +1,5 @@
-import expenseModel from "../db/expenseModel.js";
-import { success, error } from "../utils/handler.js";
+import expenseModel from "../../models/Expenses/expenseModel.js";
+import { success, error } from "../../utils/Expenses/handler.js";
 import mongoose from "mongoose";
 
 // 1. category breakdown

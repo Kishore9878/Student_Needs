@@ -3,8 +3,8 @@ import {
   createGoal,
   getGoals,
   updateSavings,
-} from "../controller/goalController.js";
-import { verifyToken } from "../middleware/authMiddleware.js";
+} from "../../controllers/Expenses/goalController.js";
+import { verifyToken } from "../../middlewares/Expenses/authMiddleware.js";
 
 const router = express.Router();
 

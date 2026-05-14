@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import expenseModel from "../db/expenseModel.js";
-import userModel from "../db/userModel.js";
-import sendEmailWithAttachment from "../utils/emailSend.js";
-import { error, success } from "../utils/handler.js";
+import expenseModel from "../../models/Expenses/expenseModel.js";
+import userModel from "../../models/Expenses/userModel.js";
+import sendEmailWithAttachment from "../../utils/Expenses/emailSend.js";
+import { error, success } from "../../utils/Expenses/handler.js";
 
 export const createExpense = async (req, res) => {
   try {

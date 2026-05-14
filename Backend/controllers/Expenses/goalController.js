@@ -1,5 +1,5 @@
-import goalModel from "../db/goalModel.js";
-import { success, error } from "../utils/handler.js";
+import goalModel from "../../models/Expenses/goalModel.js";
+import { success, error } from "../../utils/Expenses/handler.js";
 
 export const createGoal = async (req, res) => {
   try {

@@ -72,12 +72,12 @@ import profileAnalysisRoutes from "./routes/Referrals/ProfileAnalysisRoutes.js";
 //                  EXPENSE ROUTES
 // =====================================================
 
-import userRouter from "./router/Expenses/userRouter.js";
-import expenseRouter from "./router/Expenses/expenseRouter.js";
-import budgetRouter from "./router/Expenses/budgetRouter.js";
-import goalRouter from "./router/Expenses/goalRouter.js";
-import analyticsRouter from "./router/Expenses/analyticsRouter.js";
-import notificationRouter from "./router/Expenses/notificationRouter.js";
+import userRouter from "./routes/Expenses/userRouter.js";
+import expenseRouter from "./routes/Expenses/expenseRouter.js";
+import budgetRouter from "./routes/Expenses/budgetRouter.js";
+import goalRouter from "./routes/Expenses/goalRouter.js";
+import analyticsRouter from "./routes/Expenses/analyticsRouter.js";
+import notificationRouter from "./routes/Expenses/notificationRouter.js";
 
 // =====================================================
 //                  EXPENSE SCHEDULERS

@@ -1,5 +1,5 @@
-import userModel from "../db/userModel.js";
-import { error, success } from "../utils/handler.js";
+import userModel from "../../models/Expenses/userModel.js";
+import { error, success } from "../../utils/Expenses/handler.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 

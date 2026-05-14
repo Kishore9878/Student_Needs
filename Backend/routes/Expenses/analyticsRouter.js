@@ -5,8 +5,8 @@ import {
   getOverview,
   getSpendingInsights,
   predictNextMonthExpense,
-} from "../controller/analyticsController.js";
-import { verifyToken } from "../middleware/authMiddleware.js";
+} from "../../controllers/Expenses/analyticsController.js";
+import { verifyToken } from "../../middlewares/Expenses/authMiddleware.js";
 
 const router = express.Router();
 

@@ -1,9 +1,9 @@
 import cron from "node-cron";
 import mongoose from "mongoose";
 
-import userModel from "../db/userModel.js";
-import expenseModel from "../db/expenseModel.js";
-import Notification from "../db/notificationModel.js";
+import userModel from "../../models/Expenses/userModel.js";
+import expenseModel from "../../models/Expenses/expenseModel.js";
+import Notification from "../../models/Expenses/notificationModel.js";
 import sendEmailWithAttachment from "./emailSend.js";
 
 // ⏰ Smart reminder scheduler

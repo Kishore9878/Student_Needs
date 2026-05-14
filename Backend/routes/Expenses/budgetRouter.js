@@ -3,8 +3,8 @@ import {
   createBudget,
   getBudgets,
   getBudgetStatus,
-} from "../controller/budgetController.js";
-import { verifyToken } from "../middleware/authMiddleware.js";
+} from "../../controllers/Expenses/budgetController.js";
+import { verifyToken } from "../../middlewares/Expenses/authMiddleware.js";
 
 const router = express.Router();
 
