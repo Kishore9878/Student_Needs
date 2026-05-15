@@ -153,7 +153,9 @@ const AttendanceRoutes = () => {
       <Route path="/" element={<UnifiedLanding />} />
       <Route path="/role-selection" element={<RoleSelectionPage />} />
       <Route path="/role-selector" element={<Navigate to="/role-selection" replace />} />
+      <Route path="/login" element={<Navigate to="/login/student" replace />} />
       <Route path="/login/:role" element={<RoleAuthPage mode="login" />} />
+      <Route path="/signup" element={<Navigate to="/signup/student" replace />} />
       <Route path="/signup/:role" element={<RoleAuthPage mode="signup" />} />
       <Route path="/register/:role" element={<RoleAuthPage mode="signup" />} />
       <Route path="/auth/student/login" element={<Navigate to="/login/student" replace />} />
@@ -163,6 +165,8 @@ const AttendanceRoutes = () => {
       <Route path="/auth/verifier/login" element={<Navigate to="/login/verifier" replace />} />
       <Route path="/auth/verifier/signup" element={<Navigate to="/signup/verifier" replace />} />
       <Route path="/student/dashboard" element={<StudentOverviewDashboard />} />
+      <Route path="/student/attendance" element={<Navigate to="/student-dashboard" replace />} />
+      <Route path="/student/expenses" element={<Navigate to="/expenses-tracker" replace />} />
       <Route path="/modules" element={<ModuleOverviewPage />} />
       <Route path="/teacher/dashboard" element={<TutorDashboard />} />
       <Route path="/alumni/dashboard" element={<Index />} />

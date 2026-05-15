@@ -7,7 +7,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
-      window.location.href = '/';
+      const currentPath = window.location.pathname;
+      console.warn('401 intercepted:', error.response);
+      //window.location.href = '/student/referrals';
     }
     return Promise.reject(error);
   }

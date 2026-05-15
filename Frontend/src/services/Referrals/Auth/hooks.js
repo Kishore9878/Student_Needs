@@ -176,29 +176,62 @@ export function useStudentLogin() {
     return isValid;
   }, [form]);
 
-  const handleSubmit = useCallback(async () => {
-    if (!validate()) {
-      return { success: false, message: 'Please fix form errors' };
+const handleSubmit = useCallback(async () => {
+  if (!validate()) {
+    return { success: false, message: 'Please fix form errors' };
+  }
+
+  form.setSubmitting(true);
+
+  try {
+    const response = await studentLogin(form.data);
+
+    console.log("LOGIN RESPONSE:", response);
+
+    if (response.success) {
+
+      // ✅ Persist auth
+      const token =
+        response.token ||
+        response.data?.token;
+
+      const user =
+        response.user ||
+        response.data?.user;
+
+      if (token) {
+        localStorage.setItem("auth_token", token);
+        localStorage.setItem("token", token);
+      }
+
+      if (user) {
+        localStorage.setItem("auth_user", JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      form.resetForm();
+
+      navigate('/student/dashboard');
+
+    } else {
+      form.setSubmitError(response.message);
     }
 
-    form.setSubmitting(true);
-    try {
-      const response = await studentLogin(form.data);
-      if (response.success) {
-        form.resetForm();
-        navigate('/student/dashboard');
-      } else {
-        form.setSubmitError(response.message);
-      }
-      return response;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Login failed';
-      form.setSubmitError(message);
-      return { success: false, message };
-    } finally {
-      form.setSubmitting(false);
-    }
-  }, [form, studentLogin, navigate, validate]);
+    return response;
+
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Login failed';
+
+    form.setSubmitError(message);
+
+    return { success: false, message };
+
+  } finally {
+    form.setSubmitting(false);
+  }
+
+}, [form, studentLogin, navigate, validate]);
 
   return {
     ...form,
