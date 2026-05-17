@@ -13,14 +13,21 @@ export const verifyToken = (req, res, next) => {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Attach userId to request object
-    req.user = decoded;
+    // Normalize user ID to support unified auth (Referrals/Attendance use id, Expenses uses userId)
+    const unifiedUserId = decoded.userId || decoded.id;
+    
+    if (!unifiedUserId) {
+        const response = error(401, "Invalid token payload");
+        return res.status(response.statusCode).send(response);
+    }
+
+    // Attach userId to request object for Expenses controllers to use
+    req.user = { ...decoded, userId: unifiedUserId };
 
     // Security: Ownership Validation
-    // If request contains userId, it MUST match the token's userId
     const requestedUserId = req.body.userId || req.query.userId || req.params.userId;
     
-    if (requestedUserId && requestedUserId.toString() !== decoded.userId.toString()) {
+    if (requestedUserId && requestedUserId.toString() !== unifiedUserId.toString()) {
       const response = error(403, "Access denied: You can only access your own data");
       return res.status(response.statusCode).send(response);
     }

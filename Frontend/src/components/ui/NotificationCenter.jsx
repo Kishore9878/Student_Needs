@@ -38,10 +38,14 @@ export const NotificationCenter = () => {
       setUnreadCount((prev) => prev + 1);
     });
 
-    // Polling fallback every 60s if WebSocket is disconnected
+    // Polling fallback every 3 minutes if WebSocket is disconnected and tab is visible
     let interval;
     if (!isConnected) {
-      interval = setInterval(fetchNotifications, 60000);
+      interval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          fetchNotifications();
+        }
+      }, 180000);
     }
     
     return () => clearInterval(interval);

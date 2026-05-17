@@ -138,10 +138,14 @@ app.options(/.*/, cors());
 //                DEBUG ORIGIN LOGGER
 // =====================================================
 
-app.use((req, res, next) => {
-  console.log("Origin:", req.headers.origin);
-  next();
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    if (req.headers.origin) {
+      console.log("Origin:", req.headers.origin);
+    }
+    next();
+  });
+}
 
 // =====================================================
 //                    MIDDLEWARE
@@ -169,7 +173,11 @@ app.use((req, res, next) => {
 });
 
 morgan.token('id', function getId (req) { return req.id });
-app.use(morgan(':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', { stream: winstonLogger.stream }));
+
+// Disable verbose request logging in production mode
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan(':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', { stream: winstonLogger.stream }));
+}
 
 // =====================================================
 //             REQUEST TIMING & OBSERVABILITY
@@ -182,7 +190,8 @@ app.use((req, res, next) => {
     const time = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(2);
     if (time > 500) {
       winstonLogger.warn(`SLOW REQUEST: ${req.method} ${req.originalUrl} - ${time}ms`);
-    } else {
+    } else if (process.env.NODE_ENV !== 'production') {
+      // Only log fast requests in development to prevent noisy logs in production
       winstonLogger.info(`Performance: ${req.method} ${req.originalUrl} - ${time}ms`);
     }
   });
@@ -352,22 +361,31 @@ app.use("/api/expenses/expenses", expenseRouter);
 app.use("/api/expenses/goals", goalRouter);
 app.use("/api/expenses/notifications", notificationRouter);
 
-// Legacy expense mounts kept temporarily for old in-app references.
-app.use("/auth", authLimiter, userRouter);
-app.use("/analytics", analyticsRouter);
-app.use("/budgets", budgetRouter);
-app.use("/expenses", expenseRouter);
-app.use("/goals", goalRouter);
-app.use("/notifications", notificationRouter);
+// Legacy expense mounts removed for clean architecture.
 
 // =====================================================
 //                    404 HANDLER
 // =====================================================
 
 app.use((req, res) => {
+  winstonLogger.warn(`[404] Missing Endpoint: ${req.method} ${req.originalUrl} - IP: ${req.ip}`);
   res.status(404).json({
     success: false,
     message: "Route not found",
+    diagnostics: {
+      requestedUrl: req.originalUrl,
+      method: req.method,
+      availableGroups: [
+        "/api/students",
+        "/api/attendance",
+        "/api/expenses",
+        "/api/v1/student",
+        "/api/v1/alumni",
+        "/api/admin",
+        "/api/analytics",
+        "/api/notifications"
+      ]
+    }
   });
 });
 
@@ -380,10 +398,11 @@ app.use((err, req, res, next) => {
 
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || "Internal Server Error",
+    message: process.env.NODE_ENV === 'production' 
+      ? "Internal Server Error" 
+      : (err.message || "Internal Server Error"),
   });
 });
-
 
 // =====================================================
 //                SERVER INITIALIZATION
