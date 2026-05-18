@@ -398,6 +398,7 @@ function AlumniSignupFlow() {
         { name: "lastName", label: "Last Name", type: "text", placeholder: "Mehta" },
         { name: "email", label: "Email", type: "email", placeholder: "name@company.com" },
         { name: "password", label: "Password", type: "password", placeholder: "Password" },
+        { name: "collegeName", label: "College Name", type: "text", placeholder: "e.g. Stanford University" },
         { name: "company", label: "Company", type: "text", placeholder: "Company" },
         { name: "jobTitle", label: "Job Title", type: "text", placeholder: "Job title" },
       ]}
