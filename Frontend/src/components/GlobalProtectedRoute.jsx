@@ -20,6 +20,14 @@ export const GlobalProtectedRoute = ({ children, allowedRoles = [], fallbackPath
   }
 
   if (allowedRoles.length > 0) {
+<<<<<<< HEAD:src/components/GlobalProtectedRoute.jsx
+    const rawRole = (user.role || user.accountType || "student").toLowerCase();
+    const userRole = rawRole === "tutor" ? "teacher" : rawRole;
+    const hasRole = allowedRoles.some(r => {
+      const targetRole = r.toLowerCase() === "tutor" ? "teacher" : r.toLowerCase();
+      return targetRole === userRole;
+    });
+=======
 // <<<<<<< HEAD
 //     const rawRole = (user.role || user.accountType || "").toLowerCase();
 //     const userRole = rawRole === "tutor" ? "teacher" : rawRole;
@@ -31,6 +39,7 @@ export const GlobalProtectedRoute = ({ children, allowedRoles = [], fallbackPath
     const userRole = (user.role || user.accountType || "student").toLowerCase();
     const hasRole = allowedRoles.some(r => r.toLowerCase() === userRole);
 // >>>>>>> 0870b628bed689c474ddffdc0aff3a3c19622779
+>>>>>>> 94d51442ed970eef37ac0ae78cd897ae8839d68c:Frontend/src/components/GlobalProtectedRoute.jsx
     if (!hasRole) {
       return <Navigate to="/" replace />;
     }

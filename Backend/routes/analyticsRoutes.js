@@ -4,6 +4,8 @@ import Booking from "../models/Tutorials/Booking.js";
 import GradeModel from "../models/Attendance/GradeModel.js";
 import { catchAsync } from "../utils/catchAsync.js";
 
+import jwt from "jsonwebtoken";
+
 import mongoose from "mongoose";
 
 const router = express.Router();
@@ -15,12 +17,13 @@ const requireAuth = (req, res, next) => {
     return res.status(401).json({ success: false, message: "Unauthorized" });
   }
   try {
-    import("jsonwebtoken").then((jwt) => {
-      const token = authHeader.split(" ")[1];
-      const decoded = jwt.decode(token);
-      req.user = decoded;
-      next();
-    });
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.decode(token);
+    if (!decoded) {
+      return res.status(401).json({ success: false, message: "Invalid Token" });
+    }
+    req.user = decoded;
+    next();
   } catch(e) {
     return res.status(401).json({ success: false, message: "Invalid Token" });
   }

@@ -25,16 +25,29 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem('user');
         
         if (storedToken && storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          const resolvedRole = (parsedUser.role || parsedUser.accountType || "student").toLowerCase();
+          const normalizedUser = {
+            ...parsedUser,
+            role: resolvedRole,
+            accountType: resolvedRole
+          };
           setToken(storedToken);
-          setUser(JSON.parse(storedUser));
+          setUser(normalizedUser);
         } else {
           // Check Referrals fallback
           const referralAuth = localStorage.getItem('auth_data');
           if (referralAuth) {
              const parsed = JSON.parse(referralAuth);
              if (parsed.token && parsed.user) {
+                const resolvedRole = (parsed.user.role || parsed.user.accountType || "student").toLowerCase();
+                const normalizedUser = {
+                  ...parsed.user,
+                  role: resolvedRole,
+                  accountType: resolvedRole
+                };
                 setToken(parsed.token);
-                setUser(parsed.user);
+                setUser(normalizedUser);
              }
           }
         }
@@ -49,11 +62,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const handleAuthSuccess = (newToken, newUser) => {
+    const resolvedRole = (newUser.role || newUser.accountType || "student").toLowerCase();
+    const normalizedUser = {
+      ...newUser,
+      role: resolvedRole,
+      accountType: resolvedRole
+    };
     setToken(newToken);
-    setUser(newUser);
+    setUser(normalizedUser);
     localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(newUser));
-    localStorage.setItem('auth_data', JSON.stringify({ token: newToken, user: newUser }));
+    localStorage.setItem('user', JSON.stringify(normalizedUser));
+    localStorage.setItem('auth_data', JSON.stringify({ token: newToken, user: normalizedUser }));
   };
 
   const logout = useCallback(async () => {
@@ -138,8 +157,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await tutorsApiClient.get("/user");
       if (data?.user) {
-        setUser(data.user);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        const resolvedRole = (data.user.role || data.user.accountType || "student").toLowerCase();
+        const normalizedUser = {
+          ...data.user,
+          role: resolvedRole,
+          accountType: resolvedRole
+        };
+        setUser(normalizedUser);
+        localStorage.setItem('user', JSON.stringify(normalizedUser));
       }
     } catch (err) {
       console.error(err);
@@ -156,9 +181,11 @@ export const AuthProvider = ({ children }) => {
     error,
     isAuthenticated: !!user,
     isInitialized: true,
-    isTeacher: user?.role?.toLowerCase() === 'teacher' || user?.role?.toLowerCase() === 'tutor' || user?.accountType?.toLowerCase() === 'tutor',
-    isStudent: user?.role?.toLowerCase() === 'student' || user?.accountType?.toLowerCase() === 'student',
-    isTutor: user?.role?.toLowerCase() === 'tutor',
+    isTeacher: user?.role === 'teacher' || user?.role === 'tutor' || user?.accountType === 'tutor' || user?.accountType === 'teacher',
+    isStudent: user?.role === 'student' || user?.accountType === 'student',
+    isTutor: user?.role === 'tutor' || user?.accountType === 'tutor',
+    isAlumni: user?.role === 'alumni' || user?.accountType === 'alumni',
+    isVerifier: user?.role === 'verifier' || user?.accountType === 'verifier',
     
     // Actions
     login,
@@ -170,8 +197,21 @@ export const AuthProvider = ({ children }) => {
     fetchUser,
     clearError,
     setUser: (u) => {
-      setUser(u);
-      localStorage.setItem('user', JSON.stringify(u));
+      if (u) {
+        const resolvedRole = (u.role || u.accountType || "student").toLowerCase();
+        const normalized = {
+          ...u,
+          role: resolvedRole,
+          accountType: resolvedRole
+        };
+        setUser(normalized);
+        localStorage.setItem('user', JSON.stringify(normalized));
+        localStorage.setItem('auth_data', JSON.stringify({ token: localStorage.getItem('token'), user: normalized }));
+      } else {
+        setUser(null);
+        localStorage.removeItem('user');
+        localStorage.removeItem('auth_data');
+      }
     }
   };
 

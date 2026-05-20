@@ -8,9 +8,12 @@ import session from "express-session";
 import passport from "passport";
 import fileUpload from "express-fileupload";
 import path from "path";
+import os from "os";
 import helmet from "helmet";
 import { v4 as uuidv4 } from "uuid";
 import rateLimit from "express-rate-limit";
+import compression from "compression";
+import MongoStore from "connect-mongo";
 
 import { validateEnv } from "./config/envValidator.js";
 import { logger as winstonLogger } from "./utils/logger.js";
@@ -151,6 +154,9 @@ if (process.env.NODE_ENV !== 'production') {
 //                    MIDDLEWARE
 // =====================================================
 
+app.set("trust proxy", 1);
+app.use(compression());
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
@@ -201,7 +207,7 @@ app.use((req, res, next) => {
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: "/tmp/",
+    tempFileDir: os.tmpdir(),
   })
 );
 
@@ -211,8 +217,22 @@ app.use(
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per windowMs
-  message: "Too many login/signup attempts from this IP, please try again after 15 minutes",
+  max: 15, // Limit each IP to 15 attempts per windowMs
+  message: {
+    success: false,
+    message: "Too many login/signup attempts from this IP, please try again after 15 minutes"
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 300, // Limit each IP to 300 requests per 15 minutes
+  message: {
+    success: false,
+    message: "Too many requests from this IP, please try again after 15 minutes"
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -234,7 +254,11 @@ app.use(
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
-
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/TutorsApp",
+      collectionName: "sessions",
+      ttl: 24 * 60 * 60 // 1 day
+    }),
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -282,6 +306,15 @@ app.get("/", (req, res) => {
 });
 
 // =====================================================
+//                GLOBAL RATE LIMITING
+// =====================================================
+app.use("/api", generalLimiter);
+
+// Specific Auth Limiters for sensitive endpoints
+app.use("/api/login", authLimiter);
+app.use("/api/tutor/login", authLimiter);
+
+// =====================================================
 //                TUTORIAL MODULE ROUTES
 // =====================================================
 
@@ -322,6 +355,11 @@ app.use("/api/attendance", attendanceRoutes);
 // =====================================================
 //                REFERRAL MODULE ROUTES
 // =====================================================
+
+app.use("/api/v1/student/login", authLimiter);
+app.use("/api/v1/student/signup", authLimiter);
+app.use("/api/v1/alumni/login", authLimiter);
+app.use("/api/v1/alumni/signup", authLimiter);
 
 app.use("/api/v1/student", studentAuthRoutes);
 
@@ -467,3 +505,17 @@ const initializeServer = async () => {
 };
 
 initializeServer();
+
+// =====================================================
+//             GLOBAL PROCESS EXCEPTION HANDLERS
+// =====================================================
+process.on("unhandledRejection", (reason, promise) => {
+  winstonLogger.error("🔥 Unhandled Rejection at:", { promise, reason: reason?.stack || reason });
+});
+
+process.on("uncaughtException", (error) => {
+  winstonLogger.error("🔥 Uncaught Exception:", { error: error?.stack || error });
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
+});

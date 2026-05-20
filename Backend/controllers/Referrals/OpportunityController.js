@@ -221,7 +221,7 @@ export const getOpportunities = async (req, res) => {
 
         let userCollege;
 
-        if (accountType === "Student") {
+        if (accountType?.toLowerCase() === "student") {
             const student = await Student.findById(userId).select("college");
             if (!student) {
                 return res.status(404).json({
@@ -230,7 +230,7 @@ export const getOpportunities = async (req, res) => {
                 });
             }
             userCollege = student.college;
-        } else if (accountType === "Alumni") {
+        } else if (accountType?.toLowerCase() === "alumni") {
             const alumni = await Alumni.findById(userId).select("college");
             if (!alumni) {
                 return res.status(404).json({

@@ -21,8 +21,15 @@ export const verifyToken = (req, res, next) => {
         return res.status(response.statusCode).send(response);
     }
 
-    // Attach userId to request object for Expenses controllers to use
-    req.user = { ...decoded, userId: unifiedUserId };
+    const rawRole = (decoded.role || decoded.accountType || "student").toLowerCase();
+
+    // Attach userId and normalized role/accountType to request object
+    req.user = {
+      ...decoded,
+      userId: unifiedUserId,
+      role: rawRole,
+      accountType: rawRole
+    };
 
     // Security: Ownership Validation
     const requestedUserId = req.body.userId || req.query.userId || req.params.userId;

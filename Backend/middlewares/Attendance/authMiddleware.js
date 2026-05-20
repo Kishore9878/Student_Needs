@@ -24,7 +24,22 @@ const protect = async (req, res, next) => {
       );
 
       // GET USER WITHOUT PASSWORD
-      req.user = await User.findById(decoded.id).select("-password");
+      const user = await User.findById(decoded.id).select("-password");
+      if (!user) {
+        return res.status(401).json({
+          message: "User not found",
+        });
+      }
+
+      const userObj = user.toObject ? user.toObject() : user;
+      const rawRole = (userObj.role || userObj.accountType || "student").toLowerCase();
+      
+      req.user = {
+        ...userObj,
+        id: userObj._id,
+        role: rawRole,
+        accountType: rawRole,
+      };
 
       next();
 

@@ -34,7 +34,8 @@ export const isStudent = (req, res, next) => {
       });
     }
 
-    if (!req.user || req.user.role !== "student") {
+    const userRole = (req.user?.role || req.user?.accountType || "").toLowerCase();
+    if (!req.user || userRole !== "student") {
       return res.status(403).json({
         success: false,
         message: "Forbidden: Only students allowed",
@@ -56,7 +57,9 @@ export const isStudent = (req, res, next) => {
  */
 export const isTutor = (req, res, next) => {
   try {
-    if (!req.session?.user || req.session.user.role !== "tutor") {
+    const sessionUser = req.session?.user || req.user;
+    const userRole = (sessionUser?.role || sessionUser?.accountType || "").toLowerCase();
+    if (userRole !== "tutor" && userRole !== "teacher") {
       return res.status(403).json({
         success: false,
         message: "Forbidden: Only tutors allowed",
@@ -79,21 +82,25 @@ export const isTutor = (req, res, next) => {
 export const authorizeRole = (role) => {
   return (req, res, next) => {
     try {
-      if (role === "student") {
+      const targetRole = role.toLowerCase();
+      if (targetRole === "student") {
         if (!req.isAuthenticated || !req.isAuthenticated()) {
           return res.status(401).json({
             success: false,
             message: "Unauthorized: Please login",
           });
         }
-        if (!req.user || req.user.role !== "student") {
+        const userRole = (req.user?.role || req.user?.accountType || "").toLowerCase();
+        if (!req.user || userRole !== "student") {
           return res.status(403).json({
             success: false,
             message: "Forbidden: Only students allowed",
           });
         }
-      } else if (role === "tutor") {
-        if (!req.session?.user || req.session.user.role !== "tutor") {
+      } else if (targetRole === "tutor" || targetRole === "teacher") {
+        const sessionUser = req.session?.user || req.user;
+        const userRole = (sessionUser?.role || sessionUser?.accountType || "").toLowerCase();
+        if (userRole !== "tutor" && userRole !== "teacher") {
           return res.status(403).json({
             success: false,
             message: "Forbidden: Only tutors allowed",
