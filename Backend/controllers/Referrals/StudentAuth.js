@@ -43,7 +43,7 @@ export const signup = async (req, res) => {
       });
     }
 
-    
+
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -64,15 +64,15 @@ export const signup = async (req, res) => {
 
     return handleAuthSuccess(student, res, "Student registered successfully");
 
-  } catch(err){
-   console.error("SIGNUP ERROR:", err);
+  } catch (err) {
+    console.error("SIGNUP ERROR:", err);
 
-   res.status(500).json({
-      success:false,
-      message:err.message,
-      stack:err.stack
-   });
-}
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      stack: err.stack
+    });
+  }
 };
 
 // ================= LOGIN =================

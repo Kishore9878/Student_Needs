@@ -61,6 +61,8 @@ const StudentDashboard = React.lazy(() => import("./pages/Attendance/StudentDash
 // ======================================================
 
 const Index = React.lazy(() => import("@/pages/Referrals/Index.jsx"));
+const AlumniDashboard = React.lazy(() => import("@/pages/Referrals/AlumniDashboard.jsx").then(m => ({ default: m.AlumniDashboard })));
+const VerifierDashboard = React.lazy(() => import("@/pages/Referrals/VerifierDashboard.jsx").then(m => ({ default: m.VerifierDashboard })));
 import {
   RoleAuthPage,
   RoleSelectionPage,
@@ -459,7 +461,7 @@ const AttendanceRoutes = () => {
                         FALLBACK
       ====================================================== */}
 
-            {/* ======================================================
+      {/* ======================================================
                         EXPENSE TRACKER
       ====================================================== */}
 
@@ -530,46 +532,46 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        {/* Unified AuthProvider is now in main.jsx */}
-            <TooltipProvider>
-              {/* <BrowserRouter
+        <ThemeProvider>
+          {/* Unified AuthProvider is now in main.jsx */}
+          <TooltipProvider>
+            {/* <BrowserRouter
                 future={{
                   v7_startTransition: true,
                   v7_relativeSplatPath: true,
                 }}
               > */}
-                {/* ======================================================
+            {/* ======================================================
                                 TOASTERS
                 ====================================================== */}
 
-                <HotToaster
-                  position="top-right"
-                  toastOptions={{
-                    duration: 3500,
-                    style: {
-                      background: "#1e293b",
-                      color: "#f1f5f9",
-                      border: "1px solid #334155",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "14px",
-                    },
-                  }}
-                />
-                <NetworkFallback />
-                <Toaster />
-                <Sonner />
+            <HotToaster
+              position="top-right"
+              toastOptions={{
+                duration: 3500,
+                style: {
+                  background: "#1e293b",
+                  color: "#f1f5f9",
+                  border: "1px solid #334155",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "14px",
+                },
+              }}
+            />
+            <NetworkFallback />
+            <Toaster />
+            <Sonner />
 
-                {/* ======================================================
+            {/* ======================================================
                                 ROUTES
                 ====================================================== */}
 
-                <AttendanceRoutes />
-              {/* </BrowserRouter> */}
-            </TooltipProvider>
-        {/* Unified AuthProvider is now in main.jsx */}
-      </ThemeProvider>
-    </QueryClientProvider>
+            <AttendanceRoutes />
+            {/* </BrowserRouter> */}
+          </TooltipProvider>
+          {/* Unified AuthProvider is now in main.jsx */}
+        </ThemeProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 }

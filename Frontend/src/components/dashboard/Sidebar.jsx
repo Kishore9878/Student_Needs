@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import {
   LayoutDashboard,
   Users,
@@ -14,18 +15,8 @@ import {
 
 const Sidebar = ({ className, role = "student" }) => {
   const location = useLocation();
+  const { logout } = useAuth();
 
-// <<<<<<< HEAD
-//   const links = [
-//     { name: "Dashboard", href: `/${role}/dashboard`, icon: LayoutDashboard },
-//     { name: "Attendance", href: role === "teacher" || role === "tutor" ? `/attendance/attendance` : `/student/dashboard`, icon: CalendarDays },
-//     { name: "Expenses", href: `/expenses-tracker`, icon: CreditCard },
-//     { name: "Tutorials", href: `/tutorials`, icon: BookOpen },
-//     { name: "Alumni", href: role === "alumni" ? `/alumni/dashboard` : `/student/referrals`, icon: Briefcase },
-//   ];
-// >>>>>>> 0870b628bed689c474ddffdc0aff3a3c19622779
-  // We can dynamically render links based on role later.
-  // For now, these are standard module links.
   const links = role === "tutor"
     ? [
         { name: "Dashboard", href: "/tutorials/tutor/dashboard", icon: LayoutDashboard },
@@ -40,7 +31,6 @@ const Sidebar = ({ className, role = "student" }) => {
         { name: "Tutorials", href: `/tutorials/searchTutor`, icon: BookOpen },
         { name: "Referrals", href: `/student/referrals`, icon: Briefcase }, // Referrals specific route
       ];
-// >>>>>>> 0870b628bed689c474ddffdc0aff3a3c19622779
 
   return (
     <aside

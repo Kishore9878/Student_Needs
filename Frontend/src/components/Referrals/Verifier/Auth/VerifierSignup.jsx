@@ -36,8 +36,8 @@ export function VerifierSignupPage() {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md"
       >
-        <Link 
-          to="/role-selector" 
+        <Link
+          to="/role-selector"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -125,7 +125,7 @@ export function VerifierSignupPage() {
                 {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
               </div>
 
-              
+
 
               {/* Submit Action */}
               <Button type="submit" className="w-full" disabled={isSubmitting}>

@@ -176,61 +176,61 @@ export function useStudentLogin() {
     return isValid;
   }, [form]);
 
-const handleSubmit = useCallback(async () => {
-  if (!validate()) {
-    return { success: false, message: 'Please fix form errors' };
-  }
-
-  form.setSubmitting(true);
-
-  try {
-    const response = await studentLogin(form.data);
-
-
-    if (response.success) {
-
-      // ✅ Persist auth
-      const token =
-        response.token ||
-        response.data?.token;
-
-      const user =
-        response.user ||
-        response.data?.user;
-
-      if (token) {
-        localStorage.setItem("auth_token", token);
-        localStorage.setItem("token", token);
-      }
-
-      if (user) {
-        localStorage.setItem("auth_user", JSON.stringify(user));
-        localStorage.setItem("user", JSON.stringify(user));
-      }
-
-      form.resetForm();
-
-      navigate('/student/dashboard');
-
-    } else {
-      form.setSubmitError(response.message);
+  const handleSubmit = useCallback(async () => {
+    if (!validate()) {
+      return { success: false, message: 'Please fix form errors' };
     }
 
-    return response;
+    form.setSubmitting(true);
 
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Login failed';
+    try {
+      const response = await studentLogin(form.data);
 
-    form.setSubmitError(message);
 
-    return { success: false, message };
+      if (response.success) {
 
-  } finally {
-    form.setSubmitting(false);
-  }
+        // ✅ Persist auth
+        const token =
+          response.token ||
+          response.data?.token;
 
-}, [form, studentLogin, navigate, validate]);
+        const user =
+          response.user ||
+          response.data?.user;
+
+        if (token) {
+          localStorage.setItem("auth_token", token);
+          localStorage.setItem("token", token);
+        }
+
+        if (user) {
+          localStorage.setItem("auth_user", JSON.stringify(user));
+          localStorage.setItem("user", JSON.stringify(user));
+        }
+
+        form.resetForm();
+
+        navigate('/student/dashboard');
+
+      } else {
+        form.setSubmitError(response.message);
+      }
+
+      return response;
+
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Login failed';
+
+      form.setSubmitError(message);
+
+      return { success: false, message };
+
+    } finally {
+      form.setSubmitting(false);
+    }
+
+  }, [form, studentLogin, navigate, validate]);
 
   return {
     ...form,
@@ -248,6 +248,7 @@ const initialAlumniSignup = {
   lastName: '',
   email: '',
   password: '',
+  collegeName: '',
   company: '',
   jobTitle: '',
 };
@@ -286,6 +287,10 @@ export function useAlumniSignup() {
       isValid = false;
     }
 
+    if (!form.data.collegeName.trim()) {
+      form.setError('collegeName', 'College name is required');
+      isValid = false;
+    }
 
     return isValid;
   }, [form]);
@@ -300,7 +305,7 @@ export function useAlumniSignup() {
       const response = await alumniSignup(form.data);
       if (response.success) {
         form.resetForm();
-        navigate('/alumni/dashboard');
+        navigate('/login/alumni');
       } else {
         form.setSubmitError(response.message);
       }
@@ -436,14 +441,17 @@ export function useVerifierSignup() {
 
     form.setSubmitting(true);
     try {
-      const response = await studentSignup(form.data);
+      const response = await studentSignup({ ...form.data, accountType: 'verifier' });
       if (response.success && response.user) {
-        // Override accountType to Verifier for verifier signup
-        const verifierUser = { ...response.user, accountType: 'Verifier' };
-        // Update context with verifier user
-        setUser(verifierUser);
+        // Clear global session since we want them to log in manually
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('auth_data');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
+        setUser(null);
         form.resetForm();
-        navigate('/verifier');
+        navigate('/login/verifier');
       } else {
         form.setSubmitError(response.message);
       }
@@ -501,12 +509,21 @@ export function useVerifierLogin() {
     try {
       const response = await studentLogin(form.data);
       if (response.success && response.user) {
-        // Override accountType to Verifier for verifier login
-        const verifierUser = { ...response.user, accountType: 'Verifier' };
-        // Update context with verifier user
-        setUser(verifierUser);
+        const userRole = (response.user.role || response.user.accountType || "").toLowerCase();
+        if (userRole !== 'verifier') {
+          // Revert the global login state since this is not a verifier
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('auth_data');
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+          setUser(null);
+          form.setSubmitError('Unauthorized. Only verifier accounts can access this portal.');
+          return { success: false, message: 'Unauthorized access' };
+        }
+        setUser(response.user);
         form.resetForm();
-        navigate('/verifier');
+        navigate('/verifier/dashboard');
       } else {
         form.setSubmitError(response.message);
       }
@@ -549,3 +566,4 @@ export function useRoleBasedAuth(role) {
     login: alumniLogin,
   };
 }
+

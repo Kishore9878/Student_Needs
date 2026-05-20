@@ -25,13 +25,20 @@ export const createApiClient = (prefix = "") => {
     (response) => response,
     (error) => {
       if (error.response && error.response.status === 401) {
-        console.warn("Session expired or unauthorized. Logging out...");
-        localStorage.removeItem("auth_token");
-        localStorage.removeItem("auth_user");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("User");
-        window.location.href = "/login/student";
+        const isAuthRequest = error.config && (
+          error.config.url.includes("/login") ||
+          error.config.url.includes("/signup") ||
+          error.config.url.includes("/register")
+        );
+        if (!isAuthRequest) {
+          console.warn("Session expired or unauthorized. Logging out...");
+          localStorage.removeItem("auth_token");
+          localStorage.removeItem("auth_user");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          localStorage.removeItem("User");
+          window.location.href = "/role-selection";
+        }
       }
 
       // Retry logic for 5xx server errors or timeouts (idempotent requests only)
