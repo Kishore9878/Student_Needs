@@ -18,9 +18,15 @@ const Sidebar = ({ className, role = "student" }) => {
 
   const { logout, user } = useAuth();
 
-  const currentRole = (user?.role || user?.accountType || role || "student").toLowerCase();
+  const currentRole = (
+    user?.role ||
+    user?.accountType ||
+    role ||
+    "student"
+  ).toLowerCase();
 
   let links = [];
+
   if (currentRole === "tutor") {
     links = [
       { name: "Dashboard", href: "/tutorials/tutor/dashboard", icon: LayoutDashboard },
@@ -39,19 +45,43 @@ const Sidebar = ({ className, role = "student" }) => {
     ];
   } else if (currentRole === "alumni") {
     links = [
-      { name: "Dashboard", href: "/alumni/dashboard", icon: LayoutDashboard },
+      {
+        name: "Dashboard",
+        href: "/alumni/dashboard",
+        icon: LayoutDashboard,
+      },
     ];
   } else if (currentRole === "verifier") {
     links = [
-      { name: "Dashboard", href: "/verifier/dashboard", icon: LayoutDashboard },
+      {
+        name: "Dashboard",
+        href: "/verifier/dashboard",
+        icon: LayoutDashboard,
+      },
     ];
   } else {
-    // Default student links
+    // Default Student Links
     links = [
-      { name: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
-      { name: "Expenses", href: "/expenses-tracker", icon: CreditCard },
-      { name: "Tutorials", href: "/tutorials/searchTutor", icon: BookOpen },
-      { name: "Referrals", href: "/student/referrals", icon: Briefcase },
+      {
+        name: "Dashboard",
+        href: "/student/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        name: "Expenses",
+        href: "/expenses-tracker",
+        icon: CreditCard,
+      },
+      {
+        name: "Tutorials",
+        href: "/tutorials/searchTutor",
+        icon: BookOpen,
+      },
+      {
+        name: "Referrals",
+        href: "/student/referrals",
+        icon: Briefcase,
+      },
     ];
   }
 
@@ -67,19 +97,25 @@ const Sidebar = ({ className, role = "student" }) => {
         className
       )}
     >
+      {/* Logo */}
       <div className="flex items-center gap-3 mb-8 px-2">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-          <span className="text-primary-foreground font-bold text-lg leading-none">U</span>
+          <span className="text-primary-foreground font-bold text-lg leading-none">
+            U
+          </span>
         </div>
+
         <span className="text-xl font-bold tracking-tight text-foreground">
           UniConnect
         </span>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 space-y-1">
         {links?.map((link) => {
           const isActive = location.pathname.startsWith(link.href);
           const Icon = link.icon;
+
           return (
             <Link
               key={link.name}
@@ -98,14 +134,16 @@ const Sidebar = ({ className, role = "student" }) => {
         })}
       </nav>
 
+      {/* Bottom Actions */}
       <div className="mt-auto space-y-1 pt-4 border-t border-border">
         <Link
-          to={`/tutorials/profile/accountSettings`}
+          to="/tutorials/profile/accountSettings"
           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-secondary-foreground transition-colors"
         >
           <Settings className="w-4 h-4" />
           Settings
         </Link>
+
         <button
 
           onClick={logout}
