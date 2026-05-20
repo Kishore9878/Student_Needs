@@ -12,7 +12,7 @@ dotenv.config();
 // ================= VALIDATION =================
 function validateEmail(email, res) {
   if (!validator.isEmail(email)) {
-    res.status(200).json({
+    res.status(403).json({
       success: false,
       message: "Invalid Email",
     });
@@ -27,7 +27,7 @@ export const signup = async (req, res) => {
     const { firstName, lastName, email, password, accountType } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
-      return res.status(200).json({
+      return res.status(403).json({
         success: false,
         message: "All Fields are required",
       });
@@ -37,13 +37,13 @@ export const signup = async (req, res) => {
 
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
         message: "Student already exists. Please login.",
       });
     }
 
-    
+
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -64,15 +64,15 @@ export const signup = async (req, res) => {
 
     return handleAuthSuccess(student, res, "Student registered successfully");
 
-  } catch(err){
-   console.error("SIGNUP ERROR:", err);
+  } catch (err) {
+    console.error("SIGNUP ERROR:", err);
 
-   res.status(500).json({
-      success:false,
-      message:err.message,
-      stack:err.stack
-   });
-}
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      stack: err.stack
+    });
+  }
 };
 
 // ================= LOGIN =================
@@ -81,7 +81,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
         message: "Please fill all required fields",
       });
@@ -92,7 +92,7 @@ export const login = async (req, res) => {
     const student = await Student.findOne({ email });
 
     if (!student) {
-      return res.status(200).json({
+      return res.status(401).json({
         success: false,
         message: "Student not registered",
       });
@@ -101,7 +101,7 @@ export const login = async (req, res) => {
     if (await bcrypt.compare(password, student.password)) {
       return handleAuthSuccess(student, res, "Login successful");
     } else {
-      return res.status(200).json({
+      return res.status(401).json({
         success: false,
         message: "Incorrect password",
       });
