@@ -22,7 +22,7 @@ export const markAttendanceSchema = z.object({
   attendanceData: z.array(
     z.object({
       studentId: z.string().min(1, "Student ID is required"),
-      attendance: z.enum(["present", "absent", "late", "excused"]).catch("absent"), // catching generic strings into 'absent' fallback or handle custom statuses. The legacy code uses string matching.
+      attendance: z.enum(["present", "absent"]),
     }).passthrough()
   ).min(1, "Attendance data is required"),
   date: z.string().optional(),

@@ -2,16 +2,34 @@ import AttendanceModel from "../models/Attendance/Attendance.js";
 import StudentModel from "../models/Attendance/Student.js";
 import { AppError } from "../utils/AppError.js";
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export class AttendanceService {
   
   static async getAllAttendance() {
     return await AttendanceModel.find();
   }
 
-  static async getStudentAttendance(studentId) {
-    const student = await StudentModel.findOne({ userId: studentId });
+  static async getStudentAttendance(user) {
+    const userId = user?._id || user?.id || user;
+    const email = typeof user?.email === "string" ? user.email.trim() : "";
+
+    const lookup = [];
+    if (userId) lookup.push({ userId });
+    if (email) {
+      lookup.push(
+        { Email_id: email },
+        { Email_id: new RegExp(`^${escapeRegex(email)}$`, "i") },
+        { Register_number: email }
+      );
+    }
+
+    const student = lookup.length > 0
+      ? await StudentModel.findOne({ $or: lookup })
+      : null;
+
     if (!student) {
-      throw new AppError("Student not found", 404);
+      return [];
     }
 
     const attendanceRecords = await AttendanceModel.find();
@@ -20,30 +38,30 @@ export class AttendanceService {
       const studentRecord = record.attendanceRecords.find(
         rec => rec.studentId.toString() === student._id.toString()
       );
+      if (!studentRecord) return null;
       return {
+        id: record._id,
         date: record.date,
         subject: record.subject,
-        attendance: studentRecord ? studentRecord.attendance : null,
+        attendance: studentRecord.attendance,
       };
-    });
+    }).filter(Boolean);
   }
 
   static async markAttendance({ subject, attendanceData, date }) {
-    console.log("[AttendanceService] markAttendance invoked"); // Migration log
-    
     const attendanceDate = date || new Date().toISOString().split("T")[0];
     const attendanceRecords = attendanceData.map((item) => ({
       studentId: item.studentId,
       attendance: item.attendance,
     }));
 
-    await AttendanceModel.findOneAndUpdate(
+    const attendance = await AttendanceModel.findOneAndUpdate(
       { date: attendanceDate, subject },
       { $set: { attendanceRecords } },
       { upsert: true, new: true }
     );
     
-    return { message: "Attendance Updated" };
+    return { message: "Attendance Updated", attendance };
   }
 
   static async deleteStudentAttendance({ register, studentId }) {
@@ -83,7 +101,7 @@ export class AttendanceService {
 
   static async getAttendanceForDate(dateParam) {
     const attendanceRecord = await AttendanceModel.findOne({
-      date: new Date(dateParam),
+      date: dateParam,
     });
 
     if (!attendanceRecord) {

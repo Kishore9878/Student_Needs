@@ -15,18 +15,18 @@ function Navbar() {
       <div className="nav-links">
         {isTeacher && (
           <>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/attendance">Attendance</Link>
-            <Link to="/add-student">Add Student</Link>
-            <Link to="/remove-student">Remove Student</Link>
-            <Link to="/reports">Reports</Link>
-            <Link to="/add-subject">Add Subject</Link>
+            <Link to="/attendance/dashboard">Dashboard</Link>
+            <Link to="/attendance/attendance">Attendance</Link>
+            <Link to="/attendance/add-student">Add Student</Link>
+            <Link to="/attendance/remove-student">Remove Student</Link>
+            <Link to="/attendance/reports">Reports</Link>
+            <Link to="/attendance/add-subject">Add Subject</Link>
           </>
         )}
         {isStudent && (
           <>
             <Link to="/student-dashboard">My Dashboard</Link>
-            <Link to="/profile">Profile</Link>
+            <Link to="/student/dashboard">Profile</Link>
           </>
         )}
         <button onClick={handleLogout} className="btn btn-outline-danger ms-3">

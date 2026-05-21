@@ -37,7 +37,7 @@ const Login = () => {
     if (result.success) {
       const user = JSON.parse(localStorage.getItem("user"));
       toast.success(`Welcome back, ${user.name}!`);
-      navigate(user.role === "teacher" ? "/dashboard" : "/student-dashboard");
+      navigate(user.role === "teacher" ? "/attendance/dashboard" : "/student-dashboard");
     } else {
       toast.error(result.message || "Invalid credentials");
     }
@@ -105,7 +105,7 @@ const Login = () => {
         </form>
 
         <div className="auth-footer">
-          Don't have an account? <Link to="/register">Create one</Link>
+          Don't have an account? <Link to="/attendance/register">Create one</Link>
         </div>
       </div>
     </div>

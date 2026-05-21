@@ -24,9 +24,7 @@ export const addSubject = async (req, res) => {
       message: "Subject Added",
       subject,
     });
-  } catch (error) {
-    console.log(error);
-
+  } catch {
     res.status(500).json({
       message: "Error adding subject",
     });
@@ -40,9 +38,7 @@ export const getSubjects = async (req, res) => {
     const subjects = await SubjectModel.find();
 
     res.status(200).json(subjects);
-  } catch (error) {
-    console.log(error);
-
+  } catch {
     res.status(500).json({
       message: "Error fetching subjects",
     });

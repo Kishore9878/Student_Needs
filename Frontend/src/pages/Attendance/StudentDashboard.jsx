@@ -19,10 +19,10 @@ const StudentDashboard = () => {
 
   const fetchAttendance = async () => {
     try {
-      const { data } = await API.get("/attendance/student");
+      const { data } = await API.get("/attendance/attendance/student");
       setAttendanceData(data);
-    } catch (error) {
-      console.error("Error fetching attendance:", error);
+    } catch {
+      setAttendanceData([]);
     } finally {
       setLoading(false);
     }

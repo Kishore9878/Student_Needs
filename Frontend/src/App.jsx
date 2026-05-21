@@ -168,7 +168,15 @@ const AttendanceRoutes = () => {
       <Route path="/auth/verifier/login" element={<Navigate to="/login/verifier" replace />} />
       <Route path="/auth/verifier/signup" element={<Navigate to="/signup/verifier" replace />} />
       <Route path="/student/dashboard" element={<StudentOverviewDashboard />} />
-      <Route path="/student/attendance" element={<Navigate to="/student-dashboard" replace />} />
+      <Route path="/student/attendance" element={
+        <ProtectedRoute allowedRoles={["student"]}>
+          <WithLayout title="Attendance">
+            <Suspense fallback={<DashboardSkeleton />}>
+              <StudentDashboard />
+            </Suspense>
+          </WithLayout>
+        </ProtectedRoute>
+      } />
       <Route path="/student/expenses" element={<Navigate to="/expenses-tracker" replace />} />
       <Route path="/modules" element={<ModuleOverviewPage />} />
       <Route path="/teacher/dashboard" element={<TutorDashboard />} />
@@ -179,7 +187,7 @@ const AttendanceRoutes = () => {
       ====================================================== */}
 
       <Route path="/referrals/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
-      <Route path="/student/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
+      <Route path="/student/referrals" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
       <Route path="/alumni/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
       <Route path="/verifier/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
       <Route path="/auth/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />

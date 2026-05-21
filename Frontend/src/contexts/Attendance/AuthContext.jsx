@@ -16,14 +16,23 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const normalizedRole = (() => {
+    const rawRole = user?.role || user?.accountType;
+    return typeof rawRole === 'string' ? rawRole.toLowerCase() : '';
+  })();
+
   // Load user from localStorage on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token') || localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('user') || localStorage.getItem('auth_user');
 
     if (storedToken && storedUser) {
       setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        setUser(null);
+      }
     }
     setLoading(false);
   }, []);
@@ -72,8 +81,9 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated: !!user,
-    isTeacher: user?.role === 'teacher',
-    isStudent: user?.role === 'student',
+    role: normalizedRole,
+    isTeacher: normalizedRole === 'teacher',
+    isStudent: normalizedRole === 'student',
   };
 
   return (
