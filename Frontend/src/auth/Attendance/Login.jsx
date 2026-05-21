@@ -37,7 +37,6 @@ const Login = () => {
     }
 
     setLoading(true);
-<<<<<<< HEAD
     const result = await login(formData.email, formData.password);
     if (result.success) {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -45,49 +44,6 @@ const Login = () => {
       navigate(user.role === "teacher" ? "/attendance/dashboard" : "/student-dashboard");
     } else {
       toast.error(result.message || "Invalid credentials");
-=======
-
-    try {
-
-      const result = await studentLogin({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      console.log("LOGIN RESULT:", result);
-
-      if (result.success) {
-
-        const user = JSON.parse(
-          localStorage.getItem("user")
-        );
-
-        toast.success(
-          `Welcome back, ${user.firstName ||
-          user.name ||
-          "User"
-          }!`
-        );
-
-        navigate("/student/dashboard");
-
-      } else {
-
-        toast.error(
-          result.message || "Invalid credentials"
-        );
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-      toast.error("Login failed");
-
-    } finally {
-
-      setLoading(false);
->>>>>>> main
     }
   };
 

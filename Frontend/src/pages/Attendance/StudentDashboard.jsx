@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../contexts/Attendance/AuthContext";
+import { useAuth } from "../../contexts/GlobalAuthContext";
 import API from "../../services/Attendance/api";
 import { MdCheckCircle, MdCancel, MdWarning, MdCalendarToday, MdPerson } from "react-icons/md";
 import { DashboardSection } from "../../components/dashboard/shared/DashboardSection";
@@ -8,7 +8,7 @@ import { MetricCard } from "../../components/dashboard/shared/MetricCard";
 import { CGPAProgressionChart } from "../../components/dashboard/student/CGPAProgressionChart";
 import { ExpenseBreakdownChart } from "../../components/dashboard/student/ExpenseBreakdownChart";
 import { UpcomingTasks } from "../../components/dashboard/student/UpcomingTasks";
-import { MOCK_CGPA_DATA, MOCK_EXPENSE_DATA, MOCK_UPCOMING_TASKS } from "../../data/dashboard/studentMockData";
+//import { MOCK_CGPA_DATA, MOCK_EXPENSE_DATA, MOCK_UPCOMING_TASKS } from "../../data/dashboard/studentMockData";
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -135,7 +135,7 @@ const StudentDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <DashboardCard title="CGPA Progression" description="Your academic performance over time">
-            <CGPAProgressionChart data={MOCK_CGPA_DATA} />
+            <CGPAProgressionChart data={[]} />
           </DashboardCard>
 
           {/* Subject-wise Attendance */}
@@ -171,11 +171,11 @@ const StudentDashboard = () => {
 
         <div className="space-y-6">
           <DashboardCard title="Upcoming Tasks" description="Due assignments and quizzes">
-            <UpcomingTasks tasks={MOCK_UPCOMING_TASKS} />
+            <UpcomingTasks tasks={[]} />
           </DashboardCard>
           
           <DashboardCard title="Expenses" description="Monthly spending breakdown">
-            <ExpenseBreakdownChart data={MOCK_EXPENSE_DATA} />
+            <ExpenseBreakdownChart data={[]} />
           </DashboardCard>
         </div>
       </div>

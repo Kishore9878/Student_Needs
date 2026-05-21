@@ -52,19 +52,37 @@ const Dashboard = React.lazy(() => import("./pages/Attendance/Dashboard"));
 const Attendance = React.lazy(() => import("./pages/Attendance/Attendance"));
 const AddStudent = React.lazy(() => import("./pages/Attendance/AddStudent"));
 const Reports = React.lazy(() => import("./pages/Attendance/Reports"));
-const RemoveStudent = React.lazy(() => import("./pages/Attendance/RemoveStudent"));
+const RemoveStudent = React.lazy(
+  () => import("./pages/Attendance/RemoveStudent"),
+);
 const AddSubject = React.lazy(() => import("./pages/Attendance/AddSubject"));
-const StudentDashboard = React.lazy(() => import("./pages/Attendance/StudentDashboard"));
+const StudentDashboard = React.lazy(
+  () => import("./pages/Attendance/StudentDashboard"),
+);
 
 // ======================================================
 //                    REFERRALS
 // ======================================================
 
 const Index = React.lazy(() => import("@/pages/Referrals/Index.jsx"));
-const AlumniDashboard = React.lazy(() => import("@/pages/Referrals/AlumniDashboard.jsx").then(m => ({ default: m.AlumniDashboard })));
-const VerifierDashboard = React.lazy(() => import("@/pages/Referrals/VerifierDashboard.jsx").then(m => ({ default: m.VerifierDashboard })));
-const ReferralsStudentDashboard = React.lazy(() => import("@/pages/Referrals/StudentDashboard.jsx").then(m => ({ default: m.StudentDashboard })));
-const ReferralsInterviewPage = React.lazy(() => import("@/pages/Referrals/InterviewPage.jsx"));
+const AlumniDashboard = React.lazy(() =>
+  import("@/pages/Referrals/AlumniDashboard.jsx").then((m) => ({
+    default: m.AlumniDashboard,
+  })),
+);
+const VerifierDashboard = React.lazy(() =>
+  import("@/pages/Referrals/VerifierDashboard.jsx").then((m) => ({
+    default: m.VerifierDashboard,
+  })),
+);
+const ReferralsStudentDashboard = React.lazy(() =>
+  import("@/pages/Referrals/StudentDashboard.jsx").then((m) => ({
+    default: m.StudentDashboard,
+  })),
+);
+const ReferralsInterviewPage = React.lazy(
+  () => import("@/pages/Referrals/InterviewPage.jsx"),
+);
 import {
   RoleAuthPage,
   RoleSelectionPage,
@@ -91,7 +109,9 @@ import SelectRole from "./pages/Tutorials/SelectRole";
 import TutorRegisterPage from "./pages/Tutorials/TutorRegisterPage";
 // import TutorAvailability from "./pages/Tutorials/TutorAvailability";
 import TutorAvailability from "./pages/Tutorials/TutorAvailabilty";
-const TutorDashboard = React.lazy(() => import("./pages/Tutorials/TutorDashboard"));
+const TutorDashboard = React.lazy(
+  () => import("./pages/Tutorials/TutorDashboard"),
+);
 // import TutorSchedulePage from "./pages/Tutorials/TutorsSchedulePage";
 import TutorSchedulePage from "./pages/Tutorials/TutorSchedulePage";
 import TutorAcceptPage from "./pages/Tutorials/TutorAcceptPage";
@@ -104,7 +124,9 @@ import TutorEditProfilePage from "./pages/Tutorials/TutorEditProfilePage";
 const Home = React.lazy(() => import("./pages/Expenses/Home"));
 import ExpenseLogin from "./pages/Expenses/Login";
 import Signup from "./pages/Expenses/Signup";
-const RecurringTransactions = React.lazy(() => import("./pages/Expenses/RecurringTransactions"));
+const RecurringTransactions = React.lazy(
+  () => import("./pages/Expenses/RecurringTransactions"),
+);
 const Analytics = React.lazy(() => import("./pages/Expenses/Analytics"));
 const Settings = React.lazy(() => import("./pages/Expenses/Settings"));
 import AppLayout from "./components/Expenses/layout/AppLayout";
@@ -113,8 +135,8 @@ import AppLayout from "./components/Expenses/layout/AppLayout";
 //                    LAZY LOAD
 // ======================================================
 
-const LazySearch = React.lazy(() =>
-  import("./components/Tutorials/SearchTutor")
+const LazySearch = React.lazy(
+  () => import("./components/Tutorials/SearchTutor"),
 );
 
 import DashboardSkeleton from "@/components/ui/DashboardSkeleton";
@@ -130,9 +152,7 @@ const queryClient = new QueryClient();
 // ======================================================
 
 const WithLayout = ({ title, children }) => (
-  <DashboardLayout pageTitle={title}>
-    {children}
-  </DashboardLayout>
+  <DashboardLayout pageTitle={title}>{children}</DashboardLayout>
 );
 
 // ======================================================
@@ -158,32 +178,58 @@ const AttendanceRoutes = () => {
 
       <Route path="/" element={<UnifiedLanding />} />
       <Route path="/role-selection" element={<RoleSelectionPage />} />
-      <Route path="/role-selector" element={<Navigate to="/role-selection" replace />} />
+      <Route
+        path="/role-selector"
+        element={<Navigate to="/role-selection" replace />}
+      />
       <Route path="/login" element={<Navigate to="/login/student" replace />} />
       <Route path="/login/:role" element={<RoleAuthPage mode="login" />} />
-      <Route path="/signup" element={<Navigate to="/signup/student" replace />} />
+      <Route
+        path="/signup"
+        element={<Navigate to="/signup/student" replace />}
+      />
       <Route path="/signup/:role" element={<RoleAuthPage mode="signup" />} />
       <Route path="/register/:role" element={<RoleAuthPage mode="signup" />} />
-      <Route path="/auth/student/login" element={<Navigate to="/login/student" replace />} />
-      <Route path="/auth/student/signup" element={<Navigate to="/signup/student" replace />} />
-      <Route path="/auth/alumni/login" element={<Navigate to="/login/alumni" replace />} />
-      <Route path="/auth/alumni/signup" element={<Navigate to="/signup/alumni" replace />} />
-      <Route path="/auth/verifier/login" element={<Navigate to="/login/verifier" replace />} />
-      <Route path="/auth/verifier/signup" element={<Navigate to="/signup/verifier" replace />} />
-      <Route path="/student/dashboard" element={<StudentOverviewDashboard />} />
-      <Route path="/student/attendance" element={
-        <ProtectedRoute allowedRoles={["student"]}>
-          <WithLayout title="Attendance">
-            <Suspense fallback={<DashboardSkeleton />}>
-              <StudentDashboard />
-            </Suspense>
-          </WithLayout>
-        </ProtectedRoute>
-      } />
-      <Route path="/student/expenses" element={<Navigate to="/expenses-tracker" replace />} />
-      <Route path="/modules" element={<ModuleOverviewPage />} />
+      <Route
+        path="/auth/student/login"
+        element={<Navigate to="/login/student" replace />}
+      />
+      <Route
+        path="/auth/student/signup"
+        element={<Navigate to="/signup/student" replace />}
+      />
+      <Route
+        path="/auth/alumni/login"
+        element={<Navigate to="/login/alumni" replace />}
+      />
+      <Route
+        path="/auth/alumni/signup"
+        element={<Navigate to="/signup/alumni" replace />}
+      />
+      <Route
+        path="/auth/verifier/login"
+        element={<Navigate to="/login/verifier" replace />}
+      />
+      <Route
+        path="/auth/verifier/signup"
+        element={<Navigate to="/signup/verifier" replace />}
+      />
+     
+
+      <Route
+        path="/student/expenses"
+        element={<Navigate to="/expenses-tracker" replace />}
+      />
+      {/* <Route path="/modules" element={<ModuleOverviewPage />} /> */}
       <Route path="/teacher/dashboard" element={<TutorDashboard />} />
-      <Route path="/alumni/dashboard" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
+      <Route
+        path="/alumni/dashboard"
+        element={
+          <Suspense fallback={<DashboardSkeleton />}>
+            <Index />
+          </Suspense>
+        }
+      />
 
       {/* ======================================================
                       UNIFIED STUDENT FLOW (SINGLE PERSISTENT LAYOUT)
@@ -197,75 +243,245 @@ const AttendanceRoutes = () => {
       >
         {/* Student Dashboard / Attendance */}
         <Route
-          path="/student/dashboard"
+          path="/student/attendance"
           element={
             <Suspense fallback={<DashboardSkeleton />}>
               <StudentDashboard />
             </Suspense>
           }
         />
+        <Route
+          path="/student/dashboard"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <UnifiedLanding />
+            </Suspense>
+          }
+        />
+        
 
-      <Route path="/referrals/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
-      <Route path="/student/referrals" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
-      <Route path="/alumni/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
-      <Route path="/verifier/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
+        <Route
+          path="/referrals/*"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Index />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/student/referrals"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Index />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/alumni/*"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Index />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/verifier/*"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Index />
+            </Suspense>
+          }
+        />
         {/* Referrals Routes */}
-        <Route path="/student/referrals" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
-        <Route path="/student/jobs" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
-        <Route path="/student/profile" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
-        <Route path="/student/qrcode" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
-        <Route path="/student/applied" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
-        <Route path="/student/interview" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsInterviewPage /></Suspense>} />
-        <Route path="/student" element={<Navigate to="/student/dashboard" replace />} />
+        <Route
+          path="/student/referrals"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ReferralsStudentDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/student/jobs"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ReferralsStudentDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/student/profile"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ReferralsStudentDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/student/qrcode"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ReferralsStudentDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/student/applied"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ReferralsStudentDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/student/interview"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ReferralsInterviewPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/student"
+          element={<Navigate to="/student/dashboard" replace />}
+        />
 
         {/* Tutorials Student Routes */}
-        <Route path="/tutorials/searchTutor" element={<Suspense fallback={<DashboardSkeleton />}><BookClass /></Suspense>} />
-        <Route path="/tutorials/book" element={<Suspense fallback={<DashboardSkeleton />}><BookClass /></Suspense>} />
-        <Route path="/tutorials/profile" element={<Suspense fallback={<DashboardSkeleton />}><Profile /></Suspense>} />
-        <Route path="/tutorials/profile/editProfile" element={<Suspense fallback={<DashboardSkeleton />}><EditProfilePage /></Suspense>} />
-        <Route path="/tutorials/profile/manageBooking" element={<Suspense fallback={<DashboardSkeleton />}><ManageBookingPage /></Suspense>} />
-        <Route path="/tutorials/profile/classHistory" element={<Suspense fallback={<DashboardSkeleton />}><ClassHistoryPage /></Suspense>} />
-        <Route path="/tutorials/profile/accountSettings" element={<Suspense fallback={<DashboardSkeleton />}><AccountSettingPage /></Suspense>} />
+        <Route
+          path="/tutorials/searchTutor"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <BookClass />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/book"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <BookClass />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/profile"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Profile />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/profile/editProfile"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <EditProfilePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/profile/manageBooking"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ManageBookingPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/profile/classHistory"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <ClassHistoryPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/profile/accountSettings"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AccountSettingPage />
+            </Suspense>
+          }
+        />
 
         {/* Expense Tracker Routes */}
-        <Route path="/expenses-tracker" element={<Suspense fallback={<DashboardSkeleton />}><Home /></Suspense>} />
+        <Route
+          path="/expenses-tracker"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Home />
+            </Suspense>
+          }
+        />
         <Route
           path="/expenses-tracker/recurring"
-          element={<Suspense fallback={<DashboardSkeleton />}><RecurringTransactions /></Suspense>}
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <RecurringTransactions />
+            </Suspense>
+          }
         />
         <Route
           path="/expenses-tracker/analytics"
-          element={<Suspense fallback={<DashboardSkeleton />}><Analytics /></Suspense>}
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Analytics />
+            </Suspense>
+          }
         />
         <Route
           path="/expenses-tracker/settings"
-          element={<Suspense fallback={<DashboardSkeleton />}><Settings /></Suspense>}
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <Settings />
+            </Suspense>
+          }
         />
       </Route>
 
       {/* ======================================================
                         NON-STUDENT SECURE DASHBOARDS
       ====================================================== */}
-      <Route path="/alumni/dashboard" element={
-        <GlobalProtectedRoute allowedRoles={["alumni"]}>
+      <Route
+        path="/alumni/dashboard"
+        element={
+          <GlobalProtectedRoute allowedRoles={["alumni"]}>
+            <Suspense fallback={<DashboardSkeleton />}>
+              <DashboardLayout role="alumni" pageTitle="Alumni Dashboard">
+                <AlumniDashboard />
+              </DashboardLayout>
+            </Suspense>
+          </GlobalProtectedRoute>
+        }
+      />
+      <Route
+        path="/verifier/dashboard"
+        element={
+          <GlobalProtectedRoute allowedRoles={["verifier"]}>
+            <Suspense fallback={<DashboardSkeleton />}>
+              <DashboardLayout role="verifier" pageTitle="Verifier Dashboard">
+                <VerifierDashboard />
+              </DashboardLayout>
+            </Suspense>
+          </GlobalProtectedRoute>
+        }
+      />
+      <Route
+        path="/auth/*"
+        element={
           <Suspense fallback={<DashboardSkeleton />}>
-            <DashboardLayout role="alumni" pageTitle="Alumni Dashboard">
-              <AlumniDashboard />
-            </DashboardLayout>
+            <Index />
           </Suspense>
-        </GlobalProtectedRoute>
-      } />
-      <Route path="/verifier/dashboard" element={
-        <GlobalProtectedRoute allowedRoles={["verifier"]}>
+        }
+      />
+      <Route
+        path="/landing"
+        element={
           <Suspense fallback={<DashboardSkeleton />}>
-            <DashboardLayout role="verifier" pageTitle="Verifier Dashboard">
-              <VerifierDashboard />
-            </DashboardLayout>
+            <Index />
           </Suspense>
-        </GlobalProtectedRoute>
-      } />
-      <Route path="/auth/*" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
-      <Route path="/landing" element={<Suspense fallback={<DashboardSkeleton />}><Index /></Suspense>} />
+        }
+      />
 
       {/* ======================================================
                         ATTENDANCE AUTH
@@ -385,25 +601,13 @@ const AttendanceRoutes = () => {
 
       <Route path="/tutorials/login" element={<SelectRole />} />
 
-      <Route
-        path="/tutorials/login/student"
-        element={<LoginPage />}
-      />
+      <Route path="/tutorials/login/student" element={<LoginPage />} />
 
-      <Route
-        path="/tutorials/login/tutor"
-        element={<TutorLoginPage />}
-      />
+      <Route path="/tutorials/login/tutor" element={<TutorLoginPage />} />
 
-      <Route
-        path="/tutorials/register"
-        element={<RegisterPage />}
-      />
+      <Route path="/tutorials/register" element={<RegisterPage />} />
 
-      <Route
-        path="/tutorials/register/tutor"
-        element={<TutorRegisterPage />}
-      />
+      <Route path="/tutorials/register/tutor" element={<TutorRegisterPage />} />
 
       {/* ======================================================
                         TUTOR ROUTES
@@ -419,35 +623,61 @@ const AttendanceRoutes = () => {
           </GlobalProtectedRoute>
         }
       >
-        <Route path="/tutorials/tutor/dashboard" element={<Suspense fallback={<DashboardSkeleton />}><TutorDashboard /></Suspense>} />
-        <Route path="/tutorials/tutor/availability" element={<Suspense fallback={<DashboardSkeleton />}><TutorAvailability /></Suspense>} />
-        <Route path="/tutorials/tutor/schedule" element={<Suspense fallback={<DashboardSkeleton />}><TutorSchedulePage /></Suspense>} />
-        <Route path="/tutorials/tutor/accept" element={<Suspense fallback={<DashboardSkeleton />}><TutorAcceptPage /></Suspense>} />
-        <Route path="/tutorials/tutor/editProfile" element={<Suspense fallback={<DashboardSkeleton />}><TutorEditProfilePage /></Suspense>} />
+        <Route
+          path="/tutorials/tutor/dashboard"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/tutor/availability"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorAvailability />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/tutor/schedule"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorSchedulePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/tutor/accept"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorAcceptPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/tutor/editProfile"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorEditProfilePage />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* ======================================================
                         TUTORIAL LANDING
       ====================================================== */}
 
-      <Route
-        path="/tutorials"
-        element={<Landing />}
-      />
+      <Route path="/tutorials" element={<Landing />} />
 
       {/* ======================================================
                         EXPENSE AUTH
       ====================================================== */}
 
-      <Route
-        path="/expenses-tracker/login"
-        element={<ExpenseLogin />}
-      />
+      <Route path="/expenses-tracker/login" element={<ExpenseLogin />} />
 
-      <Route
-        path="/expenses-tracker/signup"
-        element={<Signup />}
-      />
+      <Route path="/expenses-tracker/signup" element={<Signup />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>
@@ -487,42 +717,42 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-          {/* Unified AuthProvider is now in main.jsx */}
-          <TooltipProvider>
-            {/* <BrowserRouter
+        {/* Unified AuthProvider is now in main.jsx */}
+        <TooltipProvider>
+          {/* <BrowserRouter
                 future={{
                   v7_startTransition: true,
                   v7_relativeSplatPath: true,
                 }}
               > */}
-            {/* ======================================================
+          {/* ======================================================
                                 TOASTERS
                 ====================================================== */}
 
-            <HotToaster
-              position="top-right"
-              toastOptions={{
-                duration: 3500,
-                style: {
-                  background: "#1e293b",
-                  color: "#f1f5f9",
-                  border: "1px solid #334155",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "14px",
-                },
-              }}
-            />
-            <NetworkFallback />
-            <Toaster />
-            <Sonner />
+          <HotToaster
+            position="top-right"
+            toastOptions={{
+              duration: 3500,
+              style: {
+                background: "#1e293b",
+                color: "#f1f5f9",
+                border: "1px solid #334155",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+              },
+            }}
+          />
+          <NetworkFallback />
+          <Toaster />
+          <Sonner />
 
-            {/* ======================================================
+          {/* ======================================================
                                 ROUTES
                 ====================================================== */}
 
-            <AttendanceRoutes />
-            {/* </BrowserRouter> */}
-          </TooltipProvider>
+          <AttendanceRoutes />
+          {/* </BrowserRouter> */}
+        </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
