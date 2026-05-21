@@ -56,7 +56,7 @@ function Attendance() {
     }
   };
 
-  const filtered = students.filter((s) =>
+  const filtered = students?.filter((s) =>
     s.Name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -80,7 +80,7 @@ function Attendance() {
               onChange={(e) => setSubject(e.target.value)}
             >
               <option value="">Select Subject</option>
-              {subjects.map((sub) => (
+              {subjects?.map((sub) => (
                 <option key={sub._id} value={sub.subjectName}>{sub.subjectName}</option>
               ))}
             </select>
@@ -135,7 +135,7 @@ function Attendance() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((student, i) => (
+                {filtered?.map((student, i) => (
                   <tr key={student._id}>
                     <td>{i + 1}</td>
                     <td>{student.Name}</td>

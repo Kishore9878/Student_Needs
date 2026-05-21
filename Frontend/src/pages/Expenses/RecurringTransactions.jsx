@@ -32,13 +32,13 @@ const RecurringTransactions = () => {
 
   const handleToggle = (id) => {
     setRecurringData((prev) =>
-      prev.map((tx) => (tx.id === id ? { ...tx, isActive: !tx.isActive } : tx)),
+      prev?.map((tx) => (tx.id === id ? { ...tx, isActive: !tx.isActive } : tx)),
     );
   };
 
   const handleDelete = (id) => {
     if (window.confirm("Delete this recurring rule?")) {
-      setRecurringData((prev) => prev.filter((tx) => tx.id !== id));
+      setRecurringData((prev) => prev?.filter((tx) => tx.id !== id));
     }
   };
 
@@ -69,7 +69,7 @@ const RecurringTransactions = () => {
     e.preventDefault();
     if (editingId) {
       setRecurringData((prev) =>
-        prev.map((tx) =>
+        prev?.map((tx) =>
           tx.id === editingId
             ? {
                 ...tx,
@@ -144,7 +144,7 @@ const RecurringTransactions = () => {
 
       {/* Auto Debit Cards UI (Premium Standout) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {upcomingCards.map((card, idx) => {
+        {upcomingCards?.map((card, idx) => {
           const isOverdue = new Date(card.nextDate) < new Date();
           const gradients = [
             "from-purple-600 to-brand-primary",
@@ -235,7 +235,7 @@ const RecurringTransactions = () => {
               </tr>
             </thead>
             <tbody>
-              {recurringData.map((tx) => {
+              {recurringData?.map((tx) => {
                 const status = getStatus(tx.nextDate, tx.isActive);
                 return (
                   <tr
@@ -417,7 +417,7 @@ const RecurringTransactions = () => {
                   "Food",
                   "Fun",
                   "Other",
-                ].map((c) => (
+                ]?.map((c) => (
                   <option key={c} value={c} className="bg-brand-900">
                     {c}
                   </option>

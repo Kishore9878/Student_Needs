@@ -1,6 +1,7 @@
 import express from "express";
 import Booking from "../../models/Tutorials/Booking.js";
 import User from "../../models/Tutorials/user.js";
+import { notificationService } from "../../services/NotificationService.js";
 
 const router = express.Router();
 
@@ -49,6 +50,20 @@ router.post("/", async (req, res) => {
           },
         },
       );
+
+      await notificationService.createAndEmitNotification({
+        recipientId: tutorId,
+        type: "BOOKING",
+        title: "New Class Booked",
+        message: `A student has booked a class for ${subject} on ${date} at ${time}.`,
+        link: "/tutorials/tutor/dashboard",
+      });
+
+      // Emit global refresh to the tutor so their dashboard instantly updates
+      import("../../sockets/index.js").then(({ getIo }) => {
+        const io = getIo();
+        if (io) io.to(tutorId.toString()).emit("dashboard_refresh");
+      });
     }
 
     res.status(201).json({ msg: "Booking created", booking });
@@ -134,6 +149,22 @@ router.patch("/:id/status", async (req, res) => {
       { new: true },
     );
 
+    if (booking) {
+      await notificationService.createAndEmitNotification({
+        recipientId: booking.userId,
+        type: "BOOKING",
+        title: `Booking ${status}`,
+        message: `Your class with ${booking.tutorName} has been marked as ${status}.`,
+        link: "/tutorials/profile/classHistory",
+      });
+
+      // Emit global refresh to the student
+      import("../../sockets/index.js").then(({ getIo }) => {
+        const io = getIo();
+        if (io) io.to(booking.userId.toString()).emit("dashboard_refresh");
+      });
+    }
+
     res.json({ msg: "Status updated", booking });
   } catch (err) {
     res.status(500).json({ msg: "Error updating status" });
@@ -168,6 +199,19 @@ router.patch("/:id/cancel", async (req, res) => {
 
     booking.status = "Cancelled";
     await booking.save();
+
+    await notificationService.createAndEmitNotification({
+      recipientId: booking.tutorId,
+      type: "BOOKING",
+      title: "Class Cancelled",
+      message: `A student has cancelled their class for ${booking.subject} on ${booking.date}.`,
+      link: "/tutorials/tutor/dashboard",
+    });
+
+    import("../../sockets/index.js").then(({ getIo }) => {
+      const io = getIo();
+      if (io) io.to(booking.tutorId.toString()).emit("dashboard_refresh");
+    });
 
     res.json({ msg: "Booking cancelled successfully", booking });
   } catch (err) {

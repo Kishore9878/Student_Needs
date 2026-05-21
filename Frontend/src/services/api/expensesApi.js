@@ -20,7 +20,6 @@ export const expensesApi = {
       });
       return exp;
     } catch (error) {
-      console.log(error.message);
       return [];
     }
   },
@@ -34,7 +33,6 @@ export const expensesApi = {
       }
       return response.data;
     } catch (e) {
-      console.log(e.message);
       return null;
     }
   },
@@ -49,7 +47,6 @@ export const expensesApi = {
       }
       return response.data;
     } catch (error) {
-      console.log(error.message);
       return null;
     }
   },
@@ -60,7 +57,6 @@ export const expensesApi = {
       toast.success("Email Sent");
       return response;
     } catch (e) {
-      console.log(e.message);
       return e.message;
     }
   }

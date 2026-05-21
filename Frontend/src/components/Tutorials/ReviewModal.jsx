@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "../../styles/Tutorials/ReviewModal.css";
 import PropTypes from "prop-types";
 import Rate from "./Rate";
-import API from "../../utils/Tutorials/api";
+import API from "@/services/api/tutorialsApi.js";
 
 /**
  * @param {props} props from parent component ClassHistory.jsx

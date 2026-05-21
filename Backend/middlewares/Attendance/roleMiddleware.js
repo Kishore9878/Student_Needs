@@ -1,9 +1,8 @@
 // ✅ ALLOW ONLY TEACHERS
 export const allowTeacher = (req, res, next) => {
-
-  if (req.user && req.user.role === "teacher") {
+  const userRole = (req.user?.role || req.user?.accountType || "").toLowerCase();
+  if (userRole === "teacher" || userRole === "tutor") {
     next();
-
   } else {
     return res.status(403).json({
       message: "Access denied. Teacher only.",
@@ -14,10 +13,9 @@ export const allowTeacher = (req, res, next) => {
 
 // ✅ ALLOW ONLY STUDENTS
 export const allowStudent = (req, res, next) => {
-
-  if (req.user && req.user.role === "student") {
+  const userRole = (req.user?.role || req.user?.accountType || "").toLowerCase();
+  if (userRole === "student") {
     next();
-
   } else {
     return res.status(403).json({
       message: "Access denied. Student only.",

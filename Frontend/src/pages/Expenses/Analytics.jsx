@@ -46,8 +46,8 @@ const Analytics = () => {
     weeklyTotals[day] = (weeklyTotals[day] || 0) + exp.amount;
   });
 
-  const mockWeeklyLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const mockWeeklyData = mockWeeklyLabels.map((day) => weeklyTotals[day] || 0);
+  const chartWeeklyLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const chartWeeklyData = chartWeeklyLabels?.map((day) => weeklyTotals[day] || 0);
 
   // Monthly totals
   const monthlyTotals = {};
@@ -60,8 +60,8 @@ const Analytics = () => {
     monthlyTotals[month] = (monthlyTotals[month] || 0) + exp.amount;
   });
 
-  const mockTrendLabels = Object.keys(monthlyTotals);
-  const mockTrendData = Object.values(monthlyTotals);
+  const chartTrendLabels = Object.keys(monthlyTotals);
+  const chartTrendData = Object.values(monthlyTotals);
 
   // Yearly totals
   const yearlyTotals = {};
@@ -165,9 +165,9 @@ const Analytics = () => {
 
           <div className="flex-1 w-full relative">
             <TrendChart
-              data={viewType === "monthly" ? mockTrendData : yearlyTrendData}
+              data={viewType === "monthly" ? chartTrendData : yearlyTrendData}
               labels={
-                viewType === "monthly" ? mockTrendLabels : yearlyTrendLabels
+                viewType === "monthly" ? chartTrendLabels : yearlyTrendLabels
               }
             />
           </div>
@@ -183,8 +183,8 @@ const Analytics = () => {
 
           <div className="flex-1 w-full relative">
             <WeeklySpendingChart
-              data={mockWeeklyData}
-              labels={mockWeeklyLabels}
+              data={chartWeeklyData}
+              labels={chartWeeklyLabels}
             />
           </div>
         </div>

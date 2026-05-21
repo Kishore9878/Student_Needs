@@ -40,7 +40,7 @@ function BookModal({
             {Object.keys(groupedSlots).length === 0 ? (
               <p>No available slots for this tutor. Check back later. ❌</p>
             ) : (
-              Object.entries(groupedSlots).map(([date, slots]) => (
+              Object.entries(groupedSlots)?.map(([date, slots]) => (
                 <div className="time" key={date}>
                   <p style={{ fontWeight: "bold", marginBottom: "8px" }}>
                     {date}
@@ -52,7 +52,7 @@ function BookModal({
                       flexWrap: "wrap",
                     }}
                   >
-                    {slots.map((slot, i) => {
+                    {slots?.map((slot, i) => {
                       const isSelected =
                         selectedSlot?.date === slot.date &&
                         selectedSlot?.time === slot.time;

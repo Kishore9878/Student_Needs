@@ -30,7 +30,7 @@ const studentSchema = new mongoose.Schema({
     },
     accountType: {
       type: String,
-      default: "Student",
+      default: "student",
       required: true,
     },
     image: {
@@ -124,6 +124,10 @@ const studentSchema = new mongoose.Schema({
       default: 0,
       min: 0,
       max: 100,
+    },
+    embeddingVector: {
+      type: [Number], // For Cosine Similarity Matching
+      select: false,
     },
 }, { timestamps: true }
 )

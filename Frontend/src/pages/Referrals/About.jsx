@@ -91,7 +91,7 @@ const About = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16"
         >
-          {stats.map((stat, index) => {
+          {stats?.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <div
@@ -135,7 +135,7 @@ const About = () => {
             </div>
             <div className="bg-gradient-to-br from-primary/5 via-student/5 to-alumni/5 rounded-lg p-8 border border-border/50">
               <div className="space-y-4">
-                {features.map((feature, index) => {
+                {features?.map((feature, index) => {
                   const Icon = feature.icon;
                   return (
                     <motion.div
@@ -181,7 +181,7 @@ const About = () => {
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {values.map((value, index) => {
+          {values?.map((value, index) => {
             const Icon = value.icon;
             return (
               <motion.div
@@ -242,7 +242,7 @@ const About = () => {
                 description: 'Verified students apply for referrals, and alumni provide opportunities based on trust.',
                 color: 'from-alumni/20 to-alumni/10',
               },
-            ].map((item, index) => (
+            ]?.map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}

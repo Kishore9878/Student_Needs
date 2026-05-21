@@ -207,7 +207,7 @@ export function StudentProfilePage() {
   };
 
   const removeSkill = (skill) => {
-    setSkills(skills.filter((s) => s !== skill));
+    setSkills(skills?.filter((s) => s !== skill));
   };
 
   const addProject = () => {
@@ -227,7 +227,7 @@ export function StudentProfilePage() {
   };
 
   const removeProject = (index) => {
-    setProjects(projects.filter((_, i) => i !== index));
+    setProjects(projects?.filter((_, i) => i !== index));
   };
 
   const addCertification = () => {
@@ -247,7 +247,7 @@ export function StudentProfilePage() {
   };
 
   const removeCertification = (index) => {
-    setCertifications(certifications.filter((_, i) => i !== index));
+    setCertifications(certifications?.filter((_, i) => i !== index));
   };
 
   const addRole = () => {
@@ -258,7 +258,7 @@ export function StudentProfilePage() {
   };
 
   const removeRole = (role) => {
-    setPreferredRoles(preferredRoles.filter((r) => r !== role));
+    setPreferredRoles(preferredRoles?.filter((r) => r !== role));
   };
 
   if (loading) {
@@ -524,7 +524,7 @@ export function StudentProfilePage() {
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {skills.map((skill) => (
+              {skills?.map((skill) => (
                 <Badge key={skill} variant="secondary" className="gap-1">
                   {skill}
                   <X
@@ -567,7 +567,7 @@ export function StudentProfilePage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {projects.map((project, index) => (
+              {projects?.map((project, index) => (
                 <Badge key={index} variant="secondary" className="gap-1">
                   {project.title}
                   <X
@@ -613,7 +613,7 @@ export function StudentProfilePage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {certifications.map((cert, index) => (
+              {certifications?.map((cert, index) => (
                 <Badge key={index} variant="secondary" className="gap-1">
                   {cert.name}
                   <X
@@ -647,7 +647,7 @@ export function StudentProfilePage() {
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {preferredRoles.map((role) => (
+              {preferredRoles?.map((role) => (
                 <Badge key={role} variant="secondary" className="gap-1">
                   {role}
                   <X

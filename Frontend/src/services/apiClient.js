@@ -14,12 +14,23 @@ export const createApiClient = (prefix = "") => {
       localStorage.getItem("token") ||
       expenseUser?.token;
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    config.headers.Authorization = token
+      ? `Bearer ${token}`
+      : "";
 
     return config;
   });
+
+  client.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error?.response?.status === 401) {
+        console.warn("Session expired");
+      }
+
+      return Promise.reject(error);
+    }
+  );
 
   return client;
 };

@@ -122,7 +122,7 @@ export function StudentDashboard() {
       if (response.success && response.data) {
         const applications = response.data.applications || [];
         setMyApplications(applications);
-        const appliedIds = applications.map(app => app.opportunity._id);
+        const appliedIds = applications?.map(app => app.opportunity._id);
         setAppliedOpportunities(appliedIds);
       }
     } catch (error) {
@@ -350,7 +350,7 @@ export function StudentDashboard() {
             </p>
           </div>
           <OpportunitiesList
-            opportunities={opportunities.filter(opp => !appliedOpportunities.includes(opp._id))}
+            opportunities={opportunities?.filter(opp => !appliedOpportunities.includes(opp._id))}
             appliedOpportunities={appliedOpportunities}
             loading={loadingOpportunities}
             isApplying={isApplying}

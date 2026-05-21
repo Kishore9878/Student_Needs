@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../utils/Tutorials/auth";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import "../../styles/Tutorials/ClassHistory.css";
 import ReviewModal from "./ReviewModal";
-import API from "../../utils/Tutorials/api";
+import API from "@/services/api/tutorialsApi.js";
 
 /**
  * component that renders user class history
@@ -61,7 +61,7 @@ function ClassHistory() {
     <div className="mainDivHistory" role="main">
       <div className="innerDivHistory">
         <h1 className="titleHistory">My Class History</h1>
-        {history.map((i, idx) => {
+        {history?.map((i, idx) => {
           return (
             <div className="line1" key={`${i.date}_${idx}`}>
               <div className="scheduleDivHistory">

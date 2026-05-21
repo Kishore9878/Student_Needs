@@ -64,7 +64,7 @@ export function BackendOpportunitiesList({
         </Button>
       </div>
 
-      {opportunities.map((opportunity) => {
+      {opportunities?.map((opportunity) => {
         const isOpen = opportunity.status === 'Open' || opportunity.isActive;
         
         return (
@@ -151,7 +151,7 @@ export function BackendOpportunitiesList({
             {/* Skills tags */}
             {opportunity.requiredSkills && opportunity.requiredSkills.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-3">
-                {opportunity.requiredSkills.slice(0, 3).map((skill, idx) => (
+                {opportunity.requiredSkills.slice(0, 3)?.map((skill, idx) => (
                   <span 
                     key={idx}
                     className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground"

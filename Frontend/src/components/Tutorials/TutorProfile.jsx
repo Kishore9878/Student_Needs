@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import "../../styles/Tutorials/TutorProfile.css";
-import { BASE_URL } from "../../utils/Tutorials/api";
+import { BASE_URL } from "@/services/api/tutorialsApi.js";
 import defaultAvatar from "../../assets/images/bulb2.png";
 
 
@@ -69,9 +69,9 @@ function TutorProfile({
         </span>
       </div>
       <div className="imgRender">
-        {displayPairs.map((tutorData, idx) => (
+        {displayPairs?.map((tutorData, idx) => (
           <div className="card-group " key={idx}>
-            {tutorData.map((tutorProfile) => {
+            {tutorData?.map((tutorProfile) => {
               // ✅ NORMALIZE FIELDS
               const tutorName =
                 tutorProfile.name ||

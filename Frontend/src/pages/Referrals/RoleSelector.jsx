@@ -75,7 +75,7 @@ export function RoleSelector() {
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-          {roles.map((role, index) => {
+          {roles?.map((role, index) => {
             const Icon = role.icon;
 
             return (

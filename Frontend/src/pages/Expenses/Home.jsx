@@ -7,7 +7,7 @@ import MonthlyExpenseChart from "../../components/Expenses/dashboard/MonthlyExpe
 import TransactionsTable from "../../components/Expenses/dashboard/TransactionsTable";
 import Modal from "../../components/Expenses/ui/Modal";
 import Skeleton from "../../components/Expenses/ui/Skeleton";
-import EmptyState from "../../components/Expenses/ui/EmptyState";
+import EmptyState from "../../components/ui/EmptyState";
 import {
   MdAdd,
   MdAccountBalanceWallet,
@@ -26,7 +26,7 @@ const Home = () => {
 
   // Settings
   const userSettings = JSON.parse(
-    localStorage.getItem(`user_settings_${userdata._id}`),
+    localStorage.getItem(`user_settings_${userdata?._id}`),
   ) || {
     monthlyBudget: 0,
     currency: "INR",
@@ -66,7 +66,7 @@ const Home = () => {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     await expensesApi.createExpense({
-      userId: userdata._id,
+      userId: userdata?._id,
       amount: Number(formData.amount),
       category: formData.category,
       date: formData.date.toISOString(),
@@ -307,7 +307,7 @@ const Home = () => {
                 "Food",
                 "Fun",
                 "Other",
-              ].map((c) => (
+              ]?.map((c) => (
                 <option key={c} value={c} className="bg-brand-900">
                   {c}
                 </option>

@@ -69,7 +69,7 @@ export const signup = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
-      accountType: "Alumni",
+      accountType: "alumni",
       image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}%20${lastName}`,
       college: college._id,
       company: company || "",

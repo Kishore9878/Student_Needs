@@ -2,6 +2,7 @@ import Application from "../../models/Referrals/ApplicationModel.js";
 import Opportunity from "../../models/Referrals/OpportunityModel.js";
 import Student from "../../models/Referrals/StudentModel.js";
 import Alumni from "../../models/Referrals/AlumniModel.js";
+import { notificationService } from "../../services/NotificationService.js";
 
 // =====================================================
 // ALUMNI SIDE - Management Endpoints
@@ -157,6 +158,18 @@ export const shortlistStudent = async (req, res) => {
         application.shortlistedAt = new Date();
         await application.save();
 
+        await notificationService.createAndEmitNotification({
+            userId: application.student._id,
+            title: 'Application Shortlisted',
+            message: `Your application for ${application.opportunity.jobTitle} has been shortlisted!`,
+            type: 'INFO',
+            category: 'REFERRAL',
+            metadata: { applicationId: application._id, opportunityId: application.opportunity._id }
+        });
+
+        // Trigger Alumni Dashboard Refresh to update grouped application counts
+        notificationService.emitToUser(alumniId, 'dashboard_refresh', { type: 'referral_update' });
+
         return res.status(200).json({
             success: true,
             data: application,
@@ -227,6 +240,17 @@ export const markAsReferred = async (req, res) => {
         }
         await opportunity.save();
 
+        await notificationService.createAndEmitNotification({
+            userId: application.student._id,
+            title: 'Referral Granted!',
+            message: `You have successfully been referred for ${application.opportunity.jobTitle}.`,
+            type: 'SUCCESS',
+            category: 'REFERRAL',
+            metadata: { applicationId: application._id, opportunityId: application.opportunity._id }
+        });
+
+        notificationService.emitToUser(alumniId, 'dashboard_refresh', { type: 'referral_update' });
+
         return res.status(200).json({
             success: true,
             data: application,
@@ -274,6 +298,17 @@ export const rejectApplication = async (req, res) => {
 
         application.status = "Rejected";
         await application.save();
+
+        await notificationService.createAndEmitNotification({
+            userId: application.student._id,
+            title: 'Application Update',
+            message: `Your application for ${application.opportunity.jobTitle} was not selected.`,
+            type: 'WARNING',
+            category: 'REFERRAL',
+            metadata: { applicationId: application._id, opportunityId: application.opportunity._id }
+        });
+
+        notificationService.emitToUser(alumniId, 'dashboard_refresh', { type: 'referral_update' });
 
         return res.status(200).json({
             success: true,
@@ -419,6 +454,22 @@ export const applyForReferral = async (req, res) => {
         const populatedApplication = await Application.findById(application._id)
             .populate('opportunity', 'jobTitle roleDescription experienceLevel requiredSkills')
             .populate('alumni', 'firstName lastName company currentRole');
+
+        // Increment the applications count dynamically
+        await Opportunity.findByIdAndUpdate(opportunityId, {
+            $inc: { applicationsCount: 1, engagementScore: 1 }
+        });
+
+        await notificationService.createAndEmitNotification({
+            userId: opportunity.postedBy._id,
+            title: 'New Referral Application',
+            message: `${student.firstName} applied for ${opportunity.jobTitle}`,
+            type: 'INFO',
+            category: 'REFERRAL',
+            metadata: { opportunityId: opportunity._id, applicationId: application._id }
+        });
+
+        notificationService.emitToUser(studentId, 'dashboard_refresh', { type: 'referral_update' });
 
         return res.status(201).json({
             success: true,

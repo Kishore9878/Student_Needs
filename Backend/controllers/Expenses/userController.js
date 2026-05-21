@@ -12,8 +12,11 @@ export const loginController = async (req, res) => {
     const response = success(200, userData);
     return res.status(response.statusCode).send(response);
   } catch (err) {
-    const response = error(err.statusCode || 500, err.message);
-    return res.status(response.statusCode).send(response);
+    console.error("Expenses Login Error:", err);
+    // Determine status code safely, defaulting to 500
+    const statusCode = err.statusCode || (err.message.includes("not found") ? 404 : err.message.includes("Invalid") ? 401 : 500);
+    const response = error(statusCode, err.message || "Internal server error during login");
+    return res.status(statusCode).send(response);
   }
 };
 
@@ -27,8 +30,10 @@ export const signupController = async (req, res) => {
     const response = success(201, result);
     return res.status(response.statusCode).send(response);
   } catch (err) {
-    const response = error(err.statusCode || 500, err.message);
-    return res.status(response.statusCode).send(response);
+    console.error("Expenses Signup Error:", err);
+    const statusCode = err.statusCode || (err.message.includes("already exists") ? 409 : 500);
+    const response = error(statusCode, err.message || "Internal server error during signup");
+    return res.status(statusCode).send(response);
   }
 };
 

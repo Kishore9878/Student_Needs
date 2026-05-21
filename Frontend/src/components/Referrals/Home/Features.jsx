@@ -39,7 +39,7 @@ const Features = React.memo(() => {
       });
 
       // Filter out null refs for cards
-      const activeCards = cardsRef.current.filter(Boolean);
+      const activeCards = cardsRef.current?.filter(Boolean);
 
       gsap.set(activeCards, {
         force3D: true,
@@ -138,7 +138,7 @@ const Features = React.memo(() => {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-7xl mx-auto">
-        {features.map((feature, index) => (
+        {features?.map((feature, index) => (
           <div
             key={feature.title}
             ref={(el) => (cardsRef.current[index] = el)}

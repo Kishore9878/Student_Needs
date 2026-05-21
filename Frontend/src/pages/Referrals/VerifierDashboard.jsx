@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import { storage } from '@/lib/Referrals/storage.js';
 import { VerifierStats } from '@/components/Referrals/Verifier/VerifierStats.jsx';
 import { StudentList } from '@/components/Referrals/Verifier/StudentList.jsx';
@@ -39,7 +39,7 @@ export function VerifierDashboard() {
     if (filter === 'all') {
       setFilteredStudents(students);
     } else {
-      setFilteredStudents(students.filter(s => s.resumeStatus === filter));
+      setFilteredStudents(students?.filter(s => s.resumeStatus === filter));
     }
   };
 

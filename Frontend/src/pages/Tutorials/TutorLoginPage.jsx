@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import API from "../../utils/Tutorials/api";
+import API from "@/services/api/tutorialsApi.js";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 
 import "../../styles/Tutorials/TutorLogin.css";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +10,7 @@ function TutorLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,11 +18,31 @@ function TutorLoginPage() {
     try {
       const res = await API.post("/tutor/login", { email, password });
 
-      // ✅ SUCCESS LOGIN
       if (res.data.status === "ok") {
         alert("Login successful ✅");
 
-        navigate("/tutorials/tutor/schedule", { replace: true });
+        const normalizedUser = {
+          ...res.data.tutor,
+          role: "tutor",
+          accountType: "tutor",
+        };
+
+        const header = btoa(JSON.stringify({ alg: "none", typ: "JWT" }));
+        const payload = btoa(JSON.stringify({ id: normalizedUser._id || normalizedUser.id, role: "tutor" }));
+        const dummyToken = `${header}.${payload}.dummy_signature`;
+        
+        localStorage.setItem("token", dummyToken);
+        localStorage.setItem("auth_token", dummyToken);
+        localStorage.setItem("user", JSON.stringify(normalizedUser));
+        localStorage.setItem("User", JSON.stringify(normalizedUser));
+        localStorage.setItem("auth_user", JSON.stringify(normalizedUser));
+        localStorage.setItem("auth_data", JSON.stringify({ token: dummyToken, user: normalizedUser }));
+
+        auth.setUser(normalizedUser);
+
+        setTimeout(() => {
+          navigate("/tutorials/tutor/dashboard", { replace: true });
+        }, 100);
       } else {
         handleError(res.data.message);
       }
@@ -39,7 +61,7 @@ function TutorLoginPage() {
 
     if (message.toLowerCase().includes("not")) {
       alert("Tutor not found. Redirecting to Sign Up 🚀");
-      navigate("/signup/teacher");
+      navigate("/signup/tutor");
     } else {
       alert(message);
     }
@@ -95,7 +117,7 @@ function TutorLoginPage() {
                   cursor: "pointer",
                   fontWeight: "bold",
                 }}
-                onClick={() => navigate("/signup/teacher")}
+                onClick={() => navigate("/signup/tutor")}
               >
                 Sign Up
               </span>

@@ -1,14 +1,14 @@
-import userModel from "../../models/Expenses/userModel.js";
+import ReferralStudent from "../../models/Referrals/StudentModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id: userId, userId: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
 export const UserService = {
   login: async (email, password) => {
-    const user = await userModel.findOne({
+    const user = await ReferralStudent.findOne({
       email: email.trim().toLowerCase(),
     });
 
@@ -30,7 +30,7 @@ export const UserService = {
 
     return {
       _id: user._id,
-      username: user.username,
+      username: user.firstName + " " + user.lastName,
       email: user.email,
       token,
     };
@@ -39,7 +39,7 @@ export const UserService = {
   signup: async (username, email, password) => {
     const normalizedEmail = email.trim().toLowerCase();
 
-    const existingUser = await userModel.findOne({ email: normalizedEmail });
+    const existingUser = await ReferralStudent.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       const err = new Error("User already exists");
@@ -48,9 +48,15 @@ export const UserService = {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Split username into firstName and lastName for the StudentModel
+    const nameParts = username.split(" ");
+    const firstName = nameParts[0] || "User";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
-    const newUser = await userModel.create({
-      username,
+    const newUser = await ReferralStudent.create({
+      firstName,
+      lastName,
       email: normalizedEmail,
       password: hashedPassword,
     });

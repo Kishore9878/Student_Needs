@@ -10,9 +10,9 @@ import {
   editTutorProfile,
   uploadTutorProfilePic,
   deleteTutorProfilePic,
-} from "../../utils/Tutorials/api";
+} from "@/services/api/tutorialsApi.js";
 
-import { BASE_URL } from "../../utils/Tutorials/api";
+import { BASE_URL } from "@/services/api/tutorialsApi.js";
 
 function TutorEditProfilePage() {
   const navigate = useNavigate();
@@ -147,7 +147,7 @@ function TutorEditProfilePage() {
 
       alert(res.data.msg || "Profile updated!");
 
-      navigate("/tutor/dashboard");
+      navigate("/tutorials/tutor/dashboard");
     } catch (err) {
       console.error("❌ Save error:", err);
     }

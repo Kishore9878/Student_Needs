@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import API from "../../utils/Tutorials/api";
+import API from "@/services/api/tutorialsApi.js";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Tutorials/Navbar";
 
@@ -29,7 +29,7 @@ function TutorAcceptPage() {
       await API.patch(`/booking/${id}/status`, { status });
 
       setBookings((prev) =>
-        prev.map((b) =>
+        prev?.map((b) =>
           b._id === id ? { ...b, status } : b
         )
       );
@@ -68,7 +68,7 @@ function TutorAcceptPage() {
         {bookings.length === 0 ? (
           <p>No pending requests at the moment.</p>
         ) : (
-          bookings.map((b) => (
+          bookings?.map((b) => (
             <div
               key={b._id}
               style={{
@@ -148,7 +148,7 @@ function TutorAcceptPage() {
         )}
 
         <button
-          onClick={() => navigate("/tutor/dashboard")}
+          onClick={() => navigate("/tutorials/tutor/dashboard")}
           style={{
             marginTop: "20px",
             cursor: "pointer",

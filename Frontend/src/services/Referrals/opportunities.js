@@ -1,26 +1,5 @@
 import { referralsApiClient as api } from '@/services/apiClient.js';
 
-// Add response interceptor to handle auth errors
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
-      
-      const currentPath = window.location.pathname;
-      if (currentPath.includes('/student')) {
-        window.location.href = '/auth/student/login';
-      } else if (currentPath.includes('/alumni')) {
-        window.location.href = '/auth/alumni/login';
-      } else {
-        window.location.href = '/';
-      }
-    }
-    return Promise.reject(error);
-  }
-);
-
 /**
  * @namespace opportunitiesApi
  */

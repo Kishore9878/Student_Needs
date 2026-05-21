@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../utils/Tutorials/auth";
-import API from "../../utils/Tutorials/api";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import API from "@/services/api/tutorialsApi.js";
 import blackboard from "../../assets/images/blackboard.png";
 
 function Login() {
@@ -30,7 +30,9 @@ function Login() {
           await auth.fetchUser();
         }
 
-        navigate("/tutorials/profile", { replace: true });
+        setTimeout(() => {
+          navigate("/tutorials/profile", { replace: true });
+        }, 100);
       } else {
         alert(res.data.message || "Login failed ❌");
       }

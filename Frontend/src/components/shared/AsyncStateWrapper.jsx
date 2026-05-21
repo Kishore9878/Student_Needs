@@ -1,6 +1,6 @@
 import React from "react";
 import Skeleton from "../Expenses/ui/Skeleton";
-import EmptyState from "../Expenses/ui/EmptyState";
+import EmptyState from "../ui/EmptyState";
 import { AlertCircle } from "lucide-react";
 
 /**
@@ -22,7 +22,7 @@ const AsyncStateWrapper = ({
   if (isLoading) {
     return (
       <div className="space-y-4 w-full">
-        {Array.from({ length: skeletonCount }).map((_, i) => (
+        {Array.from({ length: skeletonCount })?.map((_, i) => (
           <Skeleton key={i} className={`w-full ${skeletonHeight} rounded-xl`} />
         ))}
       </div>

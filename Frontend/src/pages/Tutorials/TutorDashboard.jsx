@@ -1,12 +1,13 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTutorProfile } from "../../utils/Tutorials/api";
+import { getTutorProfile } from "@/services/api/tutorialsApi.js";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { DashboardSection } from "../../components/dashboard/shared/DashboardSection";
 import { DashboardCard } from "../../components/dashboard/shared/DashboardCard";
 import { BookingActivityTimeline } from "../../components/dashboard/tutor/BookingActivityTimeline";
 import { RecentRequestsFeed } from "../../components/dashboard/tutor/RecentRequestsFeed";
-import { MOCK_ACTIVITY_TIMELINE, MOCK_RECENT_REQUESTS } from "../../data/dashboard/tutorMockData";
+import { apiClient } from "@/services/apiClient";
+import { useWebSocket } from "@/hooks/useWebSocket";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, BookOpen, Inbox } from "lucide-react";
 
@@ -14,28 +15,32 @@ function TutorDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const check = async () => {
-      try {
-        const res = await getTutorProfile();
+    fetchAnalytics();
+  }, []);
 
-        if (!res.data?.profile) {
-          navigate("/login/teacher");
-        }
-      } catch {
-        navigate("/login/teacher");
+  const { on } = useWebSocket();
+  const [analytics, setAnalytics] = useState({ recentRequests: [], activityTimeline: [] });
+  
+  const fetchAnalytics = async () => {
+    try {
+      const res = await apiClient.get("/api/analytics/tutor-dashboard");
+      if (res.data?.success) {
+        setAnalytics(res.data.data);
       }
-    };
+    } catch (err) {
+      console.error("Failed to fetch tutor analytics", err);
+    }
+  };
 
-    check();
-  }, [navigate]);
+  useEffect(() => {
+    on("dashboard_refresh", () => fetchAnalytics());
+  }, [on]);
 
   const handleAcceptRequest = useCallback((id) => {
-    console.log("Accepted request", id);
     // TODO: implement accept logic
   }, []);
 
   const handleDeclineRequest = useCallback((id) => {
-    console.log("Declined request", id);
     // TODO: implement decline logic
   }, []);
 
@@ -101,15 +106,27 @@ function TutorDashboard() {
 
         <div className="space-y-6">
           <DashboardCard title="Pending Requests" description="Students waiting for your approval">
-            <RecentRequestsFeed 
-              requests={MOCK_RECENT_REQUESTS} 
-              onAccept={handleAcceptRequest} 
-              onDecline={handleDeclineRequest} 
-            />
+            {analytics.recentRequests.length > 0 ? (
+              <RecentRequestsFeed 
+                requests={analytics.recentRequests} 
+                onAccept={handleAcceptRequest} 
+                onDecline={handleDeclineRequest} 
+              />
+            ) : (
+              <div className="flex h-32 items-center justify-center text-muted-foreground border border-dashed border-border rounded-lg bg-secondary/20 text-sm">
+                No pending requests.
+              </div>
+            )}
           </DashboardCard>
 
           <DashboardCard title="Activity Timeline" description="Your recent booking activity">
-            <BookingActivityTimeline activities={MOCK_ACTIVITY_TIMELINE} />
+            {analytics.activityTimeline.length > 0 ? (
+              <BookingActivityTimeline activities={analytics.activityTimeline} />
+            ) : (
+              <div className="flex h-32 items-center justify-center text-muted-foreground border border-dashed border-border rounded-lg bg-secondary/20 text-sm">
+                No recent activity.
+              </div>
+            )}
           </DashboardCard>
         </div>
       </div>

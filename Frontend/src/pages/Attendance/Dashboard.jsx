@@ -57,7 +57,7 @@ function Dashboard() {
       });
     });
     setAttendanceStats(
-      Object.keys(map).map((s) => ({
+      Object.keys(map)?.map((s) => ({
         subject: s,
         percentage: Number(((map[s].present / map[s].total) * 100).toFixed(1)),
         presentDays: map[s].present,
@@ -76,7 +76,7 @@ function Dashboard() {
   };
 
   const calculateSelectedDateAttendance = (data, studentsData, date) => {
-    const selected = data.filter((item) => item.date === date);
+    const selected = data?.filter((item) => item.date === date);
     if (!selected.length) { setPresentStudents([]); setAbsentStudents([]); return; }
     const presentSet = new Set();
     const absentSet = new Set();
@@ -167,7 +167,7 @@ function Dashboard() {
             <MdCheckCircle /> Present ({presentStudents.length})
           </div>
           {presentStudents.length > 0 ? (
-            presentStudents.map((s, i) => (
+            presentStudents?.map((s, i) => (
               <div key={i} style={{ padding: "6px 0", borderBottom: "1px solid var(--border)", fontSize: 14, color: "var(--text-secondary)" }}>
                 {s}
               </div>
@@ -181,7 +181,7 @@ function Dashboard() {
             <MdCancel /> Absent ({absentStudents.length})
           </div>
           {absentStudents.length > 0 ? (
-            absentStudents.map((s, i) => (
+            absentStudents?.map((s, i) => (
               <div key={i} style={{ padding: "6px 0", borderBottom: "1px solid var(--border)", fontSize: 14, color: "var(--text-secondary)" }}>
                 {s}
               </div>

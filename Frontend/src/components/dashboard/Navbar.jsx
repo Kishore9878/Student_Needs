@@ -1,8 +1,12 @@
 import React from "react";
-import { Bell, Search, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Input } from "../ui/input";
+import { NotificationCenter } from "../ui/NotificationCenter.jsx";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 
 const Navbar = ({ onMenuClick, pageTitle = "Dashboard" }) => {
+  const { user } = useAuth();
+
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
       <div className="flex items-center gap-4">
@@ -27,17 +31,18 @@ const Navbar = ({ onMenuClick, pageTitle = "Dashboard" }) => {
           />
         </div>
 
-        <button className="p-2 rounded-full text-muted-foreground hover:bg-secondary relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background"></span>
-        </button>
+        <NotificationCenter />
 
-        <div className="w-8 h-8 rounded-full bg-secondary border border-border overflow-hidden">
-          <img
-            src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix"
-            alt="User avatar"
-            className="w-full h-full object-cover"
-          />
+        <div className="w-8 h-8 rounded-full bg-secondary border border-border overflow-hidden flex items-center justify-center font-bold text-primary">
+          {user?.profilePic ? (
+            <img
+              src={user.profilePic}
+              alt="User avatar"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-xs uppercase">{(user?.name || user?.username || user?.fullName || "U")[0].toUpperCase()}</span>
+          )}
         </div>
       </div>
     </header>

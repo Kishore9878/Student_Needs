@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import API from "../../utils/Tutorials/api";
+import API from "@/services/api/tutorialsApi.js";
 import "../../styles/Tutorials/ManageBook.css";
 import Navbar from "../../components/Tutorials/Navbar";
 
@@ -32,7 +32,7 @@ function ManageBookingPage() {
       await API.patch(`/booking/${id}/cancel`);
 
       setBookings((prev) =>
-        prev.map((b) =>
+        prev?.map((b) =>
           b._id === id
             ? { ...b, status: "Cancelled" }
             : b
@@ -76,7 +76,7 @@ function ManageBookingPage() {
               </p>
             </div>
           ) : (
-            bookings.map((b) => (
+            bookings?.map((b) => (
               <div className="line1" key={b._id}>
                 <div
                   className={`scheduleDivBook ${

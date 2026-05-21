@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LandingHero from '@/components/Referrals/Home/LandingHero.jsx';
-import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import Navbar from '@/components/Referrals/Navbar.jsx';
 import Features from '@/components/Referrals/Home/Features.jsx';
 import WorkProcess from '@/components/Referrals/Home/WorkProcess.jsx';

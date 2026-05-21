@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import AttendanceModel from "../models/Attendance/Attendance.js";
 import StudentModel from "../models/Attendance/Student.js";
 import { AppError } from "../utils/AppError.js";

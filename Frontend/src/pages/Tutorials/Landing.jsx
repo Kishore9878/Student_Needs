@@ -2,9 +2,22 @@ import React from "react";
 import "../../styles/Tutorials/Landing.css";
 import Navbar from "../../components/Tutorials/Navbar";
 import Footer from "../../components/Tutorials/Footer";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { useEffect } from "react";
 
 function Landing() {
+  const { isAuthenticated, isStudent, isTutor, isInitialized, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isInitialized || isLoading) return;
+    if (isAuthenticated) {
+      if (isTutor) navigate("/tutorials/tutor/dashboard", { replace: true });
+      else if (isStudent) navigate("/tutorials/book", { replace: true });
+    }
+  }, [isAuthenticated, isStudent, isTutor, isInitialized, isLoading, navigate]);
+
   return (
     <div className="landingPage">
       <Navbar />

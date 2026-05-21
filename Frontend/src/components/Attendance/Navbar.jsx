@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../../contexts/Attendance/AuthContext";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 
 function Navbar() {
   const { user, logout, isTeacher, isStudent } = useAuth();

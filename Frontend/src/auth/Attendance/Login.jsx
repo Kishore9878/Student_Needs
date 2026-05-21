@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/Attendance/AuthContext";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import toast from "react-hot-toast";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { MdOutlineSchool } from "react-icons/md";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { studentLogin } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,13 +26,18 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
+
     const validationErrors = validate();
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
+
     setLoading(true);
+<<<<<<< HEAD
     const result = await login(formData.email, formData.password);
     if (result.success) {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -40,8 +45,50 @@ const Login = () => {
       navigate(user.role === "teacher" ? "/attendance/dashboard" : "/student-dashboard");
     } else {
       toast.error(result.message || "Invalid credentials");
+=======
+
+    try {
+
+      const result = await studentLogin({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log("LOGIN RESULT:", result);
+
+      if (result.success) {
+
+        const user = JSON.parse(
+          localStorage.getItem("user")
+        );
+
+        toast.success(
+          `Welcome back, ${user.firstName ||
+          user.name ||
+          "User"
+          }!`
+        );
+
+        navigate("/student/dashboard");
+
+      } else {
+
+        toast.error(
+          result.message || "Invalid credentials"
+        );
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      toast.error("Login failed");
+
+    } finally {
+
+      setLoading(false);
+>>>>>>> main
     }
-    setLoading(false);
   };
 
   return (

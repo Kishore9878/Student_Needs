@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../../utils/Tutorials/api";
+import API from "@/services/api/tutorialsApi.js";
 
 function MyBookings() {
 const [bookings, setBookings] = useState([]);
@@ -27,7 +27,7 @@ try {
 await API.delete(`/booking/deleteClass/${id}`);
 
   // remove from UI instantly
-  setBookings((prev) => prev.filter((b) => b.id !== id));
+  setBookings((prev) => prev?.filter((b) => b.id !== id));
 } catch (err) {
   console.error("❌ Error deleting booking:", err);
 }
@@ -42,7 +42,7 @@ return (
     <p>No bookings found</p>
   ) : (
     <div style={{ marginTop: "1rem" }}>
-      {bookings.map((b) => (
+      {bookings?.map((b) => (
         <div
           key={b.id}
           style={{

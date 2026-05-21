@@ -33,13 +33,22 @@ function Login() {
       }
       
       toast.success("Successfully Logged In !!");
-      localStorage.setItem('User', JSON.stringify(response.data.message));
-      localStorage.setItem('auth_token', response.data.message.token);
+      const userData = response.data.message;
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('User', JSON.stringify(userData)); // Legacy fallback
+      localStorage.setItem('auth_user', JSON.stringify(userData));
+      localStorage.setItem('token', userData.token);
+      localStorage.setItem('auth_token', userData.token);
+      localStorage.setItem('auth_data', JSON.stringify({ token: userData.token, user: userData }));
+      
+      // Update global context if available
+      window.dispatchEvent(new Event('storage'));
+      
       ref.current.complete();
       navigate('/expenses-tracker');
     } catch (error) {
-      console.log(error.message);
-      toast.error("Internal server error");
+      const errorMessage = error.response?.data?.message || error.message || "Internal server error";
+      toast.error(errorMessage);
       if (ref.current) ref.current.complete();
     }
   };

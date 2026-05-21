@@ -99,7 +99,7 @@ export function AppliedJobsList({ applications = [], loading }) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
-      {applications.map((application, index) => {
+      {applications?.map((application, index) => {
         const statusConfig = getStatusConfig(application.status);
         const StatusIcon = statusConfig.icon;
 

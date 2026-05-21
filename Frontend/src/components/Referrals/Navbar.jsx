@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NavLink } from '@/components/Referrals/NavLink.jsx';
-import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import { Button } from '@/components/Referrals/ui/button.jsx';
 import { LogOut, User, GraduationCap } from 'lucide-react';
 import gsap from "gsap";

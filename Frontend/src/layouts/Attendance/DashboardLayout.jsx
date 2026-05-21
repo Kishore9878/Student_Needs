@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/Attendance/AuthContext";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import {
   MdOutlineSchool,
   MdDashboard,
@@ -43,7 +43,7 @@ const DashboardLayout = ({ children, pageTitle }) => {
   };
 
   const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    ? user.name.split(" ")?.map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "U";
 
   return (
@@ -78,7 +78,7 @@ const DashboardLayout = ({ children, pageTitle }) => {
 
         <nav className="sidebar-nav">
           <div className="nav-section-label">Navigation</div>
-          {navItems.map((item) => (
+          {navItems?.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

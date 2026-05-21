@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "../../styles/Tutorials/Navbar.css";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../utils/Tutorials/auth";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import bulb2 from "../../assets/images/bulb2.png";
+import { LayoutContext } from "../layouts/DashboardLayout";
 
 function Navbar() {
-  const auth = useAuth();
+  const isNested = useContext(LayoutContext);
+  const { user, logout, isAuthenticated, isInitialized, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  if (isNested) {
+    return null;
+  }
 
   const [navColor, setNavColor] = useState(false);
 
@@ -25,9 +31,7 @@ function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    auth.logout();
-    localStorage.clear();
-    navigate("/");
+    logout();
   };
 
   const navClass = navColor
@@ -94,7 +98,7 @@ function Navbar() {
         </NavLink>
       </li>
 
-      {auth.user?.role === "student" && (
+      {(user?.role === "student" || user?.accountType === "student") && (
         <li>
           <NavLink className="nav-link" to="/tutorials/profile">
             My Profile
@@ -107,7 +111,7 @@ function Navbar() {
 
         {/* RIGHT BUTTON */}
         <div className="rightSection">
-          {auth.user || isTutorRoute ? (
+          {user || isTutorRoute ? (
             <button className="loginBtn" onClick={handleLogout}>
               Logout
             </button>

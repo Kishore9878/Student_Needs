@@ -138,7 +138,7 @@ export function OpportunityDetailModal({
                   Required Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {opportunity.requiredSkills.map((skill, index) => (
+                  {opportunity.requiredSkills?.map((skill, index) => (
                     <span
                       key={index}
                       className="px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"

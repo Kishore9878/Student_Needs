@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import { Button } from '@/components/Referrals/ui/button.jsx';
 import { cn } from '@/lib/Referrals/utils.js';
 import { showToast, dismissToast } from '@/components/Referrals/TransactionToast.jsx';
@@ -35,7 +35,7 @@ export function AlumniDashboard() {
 
   // Get alumni name from backend auth or default
   const alumniName = user ? `${user.firstName} ${user.lastName}` : 'Alumni';
-  const alumniCompany = user?.accountType === 'Alumni' ? user.company : '';
+  const alumniCompany = user?.accountType?.toLowerCase() === 'alumni' ? user.company : '';
 
   const [jobForm, setJobForm] = useState({
     title: '',
@@ -59,7 +59,7 @@ export function AlumniDashboard() {
 
   // Update company in forms when user data loads
   useEffect(() => {
-    if (user?.accountType === 'Alumni') {
+    if (user?.accountType?.toLowerCase() === 'alumni') {
       const company = user.company || '';
       setJobForm(prev => ({ ...prev, company: company || prev.company }));
       setReferralForm(prev => ({ ...prev, company: company || prev.company }));
@@ -457,7 +457,7 @@ export function AlumniDashboard() {
                       </div>
                     ) : (
                       <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
-                        {selectedOpportunityApplications.map((application) => (
+                        {selectedOpportunityApplications?.map((application) => (
                           <ApplicationCard
                             key={application._id}
                             application={application}

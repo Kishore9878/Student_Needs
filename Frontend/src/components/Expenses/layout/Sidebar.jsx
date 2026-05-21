@@ -40,7 +40,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </div>
 
         <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
-          {navItems.map((item) => (
+          {navItems?.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}

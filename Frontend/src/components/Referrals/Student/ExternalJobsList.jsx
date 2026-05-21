@@ -69,7 +69,7 @@ export function ExternalJobsList({ jobs = [], loading }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-8xl mx-auto">
-      {jobs.map((job) => {
+      {jobs?.map((job) => {
         const cleanDescription = stripHtml(job.description);
         const shortDescription = cleanDescription.length > 150 
           ? cleanDescription.substring(0, 150) + '...' 
@@ -115,7 +115,7 @@ export function ExternalJobsList({ jobs = [], loading }) {
               {/* Tags */}
               {job.tags && job.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {job.tags.slice(0, 3).map((tag, index) => (
+                  {job.tags.slice(0, 3)?.map((tag, index) => (
                     <span
                       key={index}
                       className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"
@@ -134,7 +134,7 @@ export function ExternalJobsList({ jobs = [], loading }) {
               {/* Job Types */}
               {job.job_types && job.job_types.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {job.job_types.map((type, index) => (
+                  {job.job_types?.map((type, index) => (
                     <span
                       key={index}
                       className="inline-block px-2 py-1 rounded-md text-xs font-medium bg-secondary/50 text-secondary-foreground"

@@ -1,4 +1,5 @@
 import Student from "../../models/Referrals/StudentModel.js";
+import { embeddingService } from "../../services/ai/EmbeddingService.js";
 import { calculateProfileCompleteness } from "../../utils/Referrals/calculateProfileScore.js";
 
 // Create / Update Profile
@@ -47,6 +48,18 @@ export const updateProfile = async (req, res) => {
 
         // Populate college details
         await student.populate('college', 'name matchingName');
+
+        // Trigger asynchronous embedding generation to update matching vectors
+        const textToEmbed = `
+            Student: ${student.firstName} ${student.lastName}
+            Branch: ${student.branch}
+            Skills: ${(student.skills || []).join(", ")}
+        `.trim();
+        embeddingService.generateEmbedding(textToEmbed)
+            .then(vector => {
+                Student.updateOne({ _id: student._id }, { $set: { embeddingVector: vector } }).exec();
+            })
+            .catch(console.error);
 
         // Remove password from response
         const studentObject = student.toObject();

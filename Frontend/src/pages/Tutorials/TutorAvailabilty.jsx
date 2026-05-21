@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import studyImg from "../../assets/images/study2.jpg";
 import "../../styles/Tutorials/TutorAvailability.css";
 import { useNavigate } from "react-router-dom";
-import { saveTutorAvailability, getTutorProfile } from "../../utils/Tutorials/api";
+import { saveTutorAvailability } from "@/services/api/tutorialsApi.js";
 import Navbar from "../../components/Tutorials/Navbar";
 
 function TutorAvailability() {
@@ -14,24 +14,6 @@ function TutorAvailability() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [slots, setSlots] = useState([]);
-
-  useEffect(() => {
-    const fetchTutorProfile = async () => {
-      try {
-        const res = await getTutorProfile();
-
-        if (!res.data?.profile) {
-          navigate("/login/teacher");
-          return;
-        }
-      } catch (err) {
-        console.error("Not authenticated");
-        navigate("/login/teacher");
-      }
-    };
-
-    fetchTutorProfile();
-  }, [navigate]);
 
   // ✅ Add Subject
   const addSubject = () => {
@@ -46,7 +28,7 @@ function TutorAvailability() {
 
   // ❌ Remove Subject
   const removeSubject = (sub) => {
-    setSubjects(subjects.filter((s) => s !== sub));
+    setSubjects(subjects?.filter((s) => s !== sub));
   };
 
   // ✅ Add Slot
@@ -66,7 +48,7 @@ function TutorAvailability() {
 
   // ❌ Remove Slot
   const removeSlot = (slot) => {
-    setSlots(slots.filter((s) => s !== slot));
+    setSlots(slots?.filter((s) => s !== slot));
   };
 
   // ✅ Submit
@@ -88,7 +70,7 @@ function TutorAvailability() {
 
       alert("Availability saved ✅");
 
-      navigate("/tutor/schedule");
+      navigate("/tutorials/tutor/schedule");
     } catch (err) {
       console.error(err);
       alert("Error saving data ❌");
@@ -144,7 +126,7 @@ function TutorAvailability() {
                 </button>
 
                 <div className="tag-container">
-                  {subjects.map((sub, index) => (
+                  {subjects?.map((sub, index) => (
                     <span key={index} className="tag">
                       {sub}
 
@@ -198,7 +180,7 @@ function TutorAvailability() {
                 </button>
 
                 <div className="tag-container">
-                  {slots.map((slot, index) => (
+                  {slots?.map((slot, index) => (
                     <span key={index} className="tag">
                       {slot}
 

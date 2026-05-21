@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/Tutorials/TutorSchedule.css";
 import teachingImg from "../../assets/images/Teaching.jpg";
-import API, { getSchedule } from "../../utils/Tutorials/api";
+import API, { getSchedule } from "@/services/api/tutorialsApi.js";
 import Navbar from "../../components/Tutorials/Navbar";
 
 function TutorSchedulePage() {
@@ -33,7 +33,7 @@ function TutorSchedulePage() {
       await API.delete(`/tutor/schedule/${slotId}`);
 
       setSchedule((prev) =>
-        prev.filter((s) => s._id !== slotId)
+        prev?.filter((s) => s._id !== slotId)
       );
 
       alert("Slot deleted ✅");
@@ -63,7 +63,7 @@ function TutorSchedulePage() {
           }}
         >
           <button
-            onClick={() => navigate("/tutor/dashboard")}
+            onClick={() => navigate("/tutorials/tutor/dashboard")}
             style={{
               background: "#ff7a2f",
               color: "#fff",
@@ -95,7 +95,7 @@ function TutorSchedulePage() {
             ) : schedule.length === 0 ? (
               <p>No schedule found ❌</p>
             ) : (
-              schedule.map((item, index) => (
+              schedule?.map((item, index) => (
                 <div key={index} className="schedule-card">
 
                   <div className="slot-info">

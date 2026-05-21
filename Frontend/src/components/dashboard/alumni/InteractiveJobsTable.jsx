@@ -81,7 +81,7 @@ export const InteractiveJobsTable = React.memo(({ jobs = [], onRowClick, onActio
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedJobs.map((job) => (
+            {paginatedJobs?.map((job) => (
               <TableRow 
                 key={job.id || job._id}
                 className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50"

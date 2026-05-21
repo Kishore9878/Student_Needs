@@ -8,7 +8,7 @@ import { pricePanelData } from "./PricePanelData";
 function PricePanel() {
   return (
     <div className="PricePanel">
-      {pricePanelData.map((each, index) => {
+      {pricePanelData?.map((each, index) => {
         return (
           <div key={index} className="price-panelDiv">
             <ol>

@@ -33,7 +33,7 @@ const AlumniSchema = new mongoose.Schema({
     accountType: {
 
         type: String,
-        default: "Alumni",
+        default: "alumni",
 
         required: true,
     },

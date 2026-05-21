@@ -16,10 +16,10 @@ export function CategoryPieChart({ exdata }) {
     'rgba(148, 163, 184, 0.8)', // Slate
   ];
 
-  const chartData = categories.map((cat, index) => ({
+  const chartData = categories?.map((cat, index) => ({
     name: cat,
     value: totalexp[index]
-  })).filter(item => item.value > 0);
+  }))?.filter(item => item.value > 0);
 
   const isEmpty = chartData.length === 0;
 
@@ -44,7 +44,7 @@ export function CategoryPieChart({ exdata }) {
                 dataKey="value"
                 stroke="none"
               >
-                {chartData.map((entry, index) => (
+                {chartData?.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

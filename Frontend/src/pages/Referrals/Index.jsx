@@ -8,7 +8,7 @@ import { VerifierDashboard } from '@/pages/Referrals/VerifierDashboard.jsx';
 import InterviewPage from '@/pages/Referrals/InterviewPage.jsx';
 import NotFound from '@/pages/Referrals/NotFound.jsx';
 import { RoleSelector } from '@/pages/Referrals/RoleSelector.jsx';
-import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { useAuth } from '@/contexts/GlobalAuthContext.jsx';
 import { StudentLoginPage } from '@/components/Referrals/Student/Auth/StudentLogin.jsx';
 import { StudentSignupPage } from '@/components/Referrals/Student/Auth/StudentSignup.jsx';
 import { AlumniLoginPage } from '@/components/Referrals/Alumni/Auth/AlumniLogin.jsx';
@@ -17,62 +17,7 @@ import { VerifierLoginPage } from '@/components/Referrals/Verifier/Auth/Verifier
 import { VerifierSignupPage } from '@/components/Referrals/Verifier/Auth/VerifierSignup.jsx';
 import LandingPage from "@/pages/Referrals/LandingPage";
 import DashboardLayout from '@/components/layouts/DashboardLayout.jsx';
-
-// Backend auth protected route
-function ProtectedRoute({ children, requiredRole }) {
- 
-  const { isAuthenticated, user, isLoading, isInitialized } = useAuth();
-
-  // Wait for auth to load
-  if (!isInitialized || isLoading) {
-    return null;
-  }
-  console.log("REFERRAL AUTH STATE", {
-  isAuthenticated,
-  user,
-  isLoading,
-  isInitialized
-});
-console.log("AUTH USER:", user);
-  // Check backend auth
-  const hasBackendAuth =
-    isAuthenticated &&
-    user &&
-    (
-      (requiredRole === "student" && user.accountType === "Student") ||
-      (requiredRole === "alumni" && user.accountType === "Alumni") ||
-      (requiredRole === "verifier" && user.accountType === "Verifier")
-    );
-
-  // Allow access if auth is valid
-  if (hasBackendAuth) {
-    return <>{children}</>;
-  }
-
-  // Redirect authenticated users to correct dashboards
-  if (isAuthenticated && user) {
-    const userRole = user.accountType?.toLowerCase();
-
-    if (userRole === "student") {
-      return <Navigate to="/student/dashboard" replace />;
-    }
-
-    if (userRole === "alumni") {
-      return <Navigate to="/alumni" replace />;
-    }
-
-    if (userRole === "verifier") {
-      return <Navigate to="/verifier" replace />;
-    }
-  }
-
-  // No auth
-  return (
-  <div style={{ color: "white", padding: "40px" }}>
-    Redirect blocked for debugging
-  </div>
-);
-}
+import GlobalProtectedRoute from "@/components/GlobalProtectedRoute.jsx";
 
 function AppContent() {
   return (
@@ -95,101 +40,119 @@ function AppContent() {
       <Route path="/auth/verifier/signup" element={<VerifierSignupPage />} />
       <Route path="/landing" element={<LandingPage />} />
 
-      {/* Student Dashboard */}
-      <Route
-        index
+      {/* Explicit Student Referral Routes */}
+      {/* <Route
+        path="/student/referrals"
         element={
-          <ProtectedRoute requiredRole="student">
+          <GlobalProtectedRoute allowedRoles={["student"]}>
             <DashboardLayout role="student" pageTitle="Student Referrals">
               <StudentDashboard />
             </DashboardLayout>
-          </ProtectedRoute>
+          </GlobalProtectedRoute>
         }
       />
       <Route
-        path="referrals"
+        path="/student/jobs"
         element={
-          <ProtectedRoute requiredRole="student">
-            <DashboardLayout role="student" pageTitle="Student Referrals">
-              <StudentDashboard />
-            </DashboardLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="jobs"
-        element={
-          <ProtectedRoute requiredRole="student">
+          <GlobalProtectedRoute allowedRoles={["student"]}>
             <DashboardLayout role="student" pageTitle="Student Jobs">
               <StudentDashboard />
             </DashboardLayout>
-          </ProtectedRoute>
+          </GlobalProtectedRoute>
         }
       />
       <Route
-        path="profile"
+        path="/student/profile"
         element={
-          <ProtectedRoute requiredRole="student">
+          <GlobalProtectedRoute allowedRoles={["student"]}>
             <DashboardLayout role="student" pageTitle="Student Profile">
               <StudentDashboard />
             </DashboardLayout>
-          </ProtectedRoute>
+          </GlobalProtectedRoute>
         }
       />
       <Route
-        path="qrcode"
+        path="/student/qrcode"
         element={
-          <ProtectedRoute requiredRole="student">
+          <GlobalProtectedRoute allowedRoles={["student"]}>
             <DashboardLayout role="student" pageTitle="QR Code">
               <StudentDashboard />
             </DashboardLayout>
-          </ProtectedRoute>
+          </GlobalProtectedRoute>
         }
       />
       <Route
-        path="applied"
+        path="/student/applied"
         element={
-          <ProtectedRoute requiredRole="student">
+          <GlobalProtectedRoute allowedRoles={["student"]}>
             <DashboardLayout role="student" pageTitle="Applied Jobs">
               <StudentDashboard />
             </DashboardLayout>
-          </ProtectedRoute>
+          </GlobalProtectedRoute>
         }
       />
-
-      {/* Interview Page */}
       <Route
-        path="interview"
+        path="/student/interview"
         element={
-          <ProtectedRoute requiredRole="student">
+          <GlobalProtectedRoute allowedRoles={["student"]}>
             <DashboardLayout role="student" pageTitle="Interviews">
               <InterviewPage />
             </DashboardLayout>
-          </ProtectedRoute>
+          </GlobalProtectedRoute>
+        }
+      /> */}
+
+      <Route
+        index
+        element={
+          <GlobalProtectedRoute allowedRoles={["student"]}>
+            <StudentDashboard />
+          </GlobalProtectedRoute>
         }
       />
 
-      {/* Alumni Dashboard */}
       <Route
-        path="/alumni"
+        path="jobs"
         element={
-          <ProtectedRoute requiredRole="alumni">
-            <DashboardLayout role="alumni" pageTitle="Alumni Dashboard">
-              <AlumniDashboard />
-            </DashboardLayout>
-          </ProtectedRoute>
+          <GlobalProtectedRoute allowedRoles={["student"]}>
+            <StudentDashboard />
+          </GlobalProtectedRoute>
         }
       />
 
-      {/* Verifier Dashboard */}
       <Route
-        path="/verifier"
+        path="profile"
         element={
-          <ProtectedRoute requiredRole="verifier">
-            <DashboardLayout role="verifier" pageTitle="Verifier Dashboard">
-              <VerifierDashboard />
-            </DashboardLayout>
-          </ProtectedRoute>
+          <GlobalProtectedRoute allowedRoles={["student"]}>
+            <StudentDashboard />
+          </GlobalProtectedRoute>
+        }
+      />
+
+      <Route
+        path="qrcode"
+        element={
+          <GlobalProtectedRoute allowedRoles={["student"]}>
+            <StudentDashboard />
+          </GlobalProtectedRoute>
+        }
+      />
+
+      <Route
+        path="applied"
+        element={
+          <GlobalProtectedRoute allowedRoles={["student"]}>
+            <StudentDashboard />
+          </GlobalProtectedRoute>
+        }
+      />
+
+      <Route
+        path="interview"
+        element={
+          <GlobalProtectedRoute allowedRoles={["student"]}>
+            <InterviewPage />
+          </GlobalProtectedRoute>
         }
       />
 

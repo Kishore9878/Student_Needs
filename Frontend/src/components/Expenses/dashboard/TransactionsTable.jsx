@@ -40,7 +40,7 @@ const TransactionsTable = ({ transactions, onUpdate }) => {
 
     // Search
     if (searchQuery) {
-      result = result.filter(
+      result = result?.filter(
         (tx) =>
           tx.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
           tx.amount.toString().includes(searchQuery),
@@ -48,12 +48,12 @@ const TransactionsTable = ({ transactions, onUpdate }) => {
     }
     // Filter Category
     if (filterCategory) {
-      result = result.filter((tx) => tx.category === filterCategory);
+      result = result?.filter((tx) => tx.category === filterCategory);
     }
     // Filter Date
     if (filterDate) {
       const targetDate = filterDate.toLocaleDateString();
-      result = result.filter(
+      result = result?.filter(
         (tx) => new Date(tx.date).toLocaleDateString() === targetDate,
       );
     }
@@ -187,7 +187,7 @@ const TransactionsTable = ({ transactions, onUpdate }) => {
             <option value="" className="bg-brand-900">
               All Categories
             </option>
-            {categories.map((c) => (
+            {categories?.map((c) => (
               <option key={c} value={c} className="bg-brand-900">
                 {c}
               </option>
@@ -242,7 +242,7 @@ const TransactionsTable = ({ transactions, onUpdate }) => {
           </thead>
           <tbody>
             {paginatedData.length > 0 ? (
-              paginatedData.map((exp) => (
+              paginatedData?.map((exp) => (
                 <tr
                   key={exp._id}
                   className="border-b border-white/5 hover:bg-white/5 transition-colors group"
@@ -399,7 +399,7 @@ const TransactionsTable = ({ transactions, onUpdate }) => {
               className="premium-input text-slate-300 cursor-pointer appearance-none"
               required
             >
-              {categories.map((c) => (
+              {categories?.map((c) => (
                 <option key={c} value={c} className="bg-brand-900">
                   {c}
                 </option>

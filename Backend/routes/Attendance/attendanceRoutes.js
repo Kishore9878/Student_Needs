@@ -16,7 +16,7 @@ const router = express.Router();
 
 // ✅ GET ATTENDANCE
 router.get(
-  "/attendance",
+  "/",
   protect,
   allowTeacher,
   getAttendance
@@ -24,7 +24,7 @@ router.get(
 
 // ✅ GET STUDENT ATTENDANCE
 router.get(
-  "/attendance/student",
+  "/student",
   protect,
   allowStudent,
   getStudentAttendance
@@ -33,7 +33,7 @@ router.get(
 
 // ✅ MARK ATTENDANCE
 router.post(
-  "/attendance",
+  "/",
   protect,
   allowTeacher,
   markAttendance
@@ -51,7 +51,7 @@ router.get(
 
 // ✅ DOWNLOAD TODAY DOCX
 router.get(
-  "/attendanceToday/:date",
+  "/today/:date",
   protect,
   allowTeacher,
   downloadTodayAttendance
@@ -59,7 +59,7 @@ router.get(
 
 // ✅ DELETE STUDENT ATTENDANCE
 router.delete(
-  "/attendance/:studentId",
+  "/:studentId",
   protect,
   allowTeacher,
   deleteStudentAttendance
@@ -67,7 +67,7 @@ router.delete(
 
 // ✅ DELETE ATTENDANCE USING REGISTER NUMBER
 router.delete(
-  "/attendance/student/:register",
+  "/student/:register",
   protect,
   allowTeacher,
   deleteStudentAttendance

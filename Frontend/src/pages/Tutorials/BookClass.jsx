@@ -8,9 +8,9 @@ import TutorInfo from "../../components/Tutorials/TutorInfo";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import BookModal from "../../components/Tutorials/BookModal";
 import { dateHelper } from "../../utils/Tutorials/bookDates";
-import { useAuth } from "@/utils/Tutorials/auth";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import TutorPagination from "../../components/Tutorials/TutorPagination";
-import API, { getTutorAvailability } from "../../utils/Tutorials/api";
+import API, { getTutorAvailability } from "@/services/api/tutorialsApi.js";
 
 function BookClass() {
   const [query, setQuery] = useState(null);
@@ -26,8 +26,16 @@ function BookClass() {
   const [notFound, setNotFound] = useState(false);
   const [searchSize, setSearchSize] = useState(0);
   const [availability, setAvailability] = useState([]);
+  // const auth = useAuth();
   const auth = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    isInitialized,
+  } = auth;
   const navigate = useNavigate();
+
 
   const handleQuery = (val, data, size) => {
     setQuery(val);
@@ -83,7 +91,10 @@ function BookClass() {
   useEffect(() => {
     const onBackButtonEvent = (evt) => {
       evt.preventDefault();
-      window.localStorage.clear();
+      window.localStorage.removeItem("Current_Query");
+      window.localStorage.removeItem("Current_Render");
+      window.localStorage.removeItem("Current_Data");
+      window.localStorage.removeItem("Current_Data_Size");
       setSearch(false);
       setQuery(null);
       setSearchData([]);
@@ -113,7 +124,7 @@ function BookClass() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const availableSlots = (res.data.schedule || []).filter((slot) => {
+        const availableSlots = (res.data.schedule || [])?.filter((slot) => {
           const slotDate = new Date(slot.date);
           return slotDate >= today && !slot.isBooked;
         });
@@ -169,8 +180,9 @@ function BookClass() {
       }
     };
 
-    if (auth.user) fetchSchedule();
-  }, [auth.user]);
+    // if (auth.user) fetchSchedule();
+    if (user && isAuthenticated) fetchSchedule();
+  }, [user, isAuthenticated]);
 
   // ================= ADD CLASS =================
   const addClass = (date, time) => {
@@ -201,7 +213,7 @@ function BookClass() {
 
   // ================= CONFIRM BOOKING =================
   const confirmClasses = async (selectedSlot) => {
-    if (!auth.user) {
+    if (!user) {
       return alert("Login required ❌");
     }
 
@@ -300,6 +312,10 @@ function BookClass() {
         return null;
     }
   };
+
+  if (!isInitialized || isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="BookClassMain">

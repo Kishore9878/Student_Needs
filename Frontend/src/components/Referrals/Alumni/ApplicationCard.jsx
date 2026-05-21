@@ -51,7 +51,7 @@ export function ApplicationCard({
             {/* Skills Preview */}
             {application.student.skills && application.student.skills.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {application.student.skills.slice(0, 3).map((skill, idx) => (
+                {application.student.skills.slice(0, 3)?.map((skill, idx) => (
                   <span
                     key={idx}
                     className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary"

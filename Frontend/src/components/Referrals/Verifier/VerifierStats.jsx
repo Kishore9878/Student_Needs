@@ -18,24 +18,24 @@ export function VerifierStats({ students = [], filter, onFilterChange }) {
     },
     { 
       label: 'Pending', 
-      count: students.filter(s => s.resumeStatus === 'unverified').length, 
+      count: students?.filter(s => s.resumeStatus === 'unverified').length, 
       filter: 'unverified' 
     },
     { 
       label: 'Verified', 
-      count: students.filter(s => s.resumeStatus === 'verified').length, 
+      count: students?.filter(s => s.resumeStatus === 'verified').length, 
       filter: 'verified' 
     },
     { 
       label: 'Rejected', 
-      count: students.filter(s => s.resumeStatus === 'rejected').length, 
+      count: students?.filter(s => s.resumeStatus === 'rejected').length, 
       filter: 'rejected' 
     },
   ];
 
   return (
     <div className="grid sm:grid-cols-4 gap-4">
-      {stats.map((stat) => (
+      {stats?.map((stat) => (
         <button
           key={stat.label}
           onClick={() => onFilterChange(stat.filter)}

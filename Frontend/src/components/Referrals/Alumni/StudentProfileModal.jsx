@@ -290,7 +290,7 @@ export function StudentProfileModal({ isOpen, onClose, student, loading }) {
                         Skills
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {student.skills.map((skill, index) => (
+                        {student.skills?.map((skill, index) => (
                           <span
                             key={index}
                             className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium"
@@ -309,7 +309,7 @@ export function StudentProfileModal({ isOpen, onClose, student, loading }) {
                         Experience
                       </h3>
                       <div className="space-y-3">
-                        {student.experience.map((exp, index) => (
+                        {student.experience?.map((exp, index) => (
                           <div
                             key={index}
                             className="bg-muted/30 rounded-lg p-4"
@@ -338,7 +338,7 @@ export function StudentProfileModal({ isOpen, onClose, student, loading }) {
                         Projects
                       </h3>
                       <div className="space-y-3">
-                        {student.projects.map((project, index) => (
+                        {student.projects?.map((project, index) => (
                           <div
                             key={index}
                             className="bg-muted/30 rounded-lg p-4"

@@ -132,7 +132,7 @@ export function ProfileCompletionModal({
 
   useEffect(() => {
     if (profileStatus) {
-      const incomplete = ALL_STEPS.filter((step) => {
+      const incomplete = ALL_STEPS?.filter((step) => {
         const status = profileStatus.breakdown[step.field];
         return status === "Incomplete";
       });
@@ -338,14 +338,14 @@ export function ProfileCompletionModal({
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {skills.map((skill) => (
+              {skills?.map((skill) => (
                 <span
                   key={skill}
                   className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm flex items-center gap-1"
                 >
                   {skill}
                   <button
-                    onClick={() => setSkills(skills.filter((s) => s !== skill))}
+                    onClick={() => setSkills(skills?.filter((s) => s !== skill))}
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -358,13 +358,13 @@ export function ProfileCompletionModal({
       case "projects":
         return (
           <div className="space-y-4">
-            {projects.map((project, index) => (
+            {projects?.map((project, index) => (
               <div key={index} className="p-4 border rounded-lg space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Project {index + 1}</span>
                   <button
                     onClick={() =>
-                      setProjects(projects.filter((_, i) => i !== index))
+                      setProjects(projects?.filter((_, i) => i !== index))
                     }
                     className="text-destructive"
                   >

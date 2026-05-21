@@ -33,7 +33,6 @@ export function QRScanner({ isOpen, onClose }) {
 
           scannerRef.current.render(
             async (decodedText) => {
-              console.log('QR Code scanned:', decodedText);
               setScanning(false);
               setLoading(true);
               setError(null);

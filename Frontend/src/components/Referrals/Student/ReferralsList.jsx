@@ -38,7 +38,7 @@ export function ReferralsList({ jobs, student, isApplying, onApply }) {
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-8xl mx-auto">
-      {referralJobs.map((job) => {
+      {referralJobs?.map((job) => {
         const hasApplied = student?.appliedJobs?.includes(job.id);
         const canApply = student?.resumeStatus === 'verified';
         const referralCount = job.referred?.length || 0;

@@ -29,7 +29,7 @@ export function StudentList({ students = [], selectedStudent, onSelectStudent })
             No resumes to review
           </div>
         ) : (
-          students.map((student) => (
+          students?.map((student) => (
             <motion.button
               key={student.walletAddress}
               initial={{ opacity: 0 }}

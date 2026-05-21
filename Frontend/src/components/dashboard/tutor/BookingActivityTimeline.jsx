@@ -27,7 +27,7 @@ export const BookingActivityTimeline = React.memo(({ activities = [] }) => {
   return (
     <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2">
       <div className="relative border-l border-slate-200 dark:border-slate-800 ml-3 space-y-6 pb-2">
-        {activities.map((activity, index) => (
+        {activities?.map((activity, index) => (
           <div key={activity.id} className="relative pl-6">
             <span className="absolute -left-2.5 top-1 bg-white dark:bg-slate-950 p-0.5 rounded-full ring-2 ring-white dark:ring-slate-950">
               {getStatusIcon(activity.status)}

@@ -66,7 +66,7 @@ export function ReferralApplications({
             No applications yet
           </div>
         ) : (
-          applications.map(({ student, status, txHash }) => (
+          applications?.map(({ student, status, txHash }) => (
             <div
               key={student.walletAddress}
               className="p-4 hover:bg-muted/50 transition-colors"

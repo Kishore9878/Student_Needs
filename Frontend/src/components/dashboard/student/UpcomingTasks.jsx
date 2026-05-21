@@ -26,7 +26,7 @@ export const UpcomingTasks = React.memo(({ tasks = [] }) => {
 
   return (
     <div className="space-y-4">
-      {tasks.map((task) => (
+      {tasks?.map((task) => (
         <div 
           key={task.id} 
           className="flex items-start justify-between p-3 sm:p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors"

@@ -28,7 +28,6 @@ function Signup() {
         email,
         password,
       });
-      console.log(response);
       toast.success("Registered Successfully!!");
       // SAVE USER BUDGET
       const userKey = username; // temporary identifier before login
@@ -44,7 +43,6 @@ function Signup() {
       ref.current.complete();
       navigate("/expenses-tracker/login");
     } catch (error) {
-      console.log(error.message);
       toast.error("Internal server error or email already exists");
       if (ref.current) ref.current.complete();
     }

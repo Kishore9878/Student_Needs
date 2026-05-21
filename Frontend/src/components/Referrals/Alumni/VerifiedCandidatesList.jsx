@@ -30,7 +30,7 @@ export function VerifiedCandidatesList({
             No verified students yet
           </div>
         ) : (
-          students.map((student) => (
+          students?.map((student) => (
             <button
               key={student.walletAddress}
               onClick={() => onSelectStudent(student)}

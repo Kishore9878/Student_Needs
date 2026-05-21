@@ -20,7 +20,7 @@ function StudentTable({ students, attendanceData, handleAttendance }) {
           </tr>
         </thead>
         <tbody>
-          {students.map((student, i) => (
+          {students?.map((student, i) => (
             <tr key={student._id}>
               <td>{i + 1}</td>
               <td>{student.Name}</td>

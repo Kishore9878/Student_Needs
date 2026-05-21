@@ -13,7 +13,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#f1f5f9",
       }}>
         <p style={{ fontWeight: 600, marginBottom: 4 }}>{label}</p>
-        {payload.map((p, i) => (
+        {payload?.map((p, i) => (
           <p key={i} style={{ color: p.color }}>{p.name}: {p.value}</p>
         ))}
       </div>
@@ -81,7 +81,7 @@ function Charts({ attendanceStats }) {
                 label={({ subject, percentage }) => `${subject} ${percentage}%`}
                 labelLine={{ stroke: "#475569" }}
               >
-                {attendanceStats.map((_, index) => (
+                {attendanceStats?.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

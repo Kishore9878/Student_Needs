@@ -30,36 +30,44 @@ function generatePDF(data) {
 }
 
 async function sendEmailWithAttachment(recipient, items) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
   const body = dataParserForItems(items);
   const pdfContent = generatePDF(body);
 
-  const mailOptions = {
-    from: process.env.SMTP_USER,
-    to: recipient,
-    subject: "Expense Report for This Month",
-    text: "Please find your expense report attached.",
-    attachments: [
-      {
-        filename: "expense_report.pdf",
-        content: pdfContent,
-        encoding: "base64",
-      },
-    ],
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent: " + info.response);
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: recipient,
+      subject: "Expense Report for This Month",
+      text: "Please find your expense report attached.",
+      attachments: [
+        {
+          filename: "expense_report.pdf",
+          content: pdfContent,
+          encoding: "base64",
+        },
+      ],
+    };
+
+    // Execute asynchronously without blocking the HTTP thread
+    transporter.sendMail(mailOptions).then(info => {
+      console.log("✅ Email sent successfully:", info.messageId);
+    }).catch(error => {
+      console.error("❌ Error sending email asynchronously:", error);
+    });
+
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("❌ Error initiating email send:", error);
   }
 }
 

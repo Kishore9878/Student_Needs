@@ -1,7 +1,10 @@
 // Custom Authentication Hooks
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext.jsx';
+import { useAuth } from '@/contexts/GlobalAuthContext.jsx';
+import { referralsApiClient } from '@/services/apiClient.js';
+import { AUTH_ENDPOINTS } from './config.js';
+import { showToast } from '@/components/Referrals/TransactionToast.jsx';
 
 // ============================================
 // Form State Hook
@@ -112,28 +115,87 @@ export function useStudentSignup() {
     return isValid;
   }, [form]);
 
+  // const handleSubmit = useCallback(async () => {
+  //   if (!validate()) {
+  //     return { success: false, message: 'Please fix form errors' };
+  //   }
+
+  //   form.setSubmitting(true);
+  //   try {
+  //     const response = await studentSignup(form.data);
+  //     if (response.success) {
+  //       form.resetForm();
+  //       navigate('/student/dashboard');
+  //     } else {
+  //       form.setSubmitError(response.message);
+  //     }
+  //     return response;
+  //   } catch (error) {
+  //     const message = error instanceof Error ? error.message : 'Signup failed';
+  //     form.setSubmitError(message);
+  //     return { success: false, message };
+  //   } finally {
+  //     form.setSubmitting(false);
+  //   }
+  // }, [form, studentSignup, navigate, validate]);
+
   const handleSubmit = useCallback(async () => {
+
     if (!validate()) {
-      return { success: false, message: 'Please fix form errors' };
+      return {
+        success: false,
+        message: 'Please fix form errors'
+      };
     }
 
     form.setSubmitting(true);
+
     try {
+
+      console.log("SIGNUP FORM DATA:", form.data);
+
       const response = await studentSignup(form.data);
+
+      console.log("SIGNUP RESPONSE:", response);
+
       if (response.success) {
+
         form.resetForm();
-        navigate('/student/dashboard');
+
+        // Delay avoids auth timing issues
+        setTimeout(() => {
+          navigate('/student/dashboard');
+        }, 100);
+
       } else {
-        form.setSubmitError(response.message);
+
+        form.setSubmitError(
+          response.message || 'Signup failed'
+        );
       }
+
       return response;
+
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Signup failed';
+
+      console.log("SIGNUP HOOK ERROR:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Signup failed';
+
       form.setSubmitError(message);
-      return { success: false, message };
+
+      return {
+        success: false,
+        message
+      };
+
     } finally {
       form.setSubmitting(false);
     }
+
   }, [form, studentSignup, navigate, validate]);
 
   return {
@@ -153,7 +215,7 @@ const initialLogin = {
 };
 
 export function useStudentLogin() {
-  const { studentLogin } = useAuth();
+  const { studentLogin, setUser } = useAuth();
   const navigate = useNavigate();
   const form = useAuthForm(initialLogin);
 
@@ -176,62 +238,150 @@ export function useStudentLogin() {
     return isValid;
   }, [form]);
 
-const handleSubmit = useCallback(async () => {
-  if (!validate()) {
-    return { success: false, message: 'Please fix form errors' };
-  }
+  // const handleSubmit = useCallback(async () => {
+  //   if (!validate()) {
+  //     return { success: false, message: 'Please fix form errors' };
+  //   }
 
-  form.setSubmitting(true);
+  //   form.setSubmitting(true);
 
-  try {
-    const response = await studentLogin(form.data);
+  //   try {
+  //     const response = await studentLogin(form.data);
 
-    console.log("LOGIN RESPONSE:", response);
 
-    if (response.success) {
+  //     if (response.success) {
 
-      // ✅ Persist auth
-      const token =
-        response.token ||
-        response.data?.token;
+  //       // ✅ Persist auth
+  //       const token =
+  //         response.token ||
+  //         response.data?.token;
 
-      const user =
-        response.user ||
-        response.data?.user;
+  //       const user =
+  //         response.user ||
+  //         response.data?.user;
 
-      if (token) {
-        localStorage.setItem("auth_token", token);
-        localStorage.setItem("token", token);
-      }
+  //       if (token) {
+  //         localStorage.setItem("auth_token", token);
+  //         localStorage.setItem("token", token);
+  //       }
 
-      if (user) {
-        localStorage.setItem("auth_user", JSON.stringify(user));
-        localStorage.setItem("user", JSON.stringify(user));
-      }
+  //       if (user) {
+  //         localStorage.setItem("auth_user", JSON.stringify(user));
+  //         localStorage.setItem("user", JSON.stringify(user));
+  //       }
 
-      form.resetForm();
+  //       form.resetForm();
 
-      navigate('/student/dashboard');
+  //       navigate('/student/dashboard');
 
-    } else {
-      form.setSubmitError(response.message);
+  //     } else {
+  //       form.setSubmitError(response.message);
+  //     }
+
+  //     return response;
+
+  //   } catch (error) {
+  //     const message =
+  //       error instanceof Error ? error.message : 'Login failed';
+
+  //     form.setSubmitError(message);
+
+  //     return { success: false, message };
+
+  //   } finally {
+  //     form.setSubmitting(false);
+  //   }
+
+  // }, [form, studentLogin, navigate, validate]);
+
+  const handleSubmit = useCallback(async () => {
+
+    if (!validate()) {
+      return {
+        success: false,
+        message: 'Please fix form errors'
+      };
     }
 
-    return response;
+    form.setSubmitting(true);
 
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Login failed';
+    try {
 
-    form.setSubmitError(message);
+      console.log("LOGIN FORM DATA:", form.data);
 
-    return { success: false, message };
+      const response = await studentLogin(form.data);
 
-  } finally {
-    form.setSubmitting(false);
-  }
+      console.log("LOGIN RESPONSE:", response);
 
-}, [form, studentLogin, navigate, validate]);
+      if (response.success) {
+
+        const token =
+          response.token ||
+          response.data?.token;
+
+        const user =
+          response.user ||
+          response.data?.user;
+
+        if (token) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("auth_token", token);
+        }
+
+        if (user) {
+          const normalizedUser = {
+            ...user,
+            role: "student",
+            accountType: "student",
+          };
+
+          localStorage.setItem("user", JSON.stringify(normalizedUser));
+          localStorage.setItem("User", JSON.stringify(normalizedUser));
+          localStorage.setItem("auth_user", JSON.stringify(normalizedUser));
+          localStorage.setItem("auth_data", JSON.stringify({ token, user: normalizedUser }));
+
+          setUser(normalizedUser);
+        }
+
+        form.resetForm();
+
+        // Delay avoids protected route timing issue
+        setTimeout(() => {
+          navigate('/student/dashboard');
+        }, 100);
+
+      } else {
+
+        form.setSubmitError(
+          response.message || 'Login failed'
+        );
+      }
+
+      return response;
+
+    } catch (error) {
+
+      console.log("LOGIN HOOK ERROR:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Login failed';
+
+      form.setSubmitError(message);
+
+      return {
+        success: false,
+        message
+      };
+
+    } finally {
+
+      form.setSubmitting(false);
+
+    }
+
+  }, [form, studentLogin, navigate, validate]);
 
   return {
     ...form,
@@ -249,6 +399,7 @@ const initialAlumniSignup = {
   lastName: '',
   email: '',
   password: '',
+  collegeName: '',
   company: '',
   jobTitle: '',
 };
@@ -287,6 +438,10 @@ export function useAlumniSignup() {
       isValid = false;
     }
 
+    if (!form.data.collegeName.trim()) {
+      form.setError('collegeName', 'College name is required');
+      isValid = false;
+    }
 
     return isValid;
   }, [form]);
@@ -301,7 +456,7 @@ export function useAlumniSignup() {
       const response = await alumniSignup(form.data);
       if (response.success) {
         form.resetForm();
-        navigate('/alumni/dashboard');
+        navigate('/login/alumni');
       } else {
         form.setSubmitError(response.message);
       }
@@ -327,7 +482,7 @@ export function useAlumniSignup() {
 // ============================================
 
 export function useAlumniLogin() {
-  const { alumniLogin } = useAuth();
+  const { alumniLogin, setUser } = useAuth();
   const navigate = useNavigate();
   const form = useAuthForm(initialLogin);
 
@@ -359,20 +514,44 @@ export function useAlumniLogin() {
     try {
       const response = await alumniLogin(form.data);
       if (response.success) {
+        const token = response.token || response.data?.token || localStorage.getItem('token') || localStorage.getItem('auth_token');
+        const user = response.user || response.data?.user;
+        
+        if (user) {
+          const normalizedUser = {
+            ...user,
+            role: "alumni",
+            accountType: "alumni",
+          };
+
+          if (token) {
+            localStorage.setItem("token", token);
+            localStorage.setItem("auth_token", token);
+          }
+          localStorage.setItem("user", JSON.stringify(normalizedUser));
+          localStorage.setItem("User", JSON.stringify(normalizedUser));
+          localStorage.setItem("auth_user", JSON.stringify(normalizedUser));
+          localStorage.setItem("auth_data", JSON.stringify({ token, user: normalizedUser }));
+
+          setUser(normalizedUser);
+        }
+
         form.resetForm();
-        navigate('/alumni/dashboard');
+        setTimeout(() => {
+          navigate('/alumni/dashboard');
+        }, 100);
       } else {
-        form.setSubmitError(response.message);
+        form.setSubmitError(response.message || 'Login failed');
       }
       return response;
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Login failed';
+      const message = error?.response?.data?.message || error?.message || 'Login failed';
       form.setSubmitError(message);
       return { success: false, message };
     } finally {
       form.setSubmitting(false);
     }
-  }, [form, alumniLogin, navigate, validate]);
+  }, [form, alumniLogin, setUser, navigate, validate]);
 
   return {
     ...form,
@@ -393,7 +572,7 @@ const initialVerifierSignup = {
 };
 
 export function useVerifierSignup() {
-  const { studentSignup, setUser } = useAuth();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const form = useAuthForm(initialVerifierSignup);
 
@@ -437,26 +616,44 @@ export function useVerifierSignup() {
 
     form.setSubmitting(true);
     try {
-      const response = await studentSignup(form.data);
-      if (response.success && response.user) {
-        // Override accountType to Verifier for verifier signup
-        const verifierUser = { ...response.user, accountType: 'Verifier' };
-        // Update context with verifier user
-        setUser(verifierUser);
+      const { data } = await referralsApiClient.post(AUTH_ENDPOINTS.student.signup, {
+        ...form.data,
+        accountType: 'verifier',
+      });
+
+      if (data.success) {
         form.resetForm();
-        navigate('/verifier');
+        showToast({
+          type: 'success',
+          message: 'Verifier signup successful!',
+          description: 'Please log in with your verifier account.'
+        });
+
+        // Clear stale auth localStorage keys
+        localStorage.removeItem('token');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('User');
+        localStorage.removeItem('auth_user');
+        localStorage.removeItem('auth_data');
+
+        setUser(null);
+
+        setTimeout(() => {
+          navigate('/login/verifier', { replace: true });
+        }, 100);
       } else {
-        form.setSubmitError(response.message);
+        form.setSubmitError(data.message || 'Signup failed');
       }
-      return response;
+      return data;
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Signup failed';
+      const message = error?.response?.data?.message || error?.message || 'Signup failed';
       form.setSubmitError(message);
       return { success: false, message };
     } finally {
       form.setSubmitting(false);
     }
-  }, [form, studentSignup, setUser, navigate, validate]);
+  }, [form, setUser, navigate, validate]);
 
   return {
     ...form,
@@ -502,14 +699,57 @@ export function useVerifierLogin() {
     try {
       const response = await studentLogin(form.data);
       if (response.success && response.user) {
-        // Override accountType to Verifier for verifier login
-        const verifierUser = { ...response.user, accountType: 'Verifier' };
-        // Update context with verifier user
-        setUser(verifierUser);
+        const userRole = (response.user.role || response.user.accountType || "").toLowerCase();
+        if (userRole !== 'verifier') {
+          // Revert the global login state since this is not a verifier
+          localStorage.removeItem('token');
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('User');
+          localStorage.removeItem('auth_user');
+          localStorage.removeItem('auth_data');
+          setUser(null);
+          form.setSubmitError('Unauthorized. Only verifier accounts can access this portal.');
+          return { success: false, message: 'Unauthorized access' };
+        }
+
+        // 1. Normalize verifier user
+        const normalizedUser = {
+          ...response.user,
+          role: "verifier",
+          accountType: "verifier",
+        };
+
+        const token = response.token || response.data?.token || localStorage.getItem('token') || localStorage.getItem('auth_token');
+
+        // 2. Persist ALL auth keys
+        if (token) {
+          localStorage.setItem('token', token);
+          localStorage.setItem('auth_token', token);
+        }
+        localStorage.setItem('user', JSON.stringify(normalizedUser));
+        localStorage.setItem('User', JSON.stringify(normalizedUser));
+        localStorage.setItem('auth_user', JSON.stringify(normalizedUser));
+        localStorage.setItem('auth_data', JSON.stringify({ token, user: normalizedUser }));
+
+        // 3. Update auth context with normalized verifier user
+        setUser(normalizedUser);
+
+        // 4. Show success toast
+        showToast({
+          type: 'success',
+          message: 'Login successful!',
+          description: 'Welcome to your verifier dashboard.'
+        });
+
         form.resetForm();
-        navigate('/verifier');
+
+        // 5. Use delayed navigation
+        setTimeout(() => {
+          navigate('/verifier/dashboard', { replace: true });
+        }, 100);
       } else {
-        form.setSubmitError(response.message);
+        form.setSubmitError(response.message || 'Login failed');
       }
       return response;
     } catch (error) {
@@ -550,3 +790,4 @@ export function useRoleBasedAuth(role) {
     login: alumniLogin,
   };
 }
+

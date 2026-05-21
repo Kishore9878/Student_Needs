@@ -45,6 +45,23 @@ const OpportunitySchema = new mongoose.Schema({
         enum: ["Open", "Closed"],
         default: "Open",
     },
+    tags: [{
+        type: String,
+        trim: true,
+        index: true,
+    }],
+    embeddingVector: {
+        type: [Number], // For Cosine Similarity / Vector Search
+        select: false, // Don't return this massive array in normal API calls
+    },
+    applicationsCount: {
+        type: Number,
+        default: 0,
+    },
+    engagementScore: {
+        type: Number,
+        default: 0,
+    }
 }, { timestamps: true });
 
 // Virtual field for isActive (computed from status)

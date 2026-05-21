@@ -50,7 +50,7 @@ export function ReferralPostsList({
 
   return (
     <div className="space-y-4">
-      {referrals.map((referral) => (
+      {referrals?.map((referral) => (
         <motion.button
           key={referral.id}
           initial={{ opacity: 0, y: 10 }}

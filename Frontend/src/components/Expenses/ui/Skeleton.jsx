@@ -15,7 +15,7 @@ const Skeleton = ({ type = 'card', lines = 3 }) => {
   if (type === 'table') {
     return (
       <div className="space-y-4">
-        {[...Array(lines)].map((_, i) => (
+        {[...Array(lines)]?.map((_, i) => (
           <div key={i} className={`${classes.tableRow} ${baseClass}`}></div>
         ))}
       </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/Tutorials/LoginRegister.css";
-import API from "../../utils/Tutorials/api";
+import API from "@/services/api/tutorialsApi.js";
 
 /**
  * Amanda Au-Yeung

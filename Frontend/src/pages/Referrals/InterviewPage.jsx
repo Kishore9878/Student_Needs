@@ -4,7 +4,7 @@ import { interviewApi } from '@/services/Referrals/interview.js';
 import { opportunitiesApi } from '@/services/Referrals/opportunities.js';
 import { analyzeApi } from '@/services/Referrals/analyze.js';
 import { linkedInApi, resumeApi, studentProfileApi } from '@/services/Referrals/studentProfile.js';
-import { useAuth } from '@/services/Referrals/Auth/AuthContext.jsx';
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import { Button } from '@/components/Referrals/ui/button.jsx';
 import { cn } from '@/lib/Referrals/utils.js';
 import {
@@ -84,7 +84,6 @@ export default function InterviewPage() {
           addLog('Fetching student data...');
           try {
             const studentJsonData = await studentProfileApi.getProfile();
-            console.log('Student data received:', studentJsonData);
             
             const student = studentJsonData.data;
 
@@ -160,7 +159,6 @@ export default function InterviewPage() {
 
   const analyzeProfile = async () => {
     try {
-      console.log('analyzeProfile called', { studentData, opportunityData });
       
       if (!opportunityData) {
         addLog('Error: Opportunity data not loaded');
@@ -384,7 +382,7 @@ export default function InterviewPage() {
       addLog('✓ Application submitted successfully!');
       
       setTimeout(() => {
-        navigate('/student?tab=applied');
+        navigate('/student/applied');
       }, 2000);
     } catch (error) {
       addLog(`Error submitting application: ${error.message}`);
@@ -645,7 +643,7 @@ export default function InterviewPage() {
               {logs.length === 0 ? (
                 <p className="text-muted-foreground italic">No logs yet...</p>
               ) : (
-                logs.map((log, idx) => (
+                logs?.map((log, idx) => (
                   <div
                     key={idx}
                     className={cn(

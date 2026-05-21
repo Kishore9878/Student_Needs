@@ -13,7 +13,7 @@ const COLORS = [
 ];
 
 export const ExpenseBreakdownChart = React.memo(({ data = [] }) => {
-  const chartData = useMemo(() => data.filter(d => d.amount > 0), [data]);
+  const chartData = useMemo(() => data?.filter(d => d.amount > 0), [data]);
 
   if (!chartData || chartData.length === 0) {
     return (
@@ -39,7 +39,7 @@ export const ExpenseBreakdownChart = React.memo(({ data = [] }) => {
           stroke="none"
           animationDuration={700}
         >
-          {chartData.map((entry, index) => (
+          {chartData?.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>

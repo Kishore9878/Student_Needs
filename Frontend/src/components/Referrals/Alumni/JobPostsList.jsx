@@ -42,7 +42,7 @@ export function JobPostsList({ jobs = [], selectedJob, onSelectJob, onCreateJob 
 
   return (
     <div className="space-y-4">
-      {jobs.map((job) => (
+      {jobs?.map((job) => (
         <motion.button
           key={job.id}
           initial={{ opacity: 0, y: 10 }}

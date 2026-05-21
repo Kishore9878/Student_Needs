@@ -16,7 +16,7 @@ export const RecentRequestsFeed = React.memo(({ requests = [], onAccept, onDecli
 
   return (
     <div className="space-y-4">
-      {requests.map((request) => (
+      {requests?.map((request) => (
         <div 
           key={request.id} 
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 gap-4"

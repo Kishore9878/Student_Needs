@@ -71,7 +71,7 @@ export function OpportunitiesList({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-8xl mx-auto">
-      {opportunities.map((opportunity) => {
+      {opportunities?.map((opportunity) => {
         const hasApplied = appliedOpportunities.includes(opportunity._id);
         const referralsGiven = opportunity.referralsGiven || 0;
         const referralsLeft = (opportunity.numberOfReferrals || 0) - referralsGiven;
@@ -117,7 +117,7 @@ export function OpportunitiesList({
               {/* Skills */}
               {opportunity.requiredSkills && opportunity.requiredSkills.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {opportunity.requiredSkills.slice(0, 3).map((skill, index) => (
+                  {opportunity.requiredSkills.slice(0, 3)?.map((skill, index) => (
                     <span
                       key={index}
                       className="inline-block px-2 py-1 rounded-lg text-xs font-medium bg-primary/10 text-primary border border-primary/20"

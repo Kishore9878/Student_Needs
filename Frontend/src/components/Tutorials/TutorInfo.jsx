@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import "../../styles/Tutorials/TutorInfo.css";
-import { BASE_URL } from "../../utils/Tutorials/api";
+import { BASE_URL } from "@/services/api/tutorialsApi.js";
 import defaultAvatar from "../../assets/images/bulb2.png";
 
 
@@ -86,7 +86,7 @@ function TutorInfo({ tutorProfile, returnToSearch, handleModal }) {
                 {reviews.length === 0 ? (
                   <p>No reviews available</p>
                 ) : (
-                  reviews.map((review, idx) => {
+                  reviews?.map((review, idx) => {
                     const regex = /Tutor/i;
                     const r = review.replace(regex, firstName);
 

@@ -9,8 +9,8 @@ import {
   editProfile,
   uploadProfilePic,
   deleteProfilePic,
-} from "../../utils/Tutorials/api";
-import { BASE_URL } from "../../utils/Tutorials/api";
+} from "@/services/api/tutorialsApi.js";
+import { BASE_URL } from "@/services/api/tutorialsApi.js";
 
 function EditProfile() {
   const navigate = useNavigate();
@@ -133,7 +133,6 @@ function EditProfile() {
 
       const res = await uploadProfilePic(formData);
 
-      console.log("UPLOAD RESPONSE:", res.data);
 
       if (res.data.success) {
         alert("Profile Picture Saved!");
@@ -301,7 +300,7 @@ function EditProfile() {
                     "weekends AM",
                     "weekends PM",
                     "flexible",
-                  ].map((option) => (
+                  ]?.map((option) => (
                     <label
                       key={option}
                       style={{
@@ -324,7 +323,7 @@ function EditProfile() {
                             ]);
                           } else {
                             setPreferredSchedule(
-                              preferredSchedule.filter((s) => s !== option),
+                              preferredSchedule?.filter((s) => s !== option),
                             );
                           }
                         }}
