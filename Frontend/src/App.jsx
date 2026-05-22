@@ -59,6 +59,9 @@ const AddSubject = React.lazy(() => import("./pages/Attendance/AddSubject"));
 const StudentDashboard = React.lazy(
   () => import("./pages/Attendance/StudentDashboard"),
 );
+const UnifiedDashboard = React.lazy(
+  () => import("./pages/UnifiedDashboard"),
+);
 
 // ======================================================
 //                    REFERRALS
@@ -101,6 +104,7 @@ import EditProfilePage from "./pages/Tutorials/EditProfile";
 import AccountSettingPage from "./pages/Tutorials/AccountSettingPage";
 import NotFound from "./pages/Tutorials/NotFound";
 import BookClass from "./pages/Tutorials/BookClass";
+const TutorialsHome = React.lazy(() => import("./pages/Tutorials/TutorialsHome"));
 import ManageBookingPage from "./pages/Tutorials/ManageBookingPage";
 import ClassHistoryPage from "./pages/Tutorials/ClassHistoryPage";
 // Replaced by GlobalProtectedRoute
@@ -241,7 +245,17 @@ const AttendanceRoutes = () => {
           </GlobalProtectedRoute>
         }
       >
-        {/* Student Dashboard / Attendance */}
+        {/* Unified student dashboard — single route */}
+        <Route
+          path="/student/dashboard"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <UnifiedDashboard />
+            </Suspense>
+          }
+        />
+
+        {/* Student attendance (not teacher /attendance/dashboard) */}
         <Route
           path="/student/attendance"
           element={
@@ -250,28 +264,9 @@ const AttendanceRoutes = () => {
             </Suspense>
           }
         />
-        ######################################################
-                        STUDENT DASHBOARD
-        ======================================================
-        <Route
-          path="/student/dashboard"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <Dashboard />
-            </Suspense>
-          }
-        />
 
         <Route
           path="/referrals/*"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <Index />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/student/referrals"
           element={
             <Suspense fallback={<DashboardSkeleton />}>
               <Index />
@@ -294,7 +289,7 @@ const AttendanceRoutes = () => {
             </Suspense>
           }
         />
-        {/* Referrals Routes */}
+        {/* Referrals */}
         <Route
           path="/student/referrals"
           element={
@@ -348,14 +343,21 @@ const AttendanceRoutes = () => {
           element={<Navigate to="/student/dashboard" replace />}
         />
 
-        {/* Tutorials Student Routes */}
+        {/* Tutorials module home (entry hub — not search/book) */}
         <Route
-          path="/tutorials/searchTutor"
+          path="/tutorials/home"
           element={
             <Suspense fallback={<DashboardSkeleton />}>
-              <BookClass />
+              <TutorialsHome />
             </Suspense>
           }
+        />
+        <Route path="/student/tutorials" element={<Navigate to="/tutorials/home" />} />
+
+        {/* Tutorials feature routes */}
+        <Route
+          path="/tutorials/searchTutor"
+          element={<Navigate to="/tutorials/home" replace />}
         />
         <Route
           path="/tutorials/book"

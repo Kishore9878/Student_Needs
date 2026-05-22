@@ -7,7 +7,7 @@ import "../../styles/Tutorials/BookClass.css";
 import "../../styles/Tutorials/BookModal.css";
 import TutorProfile from "../../components/Tutorials/TutorProfile";
 import TutorInfo from "../../components/Tutorials/TutorInfo";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import BookModal from "../../components/Tutorials/BookModal";
 import { dateHelper } from "../../utils/Tutorials/bookDates";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
@@ -323,8 +323,14 @@ function BookClass() {
     <div className="BookClassMain">
       {!isUnifiedLayout && <Navbar />}
       {isUnifiedLayout && (
-        <div className="px-2 pt-2">
+        <div className="px-2 pt-2 flex flex-wrap gap-4">
           <BackToStudentDashboard />
+          <Link
+            to="/tutorials/home"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary"
+          >
+            ← Tutorials home
+          </Link>
         </div>
       )}
 

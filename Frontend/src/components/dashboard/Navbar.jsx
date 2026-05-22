@@ -6,9 +6,12 @@ import { NotificationCenter } from "../ui/NotificationCenter.jsx";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 
 const STUDENT_MODULE_PATHS = [
-  "/attendance/dashboard",
+  "/student/attendance",
   "/expenses-tracker",
-  "/tutorials/",
+  "/tutorials/home",
+  "/student/tutorials",
+  "/tutorials/book",
+  "/tutorials/profile",
   "/student/referrals",
   "/student/jobs",
   "/student/profile",
