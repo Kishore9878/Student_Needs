@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { TUTORIAL_PATHS } from "@/utils/tutorialRoutes";
 import {
   LayoutDashboard,
   Users,
@@ -33,16 +34,16 @@ const Sidebar = ({ className, role = "student" }) => {
     links = [
       {
         name: "Dashboard",
-        href: "/tutorials/tutor/dashboard",
+        href: TUTORIAL_PATHS.tutorHome,
         icon: LayoutDashboard,
       },
       {
         name: "Schedule",
-        href: "/tutorials/tutor/schedule",
+        href: TUTORIAL_PATHS.tutorSchedule,
         icon: CalendarDays,
       },
-      { name: "Requests", href: "/tutorials/tutor/accept", icon: BookOpen },
-      { name: "Profile", href: "/tutorials/tutor/editProfile", icon: Users },
+      { name: "Requests", href: TUTORIAL_PATHS.tutorRequests, icon: BookOpen },
+      { name: "Profile", href: TUTORIAL_PATHS.tutorProfile, icon: Users },
     ];
   } else if (currentRole === "teacher") {
     links = [
@@ -91,7 +92,7 @@ const Sidebar = ({ className, role = "student" }) => {
       },
       {
         name: "Attendance",
-        href: "/attendance/dashboard",
+        href: "/student/attendance",
         icon: CalendarDays,
       },
       {
@@ -101,7 +102,7 @@ const Sidebar = ({ className, role = "student" }) => {
       },
       {
         name: "Tutorials",
-        href: "/tutorials/searchTutor",
+        href: TUTORIAL_PATHS.unifiedEntry,
         icon: BookOpen,
       },
       {

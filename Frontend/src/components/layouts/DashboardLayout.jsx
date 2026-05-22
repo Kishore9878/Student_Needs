@@ -18,15 +18,16 @@ const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
     if (pageTitle) return pageTitle;
     const path = location.pathname;
     if (path === "/student/dashboard") return "My Dashboard";
-    if (path === "/attendance/dashboard") return "Attendance";
+    if (path === "/student/attendance") return "Attendance";
     if (path.startsWith("/expenses-tracker")) {
       if (path.includes("/recurring")) return "Recurring Transactions";
       if (path.includes("/analytics")) return "Expenses Analytics";
       if (path.includes("/settings")) return "Expenses Settings";
       return "Expenses Tracker";
     }
+    if (path === "/tutorials/home" || path === "/student/tutorials") return "Tutorials";
     if (path.startsWith("/tutorials")) {
-      if (path.includes("/searchTutor") || path.includes("/book")) return "Find a Tutor";
+      if (path.includes("/book") || path.includes("/searchTutor")) return "Find a Tutor";
       if (path.includes("/profile/editProfile")) return "Edit Profile";
       if (path.includes("/profile/manageBooking")) return "Manage Bookings";
       if (path.includes("/profile/classHistory")) return "Class History";

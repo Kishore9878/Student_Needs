@@ -31,7 +31,7 @@ function Login() {
         }
 
         setTimeout(() => {
-          navigate("/tutorials/profile", { replace: true });
+          navigate("/tutorials/home");
         }, 100);
       } else {
         alert(res.data.message || "Login failed ❌");

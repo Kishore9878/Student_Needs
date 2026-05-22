@@ -27,18 +27,19 @@ import { ExpenseBreakdownChart } from "@/components/dashboard/student/ExpenseBre
 import { UpcomingTasks } from "@/components/dashboard/student/UpcomingTasks";
 import { RecommendedOpportunities } from "@/components/dashboard/student/RecommendedOpportunities";
 import { Button } from "@/components/ui/button";
+import { TUTORIAL_PATHS } from "@/utils/tutorialRoutes";
 
 const QUICK_ACTIONS = [
   {
     label: "Find Tutor",
-    description: "Book a tutorial session",
-    to: "/tutorials/searchTutor",
+    description: "Open tutorials module",
+    to: TUTORIAL_PATHS.unifiedEntry,
     icon: Search,
   },
   {
     label: "Attendance",
     description: "View class records",
-    to: "/attendance/dashboard",
+    to: "/student/attendance",
     icon: CheckSquare,
   },
   {
