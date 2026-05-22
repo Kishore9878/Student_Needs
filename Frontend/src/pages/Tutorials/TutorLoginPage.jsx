@@ -41,7 +41,7 @@ function TutorLoginPage() {
         auth.setUser(normalizedUser);
 
         setTimeout(() => {
-          navigate("/tutorials/tutor/dashboard", { replace: true });
+          navigate("/tutorials/tutor/dashboard");
         }, 100);
       } else {
         handleError(res.data.message);

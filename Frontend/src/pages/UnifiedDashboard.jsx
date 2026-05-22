@@ -14,8 +14,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
-import API from "@/services/Attendance/api";
-import tutorialsApi from "@/services/api/tutorialsApi.js";
+import API, { ATTENDANCE_PATHS } from "@/services/Attendance/api";
+import { getBookings } from "@/services/api/tutorialsApi.js";
 import { expensesApi } from "@/services/api/expensesApi";
 import { opportunitiesApi } from "@/services/Referrals/opportunities.js";
 import { studentProfileApi } from "@/services/Referrals/studentProfile.js";
@@ -27,18 +27,19 @@ import { ExpenseBreakdownChart } from "@/components/dashboard/student/ExpenseBre
 import { UpcomingTasks } from "@/components/dashboard/student/UpcomingTasks";
 import { RecommendedOpportunities } from "@/components/dashboard/student/RecommendedOpportunities";
 import { Button } from "@/components/ui/button";
+import { TUTORIAL_PATHS } from "@/utils/tutorialRoutes";
 
 const QUICK_ACTIONS = [
   {
     label: "Find Tutor",
-    description: "Book a tutorial session",
-    to: "/tutorials/searchTutor",
+    description: "Open tutorials module",
+    to: TUTORIAL_PATHS.unifiedEntry,
     icon: Search,
   },
   {
     label: "Attendance",
     description: "View class records",
-    to: "/attendance/dashboard",
+    to: "/student/attendance",
     icon: CheckSquare,
   },
   {
@@ -75,45 +76,53 @@ const UnifiedDashboard = () => {
 
     const load = async () => {
       setLoading(true);
-      const expenseUser = JSON.parse(localStorage.getItem("User") || "null");
+      try {
+        const expenseUser = JSON.parse(localStorage.getItem("User") || "null");
 
-      const [attendanceRes, expenseRes, bookingRes, opRes, profileRes] =
-        await Promise.allSettled([
-          API.get("/attendance/attendance/student"),
-          expenseUser?._id
-            ? expensesApi.getUserExpenses(expenseUser._id)
-            : Promise.resolve([]),
-          tutorialsApi.get("/booking"),
-          opportunitiesApi.getOpportunities(),
-          studentProfileApi.getProfileStatus(),
-        ]);
+        const [attendanceRes, expenseRes, bookingRes, opRes, profileRes] =
+          await Promise.allSettled([
+            API.get(ATTENDANCE_PATHS.student),
+            expenseUser?._id
+              ? expensesApi.getUserExpenses(expenseUser._id)
+              : Promise.resolve([]),
+            getBookings(),
+            opportunitiesApi.getOpportunities(),
+            studentProfileApi.getProfileStatus(),
+          ]);
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (attendanceRes.status === "fulfilled") {
-        setAttendanceData(attendanceRes.value?.data || []);
+        if (attendanceRes.status === "fulfilled") {
+          setAttendanceData(attendanceRes.value?.data || []);
+        }
+
+        if (expenseRes.status === "fulfilled") {
+          setExpenses(expenseRes.value || []);
+        }
+
+        if (bookingRes.status === "fulfilled") {
+          setBookings(Array.isArray(bookingRes.value) ? bookingRes.value : []);
+        }
+
+        if (opRes.status === "fulfilled" && opRes.value?.success) {
+          setOpportunities(opRes.value.data || []);
+        }
+
+        if (profileRes.status === "fulfilled" && profileRes.value?.success) {
+          setProfileCompleteness(profileRes.value.data?.completeness ?? null);
+        }
+      } catch {
+        if (!cancelled) {
+          setAttendanceData([]);
+          setExpenses([]);
+          setBookings([]);
+          setOpportunities([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-
-      if (expenseRes.status === "fulfilled") {
-        setExpenses(expenseRes.value || []);
-      }
-
-      if (bookingRes.status === "fulfilled") {
-        const list = Array.isArray(bookingRes.value?.data)
-          ? bookingRes.value.data
-          : [];
-        setBookings(list);
-      }
-
-      if (opRes.status === "fulfilled" && opRes.value?.success) {
-        setOpportunities(opRes.value.data || []);
-      }
-
-      if (profileRes.status === "fulfilled" && profileRes.value?.success) {
-        setProfileCompleteness(profileRes.value.data?.completeness ?? null);
-      }
-
-      setLoading(false);
     };
 
     load();
