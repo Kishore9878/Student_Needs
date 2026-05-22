@@ -26,8 +26,8 @@ function Dashboard() {
   const fetchData = async () => {
     try {
       const [studentsRes, attendanceRes] = await Promise.all([
-        API.get("/read"),
-        API.get("/attendance"),
+        API.get("/students/read"),
+        API.get("/attendance/attendance"),
       ]);
       const studentsData = studentsRes.data;
       const attendanceData = attendanceRes.data || [];
@@ -36,8 +36,10 @@ function Dashboard() {
       calculateSubjectStats(attendanceData);
       calculateLatestAttendance(attendanceData);
       calculateSelectedDateAttendance(attendanceData, studentsData, selectedDate);
-    } catch (error) {
-      console.error("Dashboard Error:", error);
+    } catch {
+      setStudents([]);
+      setAttendance([]);
+      setAttendanceStats([]);
     } finally {
       setLoading(false);
     }

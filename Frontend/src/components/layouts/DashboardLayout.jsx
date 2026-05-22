@@ -18,6 +18,7 @@ const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
     if (pageTitle) return pageTitle;
     const path = location.pathname;
     if (path === "/student/dashboard") return "My Dashboard";
+    if (path === "/attendance/dashboard") return "Attendance";
     if (path.startsWith("/expenses-tracker")) {
       if (path.includes("/recurring")) return "Recurring Transactions";
       if (path.includes("/analytics")) return "Expenses Analytics";

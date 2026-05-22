@@ -71,8 +71,7 @@ export const getAttendance = catchAsync(async (req, res) => {
 
 // ✅ GET STUDENT ATTENDANCE
 export const getStudentAttendance = catchAsync(async (req, res) => {
-  const studentId = req.user._id; // Assuming user is student
-  const studentAttendance = await AttendanceService.getStudentAttendance(studentId);
+  const studentAttendance = await AttendanceService.getStudentAttendance(req.user);
   res.status(200).json(studentAttendance);
 });
 

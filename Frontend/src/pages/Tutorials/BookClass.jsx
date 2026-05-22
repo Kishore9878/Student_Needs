@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../components/Tutorials/Navbar";
+import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
 import SearchTutor from "../../components/Tutorials/SearchTutor";
 import "../../styles/Tutorials/BookClass.css";
 import "../../styles/Tutorials/BookModal.css";
@@ -35,7 +37,7 @@ function BookClass() {
     isInitialized,
   } = auth;
   const navigate = useNavigate();
-
+  const isUnifiedLayout = useContext(LayoutContext);
 
   const handleQuery = (val, data, size) => {
     setQuery(val);
@@ -247,7 +249,7 @@ function BookClass() {
       ) {
         alert("Booking confirmed! ✅");
         setModalIsOpen(false);
-        navigate("/tutorials/profile");
+        navigate("/tutorials/profile/manageBooking");
       } else {
         alert(res.data.msg || "Booking failed ❌");
       }
@@ -319,7 +321,12 @@ function BookClass() {
 
   return (
     <div className="BookClassMain">
-      <Navbar />
+      {!isUnifiedLayout && <Navbar />}
+      {isUnifiedLayout && (
+        <div className="px-2 pt-2">
+          <BackToStudentDashboard />
+        </div>
+      )}
 
       <div className="container BookContainer">
         <div className="searchDiv">{renderFunc()}</div>

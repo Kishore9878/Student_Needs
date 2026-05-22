@@ -24,7 +24,7 @@ function AddSubject() {
     }
     setLoading(true);
     try {
-      await API.post("/subjects", formData);
+      await API.post("/subjects/subjects", formData);
       toast.success("Subject added successfully!");
       setFormData({ subjectName: "", subjectCode: "", department: "", year: "" });
     } catch (error) {

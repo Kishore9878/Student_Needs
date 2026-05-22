@@ -31,17 +31,37 @@ const Sidebar = ({ className, role = "student" }) => {
 
   if (currentRole === "tutor") {
     links = [
-      { name: "Dashboard", href: "/tutorials/tutor/dashboard", icon: LayoutDashboard },
-      { name: "Schedule", href: "/tutorials/tutor/schedule", icon: CalendarDays },
+      {
+        name: "Dashboard",
+        href: "/tutorials/tutor/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        name: "Schedule",
+        href: "/tutorials/tutor/schedule",
+        icon: CalendarDays,
+      },
       { name: "Requests", href: "/tutorials/tutor/accept", icon: BookOpen },
       { name: "Profile", href: "/tutorials/tutor/editProfile", icon: Users },
     ];
   } else if (currentRole === "teacher") {
     links = [
-      { name: "Dashboard", href: "/attendance/dashboard", icon: LayoutDashboard },
-      { name: "Attendance", href: "/attendance/attendance", icon: CalendarDays },
+      {
+        name: "Dashboard",
+        href: "/attendance/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        name: "Attendance",
+        href: "/attendance/attendance",
+        icon: CalendarDays,
+      },
       { name: "Add Student", href: "/attendance/add-student", icon: Users },
-      { name: "Remove Student", href: "/attendance/remove-student", icon: Users },
+      {
+        name: "Remove Student",
+        href: "/attendance/remove-student",
+        icon: Users,
+      },
       { name: "Add Subject", href: "/attendance/add-subject", icon: BookOpen },
       { name: "Reports", href: "/attendance/reports", icon: CreditCard },
     ];
@@ -70,6 +90,11 @@ const Sidebar = ({ className, role = "student" }) => {
         icon: LayoutDashboard,
       },
       {
+        name: "Attendance",
+        href: "/attendance/dashboard",
+        icon: CalendarDays,
+      },
+      {
         name: "Expenses",
         href: "/expenses-tracker",
         icon: CreditCard,
@@ -87,16 +112,11 @@ const Sidebar = ({ className, role = "student" }) => {
     ];
   }
 
-
-
-
-
-
   return (
     <aside
       className={cn(
         "hidden md:flex flex-col w-64 h-screen border-r border-border bg-card sticky top-0 px-4 py-6",
-        className
+        className,
       )}
     >
       {/* Logo */}
@@ -126,7 +146,7 @@ const Sidebar = ({ className, role = "student" }) => {
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 isActive
                   ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground",
               )}
             >
               <Icon className="w-4 h-4" />
@@ -147,9 +167,7 @@ const Sidebar = ({ className, role = "student" }) => {
         </Link>
 
         <button
-
           onClick={logout}
-
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
         >
           <LogOut className="w-4 h-4" />

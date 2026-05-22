@@ -19,19 +19,19 @@ function Attendance() {
 
   const fetchStudents = async () => {
     try {
-      const res = await API.get("/read");
+      const res = await API.get("/students/read");
       setStudents(res.data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setStudents([]);
     }
   };
 
   const fetchSubjects = async () => {
     try {
-      const res = await API.get("/subjects");
+      const res = await API.get("/subjects/subjects");
       setSubjects(res.data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setSubjects([]);
     }
   };
 
@@ -45,8 +45,8 @@ function Attendance() {
 
     setLoading(true);
     try {
-      const attendanceArray = Object.entries(attendanceData)?.map(([studentId, attendance]) => ({ studentId, attendance }));
-      await API.post("/attendance", { subject, date, attendanceData: attendanceArray });
+      const attendanceArray = Object.entries(attendanceData).map(([studentId, attendance]) => ({ studentId, attendance }));
+      await API.post("/attendance/attendance", { subject, date, attendanceData: attendanceArray });
       toast.success("Attendance submitted successfully!");
       setAttendanceData({});
     } catch (error) {

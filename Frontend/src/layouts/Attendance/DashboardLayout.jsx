@@ -17,16 +17,16 @@ import { FiUser } from "react-icons/fi";
 import toast from "react-hot-toast";
 
 const teacherNav = [
-  { label: "Dashboard",      to: "/dashboard",      icon: <MdDashboard /> },
-  { label: "Attendance",     to: "/attendance",     icon: <MdChecklist /> },
-  { label: "Add Student",    to: "/add-student",    icon: <MdPersonAdd /> },
-  { label: "Remove Student", to: "/remove-student", icon: <MdPersonRemove /> },
-  { label: "Add Subject",    to: "/add-subject",    icon: <MdLibraryBooks /> },
-  { label: "Reports",        to: "/reports",        icon: <MdBarChart /> },
+  { label: "Dashboard",      to: "/attendance/dashboard",      icon: <MdDashboard /> },
+  { label: "Attendance",     to: "/attendance/attendance",     icon: <MdChecklist /> },
+  { label: "Add Student",    to: "/attendance/add-student",    icon: <MdPersonAdd /> },
+  { label: "Remove Student", to: "/attendance/remove-student", icon: <MdPersonRemove /> },
+  { label: "Add Subject",    to: "/attendance/add-subject",    icon: <MdLibraryBooks /> },
+  { label: "Reports",        to: "/attendance/reports",        icon: <MdBarChart /> },
 ];
 
 const studentNav = [
-  { label: "My Dashboard",   to: "/student-dashboard", icon: <MdDashboard /> },
+  { label: "My Dashboard",   to: "/student/dashboard", icon: <MdDashboard /> },
 ];
 
 const DashboardLayout = ({ children, pageTitle }) => {

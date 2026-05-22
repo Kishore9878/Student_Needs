@@ -12,8 +12,8 @@ function RemoveStudent() {
     if (!register.trim()) { toast.error("Please enter a register number"); return; }
     setLoading(true);
     try {
-      await API.delete(`/attendance/student/${register}`);
-      await API.delete(`/remove/delete/${register}`);
+      await API.delete(`/attendance/attendance/student/${register}`);
+      await API.delete(`/students/remove/delete/${register}`);
       toast.success("Student removed successfully");
       setRegister("");
     } catch (error) {

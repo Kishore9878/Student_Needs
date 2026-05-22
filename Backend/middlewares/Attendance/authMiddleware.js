@@ -26,6 +26,34 @@ const protect = async (req, res, next) => {
         process.env.JWT_SECRET
       );
 
+      // GET ATTENDANCE USER WITHOUT PASSWORD
+      const attendanceUser = await User.findById(decoded.id).select("-password");
+
+      if (attendanceUser) {
+        req.user = attendanceUser;
+        return next();
+      }
+
+      if (decoded.accountType) {
+        const referralStudent = await ReferralStudent.findById(decoded.id).select("-password");
+
+        if (referralStudent) {
+          req.user = {
+            _id: referralStudent._id,
+            id: referralStudent._id,
+            name: `${referralStudent.firstName || ""} ${referralStudent.lastName || ""}`.trim(),
+            email: referralStudent.email,
+            role: referralStudent.accountType?.toLowerCase(),
+            accountType: referralStudent.accountType,
+            authSource: "referrals",
+          };
+          return next();
+        }
+      }
+
+      return res.status(401).json({
+        message: "User not found",
+      });
       // GET USER WITHOUT PASSWORD
       let user = null;
       try {
