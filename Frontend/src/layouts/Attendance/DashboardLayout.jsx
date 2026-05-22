@@ -26,7 +26,7 @@ const teacherNav = [
 ];
 
 const studentNav = [
-  { label: "My Dashboard",   to: "/student-dashboard", icon: <MdDashboard /> },
+  { label: "My Dashboard",   to: "/student/dashboard", icon: <MdDashboard /> },
 ];
 
 const DashboardLayout = ({ children, pageTitle }) => {

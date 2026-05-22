@@ -250,15 +250,17 @@ const AttendanceRoutes = () => {
             </Suspense>
           }
         />
+        ######################################################
+                        STUDENT DASHBOARD
+        ======================================================
         <Route
           path="/student/dashboard"
           element={
             <Suspense fallback={<DashboardSkeleton />}>
-              <UnifiedLanding />
+              <Dashboard />
             </Suspense>
           }
         />
-        
 
         <Route
           path="/referrals/*"

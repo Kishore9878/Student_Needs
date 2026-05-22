@@ -91,7 +91,7 @@ const Sidebar = ({ className, role = "student" }) => {
       },
       {
         name: "Attendance",
-        href: "/student/attendance",
+        href: "/attendance/dashboard",
         icon: CalendarDays,
       },
       {

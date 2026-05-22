@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
+import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
 import { storage } from "@/lib/Referrals/storage.js";
 import { Button } from "@/components/Referrals/ui/button.jsx";
 import { StatusBadge } from "@/components/Referrals/StatusBadge.jsx";
@@ -29,6 +31,7 @@ import { studentProfileApi } from "@/services/Referrals/studentProfile.js";
 export function StudentDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
+  const isUnifiedLayout = useContext(LayoutContext);
   const [student, setStudent] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [opportunities, setOpportunities] = useState([]);
@@ -191,7 +194,7 @@ export function StudentDashboard() {
 
   // Redirect /student to /student/referrals by default
   if (location.pathname === '/student') {
-    return <Navigate to="/student/referrals" replace />;
+    return <Navigate to="/student/referrals" />;
   }
 
   const handleSubmitResume = async (resumeFile) => {
@@ -303,7 +306,13 @@ export function StudentDashboard() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 mt-20 sm:mt-24 px-4 sm:px-6 md:px-8">
+    <div
+      className={cn(
+        "space-y-4 sm:space-y-6 px-4 sm:px-6 md:px-8",
+        isUnifiedLayout ? "mt-0" : "mt-20 sm:mt-24",
+      )}
+    >
+      {isUnifiedLayout && <BackToStudentDashboard />}
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col items-start justify-center">

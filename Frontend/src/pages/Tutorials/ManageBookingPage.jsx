@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import API from "@/services/api/tutorialsApi.js";
 import "../../styles/Tutorials/ManageBook.css";
 import Navbar from "../../components/Tutorials/Navbar";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
+import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
 
 function ManageBookingPage() {
+  const isUnifiedLayout = useContext(LayoutContext);
   const [bookings, setBookings] = useState([]);
 
   // ✅ FETCH BOOKINGS
@@ -53,12 +56,13 @@ function ManageBookingPage() {
 
   return (
     <>
-      <Navbar />
+      {!isUnifiedLayout && <Navbar />}
+      {isUnifiedLayout && <BackToStudentDashboard />}
 
       <div
         className="mainDivBook"
         style={{
-          paddingTop: "120px",
+          paddingTop: isUnifiedLayout ? "0" : "120px",
           minHeight: "100vh",
         }}
       >

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
 import { useAuth } from "../../contexts/GlobalAuthContext";
 import API from "../../services/Attendance/api";
 import { MdCheckCircle, MdCancel, MdWarning, MdCalendarToday, MdPerson } from "react-icons/md";
@@ -75,6 +76,7 @@ const StudentDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <BackToStudentDashboard />
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">

@@ -25,7 +25,7 @@ function Navbar() {
         )}
         {isStudent && (
           <>
-            <Link to="/student-dashboard">My Dashboard</Link>
+            <Link to="/student/dashboard">My Dashboard</Link>
             <Link to="/student/dashboard">Profile</Link>
           </>
         )}
