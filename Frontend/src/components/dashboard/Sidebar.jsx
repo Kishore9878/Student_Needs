@@ -34,21 +34,23 @@ const Sidebar = ({ className, role = "student" }) => {
     links = [
       {
         name: "Dashboard",
-        href: TUTORIAL_PATHS.tutorHome,
+        href: "/tutorials/tutor/dashboard",
         icon: LayoutDashboard,
       },
       {
         name: "Schedule",
-        href: TUTORIAL_PATHS.tutorSchedule,
+        href: "/tutorials/tutor/schedule",
         icon: CalendarDays,
       },
-      { name: "Requests", href: TUTORIAL_PATHS.tutorRequests, icon: BookOpen },
-      { name: "Profile", href: TUTORIAL_PATHS.tutorProfile, icon: Users },
+      { name: "Requests", href: "/tutorials/tutor/accept", icon: BookOpen },
+      { name: "Profile", href: "/tutorials/tutor/editProfile", icon: Users },
+      { name: "Attendance", href: "/tutorials/attendance", icon: BookOpen },
     ];
   } else if (currentRole === "teacher") {
     links = [
       { name: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
       { name: "Attendance", href: "/student/attendance", icon: CalendarDays },
+      { name: "Tutorials", href: "/tutorials/home", icon: BookOpen },
     ];
   } else if (currentRole === "alumni") {
     links = [
