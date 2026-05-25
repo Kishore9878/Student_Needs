@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/theme.css";
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Handjet:wght@500&family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap');
@@ -37,62 +38,87 @@
 
 @layer base {
   :root {
-    --background: #f8fafc; /* Very light slate for dashboard background */
-    --foreground: #0f172a; /* Slate 900 */
-    --card: #ffffff; /* Pure white cards */
-    --card-foreground: #0f172a;
+    --background: #f5f7fb;
+    --foreground: #111827;
+    --card: #ffffff;
+    --card-foreground: #111827;
     --popover: #ffffff;
-    --popover-foreground: #0f172a;
-    
-    /* Purple / Blue Modern Accent */
-    --primary: #4f46e5; /* Indigo 600 */
+    --popover-foreground: #111827;
+
+    --primary: #2563eb;
     --primary-foreground: #ffffff;
-    
-    --secondary: #f1f5f9; /* Slate 100 */
-    --secondary-foreground: #1e293b; /* Slate 800 */
-    
-    --muted: #f1f5f9;
-    --muted-foreground: #64748b; /* Slate 500 */
-    
-    --accent: #f8fafc;
-    --accent-foreground: #0f172a;
-    
-    --destructive: #ef4444; /* Red 500 */
+
+    --secondary: #f3f4f6;
+    --secondary-foreground: #111827;
+
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+
+    --accent: #eff6ff;
+    --accent-foreground: #1d4ed8;
+
+    --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    
-    --border: #e2e8f0; /* Soft border */
-    --input: #e2e8f0;
-    --ring: #4f46e5;
-    
-    --radius: 0.75rem; /* Rounded-xl by default for SaaS look */
+
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+    --ring: #2563eb;
+
+    --radius: 0.75rem;
   }
 
-  .dark {
-    --background: #0f172a; /* Slate 900 */
-    --foreground: #f8fafc;
-    --card: #1e293b; /* Slate 800 */
+  .dark,
+  .dark-theme {
+    --background: #070b1a;
+    --foreground: #f1f5f9;
+    --card: #1e293b;
     --card-foreground: #f8fafc;
-    --popover: #1e293b;
+    --popover: #0f172a;
     --popover-foreground: #f8fafc;
-    
-    --primary: #6366f1; /* Indigo 500 */
+
+    --primary: #6366f1;
     --primary-foreground: #ffffff;
-    
-    --secondary: #334155; /* Slate 700 */
-    --secondary-foreground: #f8fafc;
-    
-    --muted: #334155;
-    --muted-foreground: #94a3b8; /* Slate 400 */
-    
-    --accent: #1e293b;
-    --accent-foreground: #f8fafc;
-    
-    --destructive: #f87171; /* Red 400 */
+
+    --secondary: rgba(30, 41, 59, 0.9);
+    --secondary-foreground: #e2e8f0;
+
+    --muted: rgba(30, 41, 59, 0.8);
+    --muted-foreground: #94a3b8;
+
+    --accent: rgba(34, 211, 238, 0.12);
+    --accent-foreground: #22d3ee;
+
+    --destructive: #f87171;
     --destructive-foreground: #0f172a;
-    
-    --border: #334155;
-    --input: #334155;
-    --ring: #6366f1;
+
+    --border: rgba(34, 211, 238, 0.18);
+    --input: rgba(51, 65, 85, 0.8);
+    --ring: #22d3ee;
+
+    --shadow-glow: 0 0 20px rgba(34, 211, 238, 0.2), 0 0 40px rgba(168, 85, 247, 0.12);
+    --shadow-accent-glow: 0 0 24px rgba(99, 102, 241, 0.35);
+  }
+
+  :root.light-theme,
+  .light-theme {
+    --background: #f5f7fb;
+    --foreground: #111827;
+    --card: #ffffff;
+    --card-foreground: #111827;
+    --popover: #ffffff;
+    --popover-foreground: #111827;
+    --primary: #2563eb;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f4f6;
+    --secondary-foreground: #111827;
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+    --accent: #eff6ff;
+    --accent-foreground: #1d4ed8;
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+    --ring: #2563eb;
+    --shadow-glow: 0 4px 20px rgba(0, 0, 0, 0.06);
   }
 }
 
@@ -116,7 +142,14 @@
 
 @layer utilities {
   .glass-panel {
-    @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-slate-200 dark:border-slate-700 shadow-sm rounded-2xl;
+    @apply bg-white border border-slate-200 shadow-sm rounded-2xl;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .dark .glass-panel,
+  .dark-theme .glass-panel {
+    @apply bg-slate-800/90 border-slate-700 backdrop-blur-xl;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   .premium-card {
@@ -171,8 +204,9 @@ input[type=number] {
 .expenses-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #071028; /* premium futuristic deep dark background */
-  color: #ffffff;
+  background: var(--gradient-page, #071028);
+  background-color: var(--bg-primary, #071028);
+  color: var(--text-primary, #ffffff);
   font-family: 'Inter', sans-serif;
   overflow: hidden;
 }
@@ -212,22 +246,30 @@ input[type=number] {
   }
 }
 
-/* Glassmorphism panel styling */
+/* Expense panels — solid in light, glass in dark */
 .expenses-layout .glass-panel {
-  background: rgba(30, 41, 59, 0.4);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  border-radius: 1rem;
+}
+
+.dark-theme .expenses-layout .glass-panel,
+.dark .expenses-layout .glass-panel {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 1rem;
+}
+
+.light-theme .expenses-layout .glass-panel {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .expenses-layout .glass-card:hover,
 .expenses-layout .glass-panel.hoverable:hover {
   transform: translateY(-4px);
-  box-shadow: 0 0 40px rgba(123, 97, 255, 0.22);
-  border-color: rgba(123, 97, 255, 0.3);
+  box-shadow: var(--shadow-glow);
 }
 
 .expenses-layout h1, 
@@ -254,4 +296,15 @@ input[type=number] {
   border-color: #6366F1 !important;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
   background: rgba(15, 23, 42, 0.8) !important;
+}
+
+.light-theme .premium-input {
+  background: #ffffff !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.light-theme .premium-input:focus {
+  border-color: var(--accent-blue) !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2) !important;
 }

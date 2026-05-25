@@ -56,7 +56,7 @@ const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
 
   return (
     <LayoutContext.Provider value={true}>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="app-dashboard-layout flex min-h-screen w-full bg-background">
         {/* Mobile Sidebar overlay */}
         {isMobileMenuOpen && (
           <div

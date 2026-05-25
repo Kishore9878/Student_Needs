@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import bulb2 from "../../assets/images/bulb2.png";
 import { LayoutContext } from "../layouts/DashboardLayout";
 import { TUTORIAL_PATHS } from "@/utils/tutorialRoutes";
+import { ThemeToggle } from "@/components/ThemeToggle.jsx";
 
 function Navbar() {
   const isNested = useContext(LayoutContext);
@@ -117,6 +118,7 @@ function Navbar() {
 
         {/* RIGHT BUTTON */}
         <div className="rightSection">
+          <ThemeToggle size="sm" className="mr-2 shrink-0" />
           {user || isTutorRoute ? (
             <button className="loginBtn" onClick={handleLogout}>
               Logout

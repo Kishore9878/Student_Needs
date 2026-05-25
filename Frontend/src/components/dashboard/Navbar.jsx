@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Search, Menu, ArrowLeft } from "lucide-react";
 import { Input } from "../ui/input";
 import { NotificationCenter } from "../ui/NotificationCenter.jsx";
+import { ThemeToggle } from "@/components/ThemeToggle.jsx";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 
 const STUDENT_MODULE_PATHS = [
@@ -66,6 +67,8 @@ const Navbar = ({ onMenuClick, pageTitle = "Dashboard", showBackToDashboard }) =
             className="w-full bg-secondary/50 border-none pl-9 h-9 rounded-full focus-visible:ring-1 focus-visible:ring-primary"
           />
         </div>
+
+        <ThemeToggle />
 
         <NotificationCenter />
 

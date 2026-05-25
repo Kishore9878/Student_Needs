@@ -1,10 +1,11 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   MdDashboard,
   MdAccountBalanceWallet,
   MdSettings,
   MdPieChart,
+  MdArrowBack,
 } from "react-icons/md";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -40,6 +41,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </div>
 
         <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+          <Link
+            to="/student/dashboard"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-4 px-4 py-3 mb-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white border border-white/10 transition-all duration-200 group"
+          >
+            <div className="flex-shrink-0 transition-transform group-hover:scale-110 duration-200">
+              <MdArrowBack size={24} />
+            </div>
+            <span className="font-medium">Back to Dashboard</span>
+          </Link>
           {navItems?.map((item) => (
             <NavLink
               key={item.name}

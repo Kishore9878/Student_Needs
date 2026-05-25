@@ -14,7 +14,7 @@ import reportWebVitals from "./reportWebVitals";
 import { AuthProvider } from "./contexts/GlobalAuthContext";
 
 // Theme Provider
-import { ThemeProvider } from "./contexts/Referrals/ThemeContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 // ======================================================
 //                    COMPONENTS
