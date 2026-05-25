@@ -7,6 +7,7 @@ import { LogOut, User, GraduationCap } from 'lucide-react';
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { GetStarted } from "./GetStarted";
+import { ThemeToggle } from "@/components/ThemeToggle.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -139,6 +140,7 @@ const Navbar = () => {
 
         {/* Auth Actions Section */}
         <div ref={authRef} className="flex items-center gap-2 sm:gap-3" style={{ opacity: 0 }}>
+          <ThemeToggle size="sm" />
           {isAuthenticated && user ? (
             <div className="flex items-center gap-1.5 sm:gap-2">
               <div className="hidden xs:flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-secondary rounded-lg border">

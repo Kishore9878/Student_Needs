@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { ThemeToggle } from "@/components/ThemeToggle.jsx";
 
 function Navbar() {
   const { user, logout, isTeacher, isStudent } = useAuth();
@@ -12,7 +13,8 @@ function Navbar() {
     <nav className="navbar">
       <h2>Attendance Manager</h2>
 
-      <div className="nav-links">
+      <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <ThemeToggle size="sm" />
         {isTeacher && (
           <>
             <Link to="/attendance/dashboard">Dashboard</Link>

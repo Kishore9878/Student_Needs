@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import { ThemePreference } from "@/components/ThemePreference.jsx";
 
 const Settings = () => {
   const [user, setUser] = useState({ username: "User", email: "" });
@@ -17,7 +18,6 @@ const Settings = () => {
           currency: "INR",
           reminderTime: "09:00",
           emailAlerts: true,
-          darkTheme: true,
         };
   });
 
@@ -43,13 +43,6 @@ const Settings = () => {
     toast.success("Settings saved successfully!");
   };
 
-  useEffect(() => {
-    if (settings.darkTheme) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [settings.darkTheme]);
   return (
     <div className="w-full space-y-8 animate-fade-in-up">
       <div>
@@ -157,32 +150,12 @@ const Settings = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 border border-white/5 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                <div>
-                  <h4 className="text-white font-medium">
-                    Dark Mode Appearance
-                  </h4>
-                  <p className="text-slate-400 text-xs mt-0.5">
-                    Toggle between dark and light mode.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSettings((p) => ({ ...p, darkTheme: !p.darkTheme }))
-                  }
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                    settings.darkTheme ? "bg-brand-primary" : "bg-slate-600"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      settings.darkTheme ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </div>
+              <ThemePreference
+                variant="inline"
+                title="Theme Preference"
+                description="Synced with the navbar toggle across the whole platform."
+                className="p-4 border border-white/5 bg-white/5 rounded-xl"
+              />
             </div>
 
             <div className="pt-4 flex justify-end">

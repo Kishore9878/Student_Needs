@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PricePanel from "./PricePanel";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { ThemePreference } from "@/components/ThemePreference.jsx";
 import "../../styles/Tutorials/AccountSetting.css";
 import API from "@/services/api/tutorialsApi.js";
 
@@ -33,6 +34,10 @@ function AccountSetting() {
 
   return (
     <main className="AccountSetting">
+      <div className="account-theme-preference">
+        <ThemePreference />
+      </div>
+
       <h1 className="plan-selection">Select your plan</h1>
 
       <div className="price-container">
