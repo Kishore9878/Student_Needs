@@ -63,6 +63,14 @@ const UnifiedDashboard = React.lazy(
   () => import("./pages/UnifiedDashboard"),
 );
 
+const AttendanceManagementHub = React.lazy(() => import("./pages/Tutorials/AttendanceManagementHub"));
+const AttendanceDashboard = React.lazy(() => import("./pages/Attendance/Dashboard"));
+const AttendanceMark = React.lazy(() => import("./pages/Attendance/Attendance"));
+const AttendanceAddStudent = React.lazy(() => import("./pages/Attendance/AddStudent"));
+const AttendanceRemoveStudent = React.lazy(() => import("./pages/Attendance/RemoveStudent"));
+const AttendanceAddSubject = React.lazy(() => import("./pages/Attendance/AddSubject"));
+const AttendanceReports = React.lazy(() => import("./pages/Attendance/Reports"));
+
 // ======================================================
 //                    REFERRALS
 // ======================================================
@@ -249,7 +257,7 @@ const AttendanceRoutes = () => {
 
       <Route
         element={
-          <GlobalProtectedRoute allowedRoles={["student"]}>
+          <GlobalProtectedRoute allowedRoles={["student", "teacher", "tutor"]}>
             <DashboardLayout role="student" />
           </GlobalProtectedRoute>
         }
@@ -264,6 +272,73 @@ const AttendanceRoutes = () => {
           }
         />
 
+
+        {/* Attendance Management Hub */}
+        <Route
+          path="/tutorials/attendance"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AttendanceManagementHub />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/attendance/dashboard"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AttendanceDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/attendance/mark"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AttendanceMark />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/attendance/add-student"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AttendanceAddStudent />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/attendance/remove-student"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AttendanceRemoveStudent />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/attendance/add-subject"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AttendanceAddSubject />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/attendance/reports"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AttendanceReports />
+            </Suspense>
+          }
+        />
+
+        {/* Referrals Routes */}
+        <Route path="/student/referrals" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
+        <Route path="/student/jobs" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
+        <Route path="/student/profile" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
+        <Route path="/student/qrcode" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
+        <Route path="/student/applied" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsStudentDashboard /></Suspense>} />
+        <Route path="/student/interview" element={<Suspense fallback={<DashboardSkeleton />}><ReferralsInterviewPage /></Suspense>} />
+        <Route path="/student" element={<Navigate to="/student/dashboard" replace />} />
         <Route
           path="/referrals/*"
           element={
@@ -272,6 +347,7 @@ const AttendanceRoutes = () => {
             </Suspense>
           }
         />
+
 
         {/* Referrals */}
         <Route
