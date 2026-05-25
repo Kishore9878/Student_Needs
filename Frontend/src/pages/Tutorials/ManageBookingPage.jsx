@@ -1,24 +1,30 @@
-import React, { useEffect, useState } from "react";
-import API from "@/services/api/tutorialsApi.js";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import API, { getBookings } from "@/services/api/tutorialsApi.js";
 import "../../styles/Tutorials/ManageBook.css";
 import Navbar from "../../components/Tutorials/Navbar";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
+import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
 
 function ManageBookingPage() {
+  const isUnifiedLayout = useContext(LayoutContext);
   const [bookings, setBookings] = useState([]);
 
   // ✅ FETCH BOOKINGS
+  const fetchedRef = useRef(false);
+
   useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
     const fetchBookings = async () => {
       try {
-        const res = await API.get("/booking");
-
-        const sorted = res.data.sort(
+        const list = await getBookings();
+        const sorted = [...list].sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
-
         setBookings(sorted);
-      } catch (err) {
-        console.error("❌ Error fetching bookings:", err);
+      } catch {
+        setBookings([]);
       }
     };
 
@@ -53,12 +59,13 @@ function ManageBookingPage() {
 
   return (
     <>
-      <Navbar />
+      {!isUnifiedLayout && <Navbar />}
+      {isUnifiedLayout && <BackToStudentDashboard />}
 
       <div
         className="mainDivBook"
         style={{
-          paddingTop: "120px",
+          paddingTop: isUnifiedLayout ? "0" : "120px",
           minHeight: "100vh",
         }}
       >

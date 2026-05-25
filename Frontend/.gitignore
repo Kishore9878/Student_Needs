@@ -6,6 +6,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+logs/
+Backend/logs/
+
+# Runtime/temp
+Backend/jobs/
+
 
 node_modules
 dist

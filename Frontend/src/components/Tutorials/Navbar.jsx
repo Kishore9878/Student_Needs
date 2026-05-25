@@ -4,6 +4,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import bulb2 from "../../assets/images/bulb2.png";
 import { LayoutContext } from "../layouts/DashboardLayout";
+import { TUTORIAL_PATHS } from "@/utils/tutorialRoutes";
 
 function Navbar() {
   const isNested = useContext(LayoutContext);
@@ -93,8 +94,13 @@ function Navbar() {
     <>
       {/* STUDENT / PUBLIC */}
       <li>
-        <NavLink className="nav-link" to="/tutorials/book">
-          Book Class
+        <NavLink className="nav-link" to={TUTORIAL_PATHS.moduleHome}>
+          Tutorials
+        </NavLink>
+      </li>
+      <li>
+        <NavLink className="nav-link" to={TUTORIAL_PATHS.studentSearch}>
+          Find a Tutor
         </NavLink>
       </li>
 

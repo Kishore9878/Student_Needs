@@ -9,9 +9,7 @@ export const getStudents = async (req, res) => {
     const students = await StudentModel.find({});
 
     res.status(200).json(students);
-  } catch (error) {
-    console.log(error);
-
+  } catch {
     res.status(500).json({
       message: "Failed to fetch students",
     });
@@ -78,9 +76,7 @@ export const addStudent = async (req, res) => {
       message: "Student Added Successfully",
       student,
     });
-  } catch (error) {
-    console.log(error);
-
+  } catch {
     res.status(500).json({
       message: "Failed to add student",
     });
@@ -107,9 +103,7 @@ export const getSingleStudent = async (
     }
 
     res.status(200).json(student);
-  } catch (error) {
-    console.log(error);
-
+  } catch {
     res.status(500).json({
       message: "Error fetching student",
     });
@@ -159,9 +153,7 @@ export const deleteStudent = async (
       message:
         "Student deleted successfully",
     });
-  } catch (error) {
-    console.log(error);
-
+  } catch {
     res.status(500).json({
       message:
         "Error deleting student",

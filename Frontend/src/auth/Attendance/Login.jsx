@@ -7,7 +7,7 @@ import { MdOutlineSchool } from "react-icons/md";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { studentLogin } = useAuth();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,47 +37,13 @@ const Login = () => {
     }
 
     setLoading(true);
-
-    try {
-
-      const result = await studentLogin({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      console.log("LOGIN RESULT:", result);
-
-      if (result.success) {
-
-        const user = JSON.parse(
-          localStorage.getItem("user")
-        );
-
-        toast.success(
-          `Welcome back, ${user.firstName ||
-          user.name ||
-          "User"
-          }!`
-        );
-
-        navigate("/student/dashboard");
-
-      } else {
-
-        toast.error(
-          result.message || "Invalid credentials"
-        );
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-      toast.error("Login failed");
-
-    } finally {
-
-      setLoading(false);
+    const result = await login(formData.email, formData.password);
+    if (result.success) {
+      const user = JSON.parse(localStorage.getItem("user"));
+      toast.success(`Welcome back, ${user.name}!`);
+      navigate(user.role === "teacher" ? "/attendance/dashboard" : "/student/dashboard");
+    } else {
+      toast.error(result.message || "Invalid credentials");
     }
   };
 
@@ -142,7 +108,7 @@ const Login = () => {
         </form>
 
         <div className="auth-footer">
-          Don't have an account? <Link to="/register">Create one</Link>
+          Don't have an account? <Link to="/attendance/register">Create one</Link>
         </div>
       </div>
     </div>

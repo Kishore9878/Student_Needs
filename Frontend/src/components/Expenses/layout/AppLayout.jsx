@@ -12,18 +12,16 @@ const AppLayout = () => {
   }
 
   return (
-    <div className="flex h-screen bg-brand-900 overflow-hidden font-inter">
+    <div className="expenses-layout font-inter">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       
-      <div className="flex flex-col flex-1 w-full min-w-0 overflow-hidden">
+      <main className="expenses-main">
         <TopNavbar setIsSidebarOpen={setIsSidebarOpen} />
         
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 scroll-smooth">
-          <div className="max-w-7xl mx-auto">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+        <div className="expenses-content scroll-smooth">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 };

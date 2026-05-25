@@ -1,19 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
-import { useEffect } from "react";
+import { TUTORIAL_PATHS } from "@/utils/tutorialRoutes";
 
 function SelectRole() {
-  const { isAuthenticated, isStudent, isTutor, isInitialized, isLoading } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isInitialized || isLoading) return;
-    if (isAuthenticated) {
-      if (isTutor) navigate("/tutorials/tutor/dashboard", { replace: true });
-      else if (isStudent) navigate("/tutorials/book", { replace: true });
-    }
-  }, [isAuthenticated, isStudent, isTutor, isInitialized, isLoading, navigate]);
 
   return (
     <div style={styles.container}>
@@ -23,7 +13,7 @@ function SelectRole() {
         
         <div
           style={styles.card}
-          onClick={() => navigate("/tutorials/login/student")}
+          onClick={() => navigate(TUTORIAL_PATHS.studentLogin)}
           onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
           onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
         >
@@ -34,7 +24,7 @@ function SelectRole() {
 
         <div
           style={styles.card}
-          onClick={() => navigate("/tutorials/login/tutor")}
+          onClick={() => navigate(TUTORIAL_PATHS.tutorLogin)}
           onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
           onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
         >

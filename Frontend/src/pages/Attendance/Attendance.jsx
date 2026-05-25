@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import API from "../../services/Attendance/api";
+import API, { ATTENDANCE_PATHS } from "../../services/Attendance/api";
 import { MdSearch } from "react-icons/md";
 
 function Attendance() {
@@ -12,26 +12,30 @@ function Attendance() {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [loading, setLoading] = useState(false);
 
+  const fetchedRef = useRef(false);
+
   useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
     fetchStudents();
     fetchSubjects();
   }, []);
 
   const fetchStudents = async () => {
     try {
-      const res = await API.get("/read");
+      const res = await API.get("/students/read");
       setStudents(res.data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setStudents([]);
     }
   };
 
   const fetchSubjects = async () => {
     try {
-      const res = await API.get("/subjects");
+      const res = await API.get("/subjects/subjects");
       setSubjects(res.data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setSubjects([]);
     }
   };
 
@@ -45,8 +49,8 @@ function Attendance() {
 
     setLoading(true);
     try {
-      const attendanceArray = Object.entries(attendanceData)?.map(([studentId, attendance]) => ({ studentId, attendance }));
-      await API.post("/attendance", { subject, date, attendanceData: attendanceArray });
+      const attendanceArray = Object.entries(attendanceData).map(([studentId, attendance]) => ({ studentId, attendance }));
+      await API.post(ATTENDANCE_PATHS.root, { subject, date, attendanceData: attendanceArray });
       toast.success("Attendance submitted successfully!");
       setAttendanceData({});
     } catch (error) {

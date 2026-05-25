@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../components/Tutorials/Navbar";
+import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
 import SearchTutor from "../../components/Tutorials/SearchTutor";
 import "../../styles/Tutorials/BookClass.css";
 import "../../styles/Tutorials/BookModal.css";
 import TutorProfile from "../../components/Tutorials/TutorProfile";
 import TutorInfo from "../../components/Tutorials/TutorInfo";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import BookModal from "../../components/Tutorials/BookModal";
 import { dateHelper } from "../../utils/Tutorials/bookDates";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
@@ -35,7 +37,7 @@ function BookClass() {
     isInitialized,
   } = auth;
   const navigate = useNavigate();
-
+  const isUnifiedLayout = useContext(LayoutContext);
 
   const handleQuery = (val, data, size) => {
     setQuery(val);
@@ -247,7 +249,7 @@ function BookClass() {
       ) {
         alert("Booking confirmed! ✅");
         setModalIsOpen(false);
-        navigate("/tutorials/profile");
+        navigate("/tutorials/profile/manageBooking");
       } else {
         alert(res.data.msg || "Booking failed ❌");
       }
@@ -319,7 +321,18 @@ function BookClass() {
 
   return (
     <div className="BookClassMain">
-      <Navbar />
+      {!isUnifiedLayout && <Navbar />}
+      {isUnifiedLayout && (
+        <div className="px-2 pt-2 flex flex-wrap gap-4">
+          <BackToStudentDashboard />
+          <Link
+            to="/tutorials/home"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary"
+          >
+            ← Tutorials home
+          </Link>
+        </div>
+      )}
 
       <div className="container BookContainer">
         <div className="searchDiv">{renderFunc()}</div>

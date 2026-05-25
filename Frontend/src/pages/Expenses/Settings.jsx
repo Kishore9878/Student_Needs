@@ -51,7 +51,7 @@ const Settings = () => {
     }
   }, [settings.darkTheme]);
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in-up">
+    <div className="w-full space-y-8 animate-fade-in-up">
       <div>
         <h2 className="text-3xl font-bold font-mont text-white tracking-tight flex items-center gap-3">
           <span className="text-brand-primary">Profile &</span> Settings
@@ -61,7 +61,7 @@ const Settings = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="settings-grid">
         {/* Profile Card Sidebar */}
         <div className="lg:col-span-1 space-y-6">
           <div className="glass-panel p-6 flex flex-col items-center text-center">

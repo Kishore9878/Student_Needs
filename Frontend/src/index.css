@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Handjet:wght@500&family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Handjet:wght@500&family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap');
 
 @theme {
   --color-background: var(--background);
@@ -162,4 +162,96 @@ input[type=number] {
 }
 [data-sonner-toast] {
   font-family: "Inter", sans-serif !important;
+}
+
+/* ======================================================
+   EXPENSE TRACKER PREMIUM FUTURISTIC UI
+   ====================================================== */
+
+.expenses-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #071028; /* premium futuristic deep dark background */
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+.expenses-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.expenses-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .expenses-content {
+    padding: 2rem;
+  }
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Glassmorphism panel styling */
+.expenses-layout .glass-panel {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1rem;
+}
+
+.expenses-layout .glass-card:hover,
+.expenses-layout .glass-panel.hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 40px rgba(123, 97, 255, 0.22);
+  border-color: rgba(123, 97, 255, 0.3);
+}
+
+.expenses-layout h1, 
+.expenses-layout h2, 
+.expenses-layout h3, 
+.expenses-layout h4 {
+  font-family: 'Sora', 'Montserrat', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Premium Inputs */
+.premium-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.75rem !important;
+  color: #ffffff !important;
+  outline: none !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.premium-input:focus {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+  background: rgba(15, 23, 42, 0.8) !important;
 }

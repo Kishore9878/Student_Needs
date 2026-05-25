@@ -27,7 +27,7 @@ function StudentForm({ refreshStudents }) {
     }
     setLoading(true);
     try {
-      await API.post("/form/insert", formData);
+      await API.post("/students/form/insert", formData);
       toast.success("Student added successfully!");
       setFormData({
         Name: "",

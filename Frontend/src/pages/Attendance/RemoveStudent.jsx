@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import API from "../../services/Attendance/api";
+import API, { ATTENDANCE_PATHS } from "../../services/Attendance/api";
 import { MdDeleteForever, MdWarning } from "react-icons/md";
 
 function RemoveStudent() {
@@ -12,8 +12,8 @@ function RemoveStudent() {
     if (!register.trim()) { toast.error("Please enter a register number"); return; }
     setLoading(true);
     try {
-      await API.delete(`/attendance/student/${register}`);
-      await API.delete(`/remove/delete/${register}`);
+      await API.delete(ATTENDANCE_PATHS.studentByRegister(register));
+      await API.delete(`/students/remove/delete/${register}`);
       toast.success("Student removed successfully");
       setRegister("");
     } catch (error) {

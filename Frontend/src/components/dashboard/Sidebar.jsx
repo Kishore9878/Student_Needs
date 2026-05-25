@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { TUTORIAL_PATHS } from "@/utils/tutorialRoutes";
 import {
   LayoutDashboard,
   Users,
@@ -31,11 +32,31 @@ const Sidebar = ({ className, role = "student" }) => {
 
   if (currentRole === "tutor") {
     links = [
-      { name: "Dashboard", href: "/tutorials/tutor/dashboard", icon: LayoutDashboard },
-      { name: "Schedule", href: "/tutorials/tutor/schedule", icon: CalendarDays },
+      {
+        name: "Dashboard",
+        href: "/tutorials/tutor/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        name: "Schedule",
+        href: "/tutorials/tutor/schedule",
+        icon: CalendarDays,
+      },
       { name: "Requests", href: "/tutorials/tutor/accept", icon: BookOpen },
       { name: "Profile", href: "/tutorials/tutor/editProfile", icon: Users },
       { name: "Attendance", href: "/tutorials/attendance", icon: BookOpen },
+      {
+        name: "Dashboard",
+        href: TUTORIAL_PATHS.tutorHome,
+        icon: LayoutDashboard,
+      },
+      {
+        name: "Schedule",
+        href: TUTORIAL_PATHS.tutorSchedule,
+        icon: CalendarDays,
+      },
+      { name: "Requests", href: TUTORIAL_PATHS.tutorRequests, icon: BookOpen },
+      { name: "Profile", href: TUTORIAL_PATHS.tutorProfile, icon: Users },
     ];
   } else if (currentRole === "teacher") {
     links = [
@@ -68,13 +89,18 @@ const Sidebar = ({ className, role = "student" }) => {
         icon: LayoutDashboard,
       },
       {
+        name: "Attendance",
+        href: "/student/attendance",
+        icon: CalendarDays,
+      },
+      {
         name: "Expenses",
         href: "/expenses-tracker",
         icon: CreditCard,
       },
       {
         name: "Tutorials",
-        href: "/tutorials/searchTutor",
+        href: TUTORIAL_PATHS.unifiedEntry,
         icon: BookOpen,
       },
       {
@@ -85,16 +111,11 @@ const Sidebar = ({ className, role = "student" }) => {
     ];
   }
 
-
-
-
-
-
   return (
     <aside
       className={cn(
         "hidden md:flex flex-col w-64 h-screen border-r border-border bg-card sticky top-0 px-4 py-6",
-        className
+        className,
       )}
     >
       {/* Logo */}
@@ -124,7 +145,7 @@ const Sidebar = ({ className, role = "student" }) => {
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 isActive
                   ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground",
               )}
             >
               <Icon className="w-4 h-4" />
@@ -145,9 +166,7 @@ const Sidebar = ({ className, role = "student" }) => {
         </Link>
 
         <button
-
           onClick={logout}
-
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
         >
           <LogOut className="w-4 h-4" />

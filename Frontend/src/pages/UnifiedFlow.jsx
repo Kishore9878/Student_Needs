@@ -95,7 +95,7 @@ const roles = [
 ];
 
 const studentModules = [
-  { title: "Find Tutor", text: "Search tutors, view profiles and book classes.", icon: UserRound, to: "/tutorials/searchTutor" },
+  { title: "Find Tutor", text: "Search tutors, view profiles and book classes.", icon: UserRound, to: "/tutorials/home" },
   { title: "Attendance", text: "View attendance status and class records.", icon: CheckSquare, to: "/student/attendance" },
   { title: "Expense Tracker", text: "Add, categorize and track monthly spending.", icon: ReceiptText, to: "/student/expenses" },
   { title: "Internships & Referrals", text: "Apply to alumni-posted opportunities.", icon: UsersRound, to: "/student/referrals" },
@@ -104,7 +104,7 @@ const studentModules = [
 
 const sidebarItems = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/student/dashboard" },
-  { label: "Find Tutor", icon: Search, to: "/tutorials/searchTutor" },
+  { label: "Find Tutor", icon: Search, to: "/tutorials/home" },
   { label: "Attendance", icon: CheckSquare, to: "/student/attendance" },
   { label: "Expenses", icon: ReceiptText, to: "/student/expenses" },
   { label: "Internships & Referrals", icon: Briefcase, to: "/student/referrals" },
