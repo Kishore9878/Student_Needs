@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
 import { expensesApi } from "../../services/api/expensesApi";
 import StatCard from "../../components/Expenses/dashboard/StatCard";
 import { CategoryPieChart } from "../../components/Expenses/dashboard/CategoryPieChart";
@@ -32,12 +31,6 @@ const Home = () => {
     monthlyBudget: 0,
     currency: "INR",
   };
-  useEffect(() => {
-    if (!userSettings.monthlyBudget || userSettings.monthlyBudget === 0) {
-      navigate("/expenses-tracker/settings");
-    }
-  }, []);
-
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -106,7 +99,6 @@ const Home = () => {
 
   return (
     <div className="w-full space-y-6 sm:space-y-8 animate-fade-in-up">
-      <BackToStudentDashboard />
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
