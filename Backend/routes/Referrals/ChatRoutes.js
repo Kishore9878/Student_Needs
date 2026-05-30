@@ -10,7 +10,8 @@ import {
     uploadAttachment,
     downloadAttachment,
     editMessage,
-    deleteMessage
+    deleteMessage,
+    createChat
 } from "../../controllers/Referrals/ChatController.js";
 
 // Import middleware
@@ -24,6 +25,7 @@ router.use(auth);
 
 // Conversations CRUD
 router.get("/chats", getChats);
+router.post("/chats", createChat);
 router.get("/chats/:chatId/messages", getMessages);
 router.post("/chats/:chatId/messages", sendMessage);
 router.post("/chats/:chatId/read", markRead);

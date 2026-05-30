@@ -88,4 +88,14 @@ export const chatApi = {
     const response = await api.delete(`/chats/messages/${messageId}`);
     return response.data;
   },
+
+  /**
+   * Create a new conversation room with an alumni
+   * @param {string} alumniId
+   * @returns {Promise<Object>} Created chat room
+   */
+  createChat: async (alumniId) => {
+    const response = await api.post("/chats", { alumniId });
+    return response.data;
+  },
 };

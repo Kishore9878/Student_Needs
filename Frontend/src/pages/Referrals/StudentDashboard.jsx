@@ -364,6 +364,7 @@ export function StudentDashboard() {
             onApply={handleApplyJob}
             onViewDetails={handleViewDetails}
             canApply={true}
+            profileStatus={profileStatus}
           />
         </motion.div>
       )}
@@ -416,6 +417,7 @@ export function StudentDashboard() {
             onApply={handleApplyJob}
             onViewDetails={handleViewDetails}
             canApply={true}
+            profileStatus={profileStatus}
           />
         </motion.div>
       )}

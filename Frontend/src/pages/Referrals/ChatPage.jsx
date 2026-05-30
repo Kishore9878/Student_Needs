@@ -58,6 +58,38 @@ export default function ChatPage() {
           }
         }
 
+        // Check for preselected userId or alumniId
+        const targetUserId = searchParams.get("userId") || searchParams.get("alumniId");
+        if (targetUserId) {
+          const targetChat = response.data.find(c => {
+            const partnerId = currentRole === "alumni" ? c.student?._id : c.alumni?._id;
+            return partnerId?.toString() === targetUserId.toString();
+          });
+          if (targetChat) {
+            handleSelectChat(targetChat);
+            return;
+          } else if (currentRole === "student") {
+            // CASE 2: No conversation exists. Automatically create it!
+            try {
+              const createRes = await chatApi.createChat(targetUserId);
+              if (createRes.success) {
+                // Reload chats list
+                const reloadRes = await chatApi.getChats();
+                if (reloadRes.success) {
+                  setChats(reloadRes.data);
+                  const newChat = reloadRes.data.find(c => c._id.toString() === createRes.data._id.toString());
+                  if (newChat) {
+                    handleSelectChat(newChat);
+                    return;
+                  }
+                }
+              }
+            } catch (createErr) {
+              console.error("Auto-create conversation failed:", createErr);
+            }
+          }
+        }
+
         // Optionally select first conversation if on desktop
         if (selectFirst && response.data.length > 0 && window.innerWidth >= 768) {
           handleSelectChat(response.data[0]);
@@ -86,13 +118,28 @@ export default function ChatPage() {
 
   // Sync active chat if query param changes
   useEffect(() => {
-    if (chats.length > 0 && chatIdParam) {
-      const targetChat = chats.find(c => c._id.toString() === chatIdParam.toString());
-      if (targetChat && activeChat?._id !== targetChat._id) {
-        handleSelectChat(targetChat);
+    const targetChatId = searchParams.get("chatId");
+    const targetUserId = searchParams.get("userId") || searchParams.get("alumniId");
+
+    if (chats.length > 0) {
+      if (targetChatId) {
+        const targetChat = chats.find(c => c._id.toString() === targetChatId.toString());
+        if (targetChat && activeChat?._id !== targetChat._id) {
+          handleSelectChat(targetChat);
+        }
+      } else if (targetUserId) {
+        const targetChat = chats.find(c => {
+          const partnerId = currentRole === "alumni" ? c.student?._id : c.alumni?._id;
+          return partnerId?.toString() === targetUserId.toString();
+        });
+        if (targetChat && activeChat?._id !== targetChat._id) {
+          handleSelectChat(targetChat);
+        } else if (!targetChat && currentRole === "student") {
+          loadChats();
+        }
       }
     }
-  }, [chatIdParam, chats]);
+  }, [searchParams, chats]);
 
   // 2. Fetch Messages for Selected Chat
   const loadMessages = async (chatId, page = 1) => {

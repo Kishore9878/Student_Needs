@@ -23,7 +23,7 @@ const ALLOWED_MIMES = {
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": { ext: "docx", maxBytes: 15 * 1024 * 1024 }
 };
 
-// Check if user is participant of chat and there is an application linking student and alumni
+// Check if user is participant of chat and student meets eligibility requirements
 const checkChatAccess = async (chatId, userId) => {
   const chat = await Chat.findById(chatId);
   if (!chat) return null;
@@ -33,13 +33,11 @@ const checkChatAccess = async (chatId, userId) => {
 
   if (!isStudent && !isAlumni) return null;
 
-  // Verify that an application exists between this student and alumni
-  const appExists = await Application.findOne({
-    student: chat.student,
-    alumni: chat.alumni
-  });
-
-  if (!appExists) return null;
+  // Verify that the student participant has 100% profile completeness
+  const student = await Student.findById(chat.student);
+  if (!student || student.profileCompleteness !== 100) {
+    return null; // Deny access if eligibility criteria are not met
+  }
 
   return {
     chat,
@@ -58,7 +56,7 @@ const emitMessage = (recipientId, event, data) => {
   }
 };
 
-// 1. Get Chats (With Self-Healing Application Reconciliation)
+// 1. Get Chats (With Self-Healing Application Reconciliation & Profile Eligibility enforcement)
 export const getChats = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -94,7 +92,7 @@ export const getChats = async (req, res) => {
     const chats = await Chat.find({
       $or: [{ student: userId }, { alumni: userId }]
     })
-      .populate("student", "firstName lastName email image branch graduationYear")
+      .populate("student", "firstName lastName email image branch graduationYear profileCompleteness")
       .populate("alumni", "firstName lastName email image company jobTitle")
       .populate({
         path: "lastMessage",
@@ -102,18 +100,11 @@ export const getChats = async (req, res) => {
       })
       .sort({ updatedAt: -1 });
 
-    // Get list of active partner IDs from applications
-    const activePartnerIds = new Set(
-      applications.map(app => 
-        userRole === "alumni" ? app.student.toString() : app.alumni.toString()
-      )
-    );
-
-    // Format response and determine unread badge counts and online status, filtering out unrelated chats
+    // Format response and determine unread badge counts and online status, filtering out ineligible student chats
     const data = chats
       .filter(chat => {
-        const partnerId = userRole === "alumni" ? chat.student?._id?.toString() : chat.alumni?._id?.toString();
-        return partnerId && activePartnerIds.has(partnerId);
+        // Enforce that the student in the conversation exists and has 100% profile completeness
+        return chat.student && chat.student.profileCompleteness === 100;
       })
       .map(chat => {
         const chatObj = chat.toObject();
@@ -592,6 +583,56 @@ export const deleteMessage = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to delete message",
+    });
+  }
+};
+
+// 9. Create Chat Conversation (Enforces student profile completeness eligibility)
+export const createChat = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { alumniId } = req.body;
+
+    if (!alumniId) {
+      return res.status(400).json({
+        success: false,
+        message: "Alumni ID is required",
+      });
+    }
+
+    // 1. Enforce student profile eligibility: completeness must be 100
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student profile not found",
+      });
+    }
+
+    if (student.profileCompleteness !== 100) {
+      return res.status(403).json({
+        success: false,
+        message: "Complete the required eligibility criteria before messaging alumni.",
+      });
+    }
+
+    // 2. Find or create the conversation
+    const chat = await Chat.findOneAndUpdate(
+      { student: studentId, alumni: alumniId },
+      { $setOnInsert: { student: studentId, alumni: alumniId } },
+      { upsert: true, new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: chat,
+      message: "Conversation ready",
+    });
+  } catch (error) {
+    console.error("Create chat error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to initialize conversation",
     });
   }
 };

@@ -1,5 +1,6 @@
 import { Button } from '@/components/Referrals/ui/button.jsx';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   Users,
   CheckCircle,
@@ -10,6 +11,7 @@ import {
   Briefcase,
   Target,
   Eye,
+  MessageSquare,
 } from 'lucide-react';
 
 /**
@@ -30,9 +32,23 @@ export function OpportunitiesList({
   isApplying, 
   onApply,
   onViewDetails,
-  canApply = true 
+  canApply = true,
+  profileStatus
 }) {
   const navigate = useNavigate();
+
+  const isEligible = !profileStatus || profileStatus.completeness === 100;
+
+  const handleChatClick = (alumniId) => {
+    if (!isEligible) {
+      toast.error("Complete the required eligibility criteria before messaging alumni.", {
+        description: "Please complete your profile to 100% first.",
+        duration: 4000
+      });
+      return;
+    }
+    navigate(`/student/chat?userId=${alumniId}`);
+  };
 
   const handleApplyClick = (opportunityId) => {
     // Redirect to interview page with opportunity ID
@@ -164,6 +180,73 @@ export function OpportunitiesList({
                   </span>
                 )}
               </div>
+              
+              {/* Alumni Details Section */}
+              {opportunity.postedBy && (
+                <div className="mt-4 pt-4 border-t border-border/40 text-sm space-y-3">
+                  <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 font-bold">
+                    <Users className="w-3.5 h-3.5 text-primary" />
+                    Alumni Details
+                  </h4>
+                  <div className="bg-secondary/40 border border-border/40 backdrop-blur-md rounded-xl p-3 flex flex-col gap-2.5">
+                    <div className="flex items-center gap-3">
+                      {opportunity.postedBy.image ? (
+                        <img 
+                          src={opportunity.postedBy.image} 
+                          alt={`${opportunity.postedBy.firstName} ${opportunity.postedBy.lastName}`} 
+                          className="w-10 h-10 rounded-full object-cover border border-border"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">
+                          {opportunity.postedBy.firstName?.[0]}{opportunity.postedBy.lastName?.[0]}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground text-sm truncate">
+                          {opportunity.postedBy.firstName} {opportunity.postedBy.lastName}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {opportunity.postedBy.jobTitle || opportunity.postedBy.designation || "Alumni"} @ {opportunity.postedBy.company}
+                        </p>
+                      </div>
+                    </div>
+
+                    {opportunity.postedBy.yearsOfExperience !== undefined && (
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <span className="text-amber-500">★</span>
+                        <span>{opportunity.postedBy.yearsOfExperience} Years Experience</span>
+                      </div>
+                    )}
+
+                    {opportunity.postedBy.skills && opportunity.postedBy.skills.length > 0 && (
+                      <div className="space-y-1">
+                        <span className="text-xs text-muted-foreground font-medium">🏷 Skills:</span>
+                        <div className="flex flex-wrap gap-1">
+                          {opportunity.postedBy.skills.slice(0, 3).map((skill, idx) => (
+                            <span key={idx} className="text-[10px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full font-medium">
+                              {skill}
+                            </span>
+                          ))}
+                          {opportunity.postedBy.skills.length > 3 && (
+                            <span className="text-[10px] text-muted-foreground px-1.5 py-0.5 bg-muted rounded-full">
+                              +{opportunity.postedBy.skills.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {opportunity.postedBy.referralPreferences && (
+                      <div className="text-xs border-t border-border/30 pt-2 mt-1">
+                        <span className="text-muted-foreground font-medium">📖 Preferences:</span>{" "}
+                        <span className="text-foreground/90 italic block mt-0.5 leading-relaxed line-clamp-2">
+                          "{opportunity.postedBy.referralPreferences}"
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -171,11 +254,30 @@ export function OpportunitiesList({
               <Button
                 variant="outline"
                 onClick={() => onViewDetails(opportunity)}
-                className="w-full"
+                className="w-full border-border/80 text-foreground bg-secondary/15 hover:bg-secondary/35"
               >
                 <Eye className="w-4 h-4 mr-2" />
                 View Details
               </Button>
+
+              {isEligible ? (
+                <Button
+                  variant="outline"
+                  onClick={() => handleChatClick(opportunity.postedBy?._id)}
+                  className="w-full border-primary/30 text-primary hover:bg-primary/5 flex items-center justify-center gap-2"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  💬 Chat With Alumni
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => handleChatClick(opportunity.postedBy?._id)}
+                  className="w-full border-muted text-muted-foreground bg-muted/5 opacity-70 hover:bg-muted/10 flex items-center justify-center gap-2"
+                >
+                  <span>🔒 Chat Locked</span>
+                </Button>
+              )}
               
               {hasApplied ? (
                 <Button variant="default" disabled className="w-full bg-success/20 text-success hover:bg-success/20">
@@ -192,7 +294,7 @@ export function OpportunitiesList({
                   variant="default"
                   onClick={() => handleApplyClick(opportunity._id)}
                   disabled={!canApply}
-                  className='w-full bg-primary text-background hover:bg-primary/90'
+                  className='w-full bg-primary text-background hover:bg-primary/90 font-semibold'
                 >
                   <Users className="w-4 h-4 mr-2" />
                   Start Interview

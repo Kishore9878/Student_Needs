@@ -102,11 +102,6 @@ const Sidebar = ({ className, role = "student" }) => {
         href: "/student/referrals",
         icon: Briefcase,
       },
-      {
-        name: "Chat",
-        href: "/student/chat",
-        icon: MessageSquare,
-      },
     ];
   }
 

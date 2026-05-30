@@ -67,7 +67,7 @@ export const createOpportunity = async (req, res) => {
 
         // Populate alumni and college details
         await opportunity.populate([
-            { path: 'postedBy', select: 'firstName lastName email company jobTitle' },
+            { path: 'postedBy', select: 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences' },
             { path: 'college', select: 'name matchingName' }
         ]);
 
@@ -150,7 +150,7 @@ export const updateOpportunity = async (req, res) => {
         await opportunity.save();
 
         await opportunity.populate([
-            { path: 'postedBy', select: 'firstName lastName email company jobTitle' },
+            { path: 'postedBy', select: 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences' },
             { path: 'college', select: 'name matchingName' }
         ]);
 
@@ -253,7 +253,7 @@ export const getOpportunities = async (req, res) => {
         }
 
         const opportunities = await Opportunity.find(query)
-        .populate('postedBy', 'firstName lastName email company jobTitle')
+        .populate('postedBy', 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences')
         .populate('college', 'name matchingName')
         .sort({ createdAt: -1 });
 
@@ -281,7 +281,7 @@ export const getMyOpportunities = async (req, res) => {
         const opportunities = await Opportunity.find({
             postedBy: alumniId,
         })
-        .populate('postedBy', 'firstName lastName email company jobTitle')
+        .populate('postedBy', 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences')
         .populate('college', 'name matchingName')
         .sort({ createdAt: -1 });
 
