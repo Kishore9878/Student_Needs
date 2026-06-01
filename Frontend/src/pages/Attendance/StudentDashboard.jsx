@@ -329,7 +329,7 @@ const StudentDashboard = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
-          <DashboardCard title="Analytics" description="Charts from your attendance data">
+          <DashboardCard title="Analytics" description="Charts from your attendance data" className="h-auto">
             <AttendanceCharts
               bySubject={subjectProgress}
               timeline={timeline}
@@ -338,7 +338,7 @@ const StudentDashboard = () => {
           </DashboardCard>
 
           {subjectProgress.length > 0 && (
-            <DashboardCard title="Subject-wise progress" description="Per-subject breakdown">
+            <DashboardCard title="Subject-wise progress" description="Per-subject breakdown" className="h-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                 {subjectProgress.map((s) => {
                   const pct = s.percentage;

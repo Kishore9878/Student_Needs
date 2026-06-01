@@ -37,8 +37,8 @@ function DashboardCardComponent({
       {...props}
     >
       {(title || description || action) && (
-        <CardHeader className="pb-4 flex flex-row items-center justify-between space-y-0">
-          <div>
+        <CardHeader className="pb-4 flex flex-row items-center justify-between">
+          <div className="flex flex-col gap-y-1">
             {title && <CardTitle className="text-lg">{title}</CardTitle>}
             {description && <CardDescription>{description}</CardDescription>}
           </div>
