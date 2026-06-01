@@ -1,80 +1,34 @@
 import Student from "../../models/Referrals/StudentModel.js";
-import { uploadPdfToMongoDB } from "../../utils/Referrals/getStringFromPdf.js";
 import { calculateProfileCompleteness } from "../../utils/Referrals/calculateProfileScore.js";
 
-export const uploadLinkedIn = async (req, res) => {
-  try {
-    const studentId = req.user.id;
-    const { linkedInUrl } = req.body;
-
-    if (!req.files || !req.files.linkedIn) {
-      return res.status(400).json({
-        success: false,
-        message: "LinkedIn PDF file is required",
-      });
-    }
-
-    const student = await Student.findById(studentId);
-    if (!student) {
-      return res.status(404).json({
-        success: false,
-        message: "Student not found",
-      });
-    }
-
-    // Check if LinkedIn PDF already exists
-    if (student.linkedIn && student.linkedIn.data) {
-      return res.status(400).json({
-        success: false,
-        message: "LinkedIn PDF already exists. Use update endpoint to replace it.",
-      });
-    }
-
-    // Upload PDF and get data
-    const pdfData = await uploadPdfToMongoDB(req.files.linkedIn);
-
-    // Store PDF in MongoDB with optional LinkedIn URL
-    student.linkedIn = {
-      ...pdfData,
-      linkedInUrl: linkedInUrl || "",
-    };
-    student.profileCompleteness = calculateProfileCompleteness(student);
-
-    await student.save();
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        fileName: student.linkedIn.fileName,
-        fileSize: student.linkedIn.fileSize,
-        uploadedAt: student.linkedIn.uploadedAt,
-        linkedInUrl: student.linkedIn.linkedInUrl,
-        profileCompleteness: student.profileCompleteness,
-      },
-      message: "LinkedIn PDF uploaded successfully",
-    });
-
-  } catch (error) {
-    console.error("Upload LinkedIn Error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Failed to upload LinkedIn PDF",
-    });
-  }
+// Validation helper for LinkedIn URL
+const validateLinkedInUrl = (url) => {
+  const pattern = /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/i;
+  return pattern.test(url.trim());
 };
 
-export const updateLinkedInLink = async (req, res) => {
+// Add LinkedIn URL
+export const addLinkedInUrl = async (req, res) => {
   try {
     const studentId = req.user.id;
-    const { linkedInUrl } = req.body;
+    const { linkedinUrl } = req.body;
 
-    if (!linkedInUrl) {
+    if (!linkedinUrl) {
       return res.status(400).json({
         success: false,
         message: "LinkedIn URL is required",
       });
     }
 
+    const trimmedUrl = linkedinUrl.trim();
+
+    if (!validateLinkedInUrl(trimmedUrl)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid LinkedIn URL format. Example: https://linkedin.com/in/username",
+      });
+    }
+
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({
@@ -83,10 +37,14 @@ export const updateLinkedInLink = async (req, res) => {
       });
     }
 
-    // Update only the LinkedIn URL, preserve PDF data if exists
-    if (student.linkedIn) {
-      student.linkedIn.linkedInUrl = linkedInUrl;
-    } 
+    if (student.linkedinUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "LinkedIn URL already exists. Use update endpoint to change it.",
+      });
+    }
+
+    student.linkedinUrl = trimmedUrl;
     student.profileCompleteness = calculateProfileCompleteness(student);
 
     await student.save();
@@ -94,31 +52,112 @@ export const updateLinkedInLink = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: {
-        linkedInUrl: student.linkedIn.linkedInUrl,
+        linkedinUrl: student.linkedinUrl,
+        profileCompleteness: student.profileCompleteness,
+      },
+      message: "LinkedIn URL added successfully",
+    });
+  } catch (error) {
+    console.error("Add LinkedIn URL Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to add LinkedIn URL",
+    });
+  }
+};
+
+// Update LinkedIn URL (Used by both POST upload stubs and URL updates)
+export const updateLinkedInUrl = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { linkedinUrl } = req.body;
+
+    if (!linkedinUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "LinkedIn URL is required",
+      });
+    }
+
+    const trimmedUrl = linkedinUrl.trim();
+
+    if (!validateLinkedInUrl(trimmedUrl)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid LinkedIn URL format. Example: https://linkedin.com/in/username",
+      });
+    }
+
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    student.linkedinUrl = trimmedUrl;
+    student.profileCompleteness = calculateProfileCompleteness(student);
+
+    await student.save();
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        linkedinUrl: student.linkedinUrl,
         profileCompleteness: student.profileCompleteness,
       },
       message: "LinkedIn URL updated successfully",
     });
-
   } catch (error) {
     console.error("Update LinkedIn URL Error:", error.message);
     return res.status(500).json({
       success: false,
-      message: error.message || "Failed to update LinkedIn URL",
+      message: "Failed to update LinkedIn URL",
     });
   }
 };
 
-export const updateLinkedInPdf = async (req, res) => {
+// Get LinkedIn URL
+export const getLinkedInUrl = async (req, res) => {
   try {
     const studentId = req.user.id;
 
-    if (!req.files || !req.files.linkedIn) {
-      return res.status(400).json({
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
         success: false,
-        message: "LinkedIn PDF file is required",
+        message: "Student not found",
       });
     }
+
+    if (!student.linkedinUrl) {
+      return res.status(404).json({
+        success: false,
+        message: "LinkedIn URL not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        linkedinUrl: student.linkedinUrl,
+      },
+      message: "LinkedIn URL retrieved successfully",
+    });
+  } catch (error) {
+    console.error("Get LinkedIn URL Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve LinkedIn URL",
+    });
+  }
+};
+
+// Delete LinkedIn URL
+export const deleteLinkedInUrl = async (req, res) => {
+  try {
+    const studentId = req.user.id;
 
     const student = await Student.findById(studentId);
     if (!student) {
@@ -128,14 +167,7 @@ export const updateLinkedInPdf = async (req, res) => {
       });
     }
 
-    // Upload new PDF and get data
-    const pdfData = await uploadPdfToMongoDB(req.files.linkedIn);
-
-    // Update LinkedIn PDF in MongoDB, preserve the URL if exists
-    student.linkedIn = {
-      ...pdfData
-    };
-
+    student.linkedinUrl = undefined;
     student.profileCompleteness = calculateProfileCompleteness(student);
 
     await student.save();
@@ -143,99 +175,15 @@ export const updateLinkedInPdf = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: {
-        fileName: student.linkedIn.fileName,
-        fileSize: student.linkedIn.fileSize,
-        uploadedAt: student.linkedIn.uploadedAt,
         profileCompleteness: student.profileCompleteness,
       },
-      message: "LinkedIn PDF updated successfully",
+      message: "LinkedIn URL deleted successfully",
     });
-
   } catch (error) {
-    console.error("Update LinkedIn PDF Error:", error.message);
+    console.error("Delete LinkedIn URL Error:", error.message);
     return res.status(500).json({
       success: false,
-      message: error.message || "Failed to update LinkedIn PDF",
-    });
-  }
-};
-
-export const getLinkedIn = async (req, res) => {
-  try {
-    const studentId = req.user.id;
-
-    const student = await Student.findById(studentId).select('linkedIn');
-    
-    if (!student) {
-      return res.status(404).json({
-        success: false,
-        message: "Student not found",
-      });
-    }
-
-    if (!student.linkedIn || !student.linkedIn.data) {
-      return res.status(404).json({
-        success: false,
-        message: "No LinkedIn PDF found",
-      });
-    }
-
-    // Set headers for PDF download
-    res.setHeader('Content-Type', student.linkedIn.contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${student.linkedIn.fileName}"`);
-    res.setHeader('Content-Length', student.linkedIn.fileSize);
-
-    // Send the PDF file
-    return res.send(student.linkedIn.data);
-
-  } catch (error) {
-    console.error("Get LinkedIn Error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to retrieve LinkedIn PDF",
-    });
-  }
-};
-
-export const deleteLinkedIn = async (req, res) => {
-  try {
-    const studentId = req.user.id;
-
-    const student = await Student.findById(studentId);
-    
-    if (!student) {
-      return res.status(404).json({
-        success: false,
-        message: "Student not found",
-      });
-    }
-
-    if (!student.linkedIn || !student.linkedIn.data) {
-      return res.status(404).json({
-        success: false,
-        message: "No LinkedIn PDF to delete",
-      });
-    }
-
-    // Remove LinkedIn PDF from MongoDB
-    student.linkedIn = undefined;
-    student.profileCompleteness = calculateProfileCompleteness(student);
-    
-    await student.save();
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        profileCompleteness: student.profileCompleteness,
-      },
-      message: "LinkedIn PDF deleted successfully",
-    });
-
-  } catch (error) {
-    console.error("Delete LinkedIn Error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to delete LinkedIn PDF",
+      message: "Failed to delete LinkedIn URL",
     });
   }
 };

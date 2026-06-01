@@ -8,7 +8,7 @@ const ApplicationSchema = new mongoose.Schema({
     },
     student: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Student",
+        ref: "ReferralStudent",
         required: true,
     },
     studentDetails: {
@@ -28,8 +28,8 @@ const ApplicationSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Applied", "Shortlisted", "Referred", "Rejected"],
-        default: "Applied",
+        enum: ["Applied", "Shortlisted", "Referred", "Rejected", "pending", "approved", "rejected"],
+        default: "pending",
     },
     // Snapshot of student's resume at the time of application
     resumeSnapshot: {
@@ -47,6 +47,7 @@ const ApplicationSchema = new mongoose.Schema({
         graduationYear: Number,
         skills: [String],
         profileCompleteness: Number,
+        cgpa: Number,
     },
     appliedAt: {
         type: Date,
@@ -61,10 +62,28 @@ const ApplicationSchema = new mongoose.Schema({
     rejectedAt: {
         type: Date,
     },
+    approvedAt: {
+        type: Date,
+    },
+    approvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Alumni",
+    },
+    rejectedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Alumni",
+    },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
+    archiveAt: {
+        type: Date,
+    },
     statusHistory: [{
         status: {
             type: String,
-            enum: ["Applied", "Shortlisted", "Referred", "Rejected"],
+            enum: ["Applied", "Shortlisted", "Referred", "Rejected", "pending", "approved", "rejected"],
         },
         timestamp: {
             type: Date,

@@ -54,6 +54,8 @@ const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
     if (path.startsWith("/student/qrcode")) return "My QR Code";
     if (path.startsWith("/student/applied")) return "Applied Jobs";
     if (path.startsWith("/student/interview")) return "Interviews";
+    if (path.startsWith("/student/chat")) return "Referrals Chat";
+    if (path.startsWith("/alumni/chat")) return "Referrals Chat";
     return "Dashboard";
   };
 
@@ -83,7 +85,7 @@ const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
             pageTitle={getDynamicTitle()}
             onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           />
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto space-y-6">
               {children || <Outlet />}
             </div>

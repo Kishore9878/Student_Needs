@@ -12,21 +12,23 @@ import {
 } from "@/components/Referrals/TransactionToast";
 import { ProfileForm } from "@/components/Referrals/Student/ProfileForm.jsx";
 import { ResumeUpload } from "@/components/Referrals/Student/ResumeUpload.jsx";
-import { JobsList } from "@/components/Referrals/Student/JobsList.jsx";
+
 import { ReferralsList } from "@/components/Referrals/Student/ReferralsList.jsx";
 import { OpportunitiesList } from "@/components/Referrals/Student/OpportunitiesList.jsx";
 import { QRCodeSection } from "@/components/Referrals/Student/QRCodeSection.jsx";
 import { TabNavigation } from "@/components/Referrals/Student/TabNavigation.jsx";
-import { ExternalJobsList } from "@/components/Referrals/Student/ExternalJobsList.jsx";
+
 import { StudentProfilePage } from "@/pages/Referrals/StudentProfile.jsx";
 import { ProfileCompletionModal } from "@/components/Referrals/Student/ProfileCompletionModal.jsx";
 import { OpportunityDetailModal } from "@/components/Referrals/Student/OpportunityDetailModal.jsx";
 import { AppliedJobsList } from "@/components/Referrals/Student/AppliedJobsList.jsx";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/Referrals/utils.js";
-import { externalJobsApi } from "@/services/Referrals/externalJobs.js";
 import { opportunitiesApi } from "@/services/Referrals/opportunities.js";
 import { studentProfileApi } from "@/services/Referrals/studentProfile.js";
+import { useWebSocket } from "@/hooks/useWebSocket.js";
+import { chatApi } from "@/services/Referrals/chat.js";
 
 export function StudentDashboard() {
   const location = useLocation();
@@ -36,8 +38,7 @@ export function StudentDashboard() {
   const [jobs, setJobs] = useState([]);
   const [opportunities, setOpportunities] = useState([]);
   const [loadingOpportunities, setLoadingOpportunities] = useState(false);
-  const [externalJobs, setExternalJobs] = useState([]);
-  const [loadingExternalJobs, setLoadingExternalJobs] = useState(false);
+
   const [isUploading, setIsUploading] = useState(false);
   const [isApplying, setIsApplying] = useState(null);
   
@@ -84,6 +85,42 @@ export function StudentDashboard() {
 
   const activeTab = getActiveTab();
 
+  const { isConnected, on, off } = useWebSocket();
+  const [unreadChatsCount, setUnreadChatsCount] = useState(0);
+
+  // Fetch unread chats count and listen to WebSocket message events
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await chatApi.getChats();
+        if (response.success && Array.isArray(response.data)) {
+          const count = response.data.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
+          setUnreadChatsCount(count);
+        }
+      } catch (error) {
+        console.error('Error fetching unread chats count:', error);
+      }
+    };
+
+    fetchUnreadCount();
+
+    const handleNewMessage = () => {
+      fetchUnreadCount();
+    };
+
+    on('message', handleNewMessage);
+
+    const interval = setInterval(fetchUnreadCount, 10000);
+
+    return () => {
+      off('message', handleNewMessage);
+      clearInterval(interval);
+    };
+  }, [isConnected, on, off]);
+
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (token) {
@@ -100,12 +137,7 @@ export function StudentDashboard() {
     }
   }, []);
 
-  // Fetch external jobs when jobs tab is active
-  useEffect(() => {
-    if (activeTab === 'jobs' && externalJobs.length === 0) {
-      fetchExternalJobs();
-    }
-  }, [activeTab, externalJobs.length]);
+
 
   const fetchProfileStatus = async () => {
     try {
@@ -166,31 +198,7 @@ export function StudentDashboard() {
     }
   };
 
-  const fetchExternalJobs = async () => {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      navigate('/auth/student/login');
-      return;
-    }
 
-    setLoadingExternalJobs(true);
-    try {
-      const response = await externalJobsApi.getExternalJobs(1);
-      if (response.success) {
-        setExternalJobs(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching external jobs:', error);
-      if (error.response?.status !== 401) {
-        showToast({
-          type: "error",
-          message: "Failed to load external jobs",
-        });
-      }
-    } finally {
-      setLoadingExternalJobs(false);
-    }
-  };
 
   // Redirect /student to /student/referrals by default
   if (location.pathname === '/student') {
@@ -275,10 +283,35 @@ export function StudentDashboard() {
       const response = await opportunitiesApi.applyForReferral(jobId);
 
       dismissToast(toastId);
-      showToast({
-        type: "success",
-        message: response.message || "Application submitted successfully!",
-      });
+      
+      const chatId = response.data?.chat?._id;
+      if (chatId) {
+        toast.success(
+          <div className="flex flex-col gap-2 w-full">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
+                Application Submitted Successfully
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                toast.dismiss();
+                navigate(`/student/chat?chatId=${chatId}`);
+              }}
+              className="mt-1 px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/95 text-xs font-semibold rounded-lg shadow-sm transition-all text-center flex items-center justify-center gap-1.5 w-full sm:w-auto self-start font-medium"
+            >
+              Message Alumni
+            </button>
+          </div>,
+          { duration: 6000 }
+        );
+      } else {
+        showToast({
+          type: "success",
+          message: "Application Submitted Successfully",
+        });
+      }
 
       setAppliedOpportunities(prev => [...prev, jobId]);
       await fetchOpportunities();
@@ -332,6 +365,7 @@ export function StudentDashboard() {
         activeTab={activeTab}
         student={student}
         appliedCount={myApplications.length}
+        unreadChatsCount={unreadChatsCount}
       />
 
       {/* Profile Tab */}
@@ -355,17 +389,21 @@ export function StudentDashboard() {
               Referral Opportunities from Alumni
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Connect with alumni from your college and get referred
+              Connect with alumni from across the platform and get referred
             </p>
           </div>
           <OpportunitiesList
-            opportunities={opportunities?.filter(opp => !appliedOpportunities.includes(opp._id))}
+            opportunities={opportunities?.filter(opp => 
+              (opp.opportunityType === 'Referral' || !opp.opportunityType) && 
+              !appliedOpportunities.includes(opp._id)
+            )}
             appliedOpportunities={appliedOpportunities}
             loading={loadingOpportunities}
             isApplying={isApplying}
             onApply={handleApplyJob}
             onViewDetails={handleViewDetails}
             canApply={true}
+            profileStatus={profileStatus}
           />
         </motion.div>
       )}
@@ -391,26 +429,7 @@ export function StudentDashboard() {
         </motion.div>
       )}
 
-      {/* Jobs Tab - External Jobs */}
-      {activeTab === "jobs" && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
-              Browse Jobs from Around the World
-            </h2>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              Discover opportunities from global companies
-            </p>
-          </div>
-          <ExternalJobsList 
-            jobs={externalJobs} 
-            loading={loadingExternalJobs}
-          />
-        </motion.div>
-      )}
+
 
       {/* Jobs Tab */}
       {activeTab === "jobs" && (
@@ -418,11 +437,26 @@ export function StudentDashboard() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <JobsList
-            jobs={jobs}
-            student={student}
+          <div className="mb-4 sm:mb-6 mt-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
+              Jobs Posted by Alumni
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Browse exclusive job openings posted by alumni
+            </p>
+          </div>
+          <OpportunitiesList
+            opportunities={opportunities?.filter(opp => 
+              opp.opportunityType === 'Job' && 
+              !appliedOpportunities.includes(opp._id)
+            )}
+            appliedOpportunities={appliedOpportunities}
+            loading={loadingOpportunities}
             isApplying={isApplying}
             onApply={handleApplyJob}
+            onViewDetails={handleViewDetails}
+            canApply={true}
+            profileStatus={profileStatus}
           />
         </motion.div>
       )}
@@ -462,6 +496,7 @@ export function StudentDashboard() {
         }}
         isApplying={isApplying === selectedOpportunity?._id}
         hasApplied={selectedOpportunity ? appliedOpportunities.includes(selectedOpportunity._id) : false}
+        chatId={selectedOpportunity ? myApplications.find(app => app.opportunity?._id === selectedOpportunity._id)?.chatId : null}
       />
     </div>
   );

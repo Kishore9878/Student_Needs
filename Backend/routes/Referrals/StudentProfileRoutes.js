@@ -6,7 +6,13 @@ import {
     updateProfile,
     getProfile,
     getProfileStatus,
+    getColleges,
 } from "../../controllers/Referrals/StudentProfile.js";
+
+import {
+    uploadProfileImage,
+    removeProfileImage,
+} from "../../controllers/Referrals/ApplicationController.js";
 
 // Import middleware
 import { auth } from "../../middlewares/Referrals/auth.js";
@@ -18,6 +24,9 @@ import { auth } from "../../middlewares/Referrals/auth.js";
 // All routes require authentication
 router.use(auth);
 
+// Get all registered colleges
+router.get("/colleges", getColleges);
+
 // Create / Update Profile
 router.put("/profile", updateProfile);
 
@@ -26,5 +35,11 @@ router.get("/profile", getProfile);
 
 // Get Profile Completion Status
 router.get("/profile/status", getProfileStatus);
+
+// Profile image upload
+router.post("/profile/image", uploadProfileImage);
+
+// Profile image removal
+router.delete("/profile/image", removeProfileImage);
 
 export default router;

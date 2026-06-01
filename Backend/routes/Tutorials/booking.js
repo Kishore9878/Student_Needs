@@ -9,6 +9,8 @@ const router = express.Router();
 /**
  * ✅ CREATE BOOKING (FROM FRONTEND)
  */
+import jwt from "jsonwebtoken";
+
 router.post("/", async (req, res) => {
   try {
     const userId = resolveBookingStudentId(req);

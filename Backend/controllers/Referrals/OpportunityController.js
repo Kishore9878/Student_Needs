@@ -9,10 +9,13 @@ export const createOpportunity = async (req, res) => {
         const alumniId = req.user.id;
         const {
             jobTitle,
+            opportunityType,
             roleDescription,
             requiredSkills,
             experienceLevel,
             numberOfReferrals,
+            company,
+            location,
         } = req.body;
 
         // Validate required fields
@@ -50,10 +53,13 @@ export const createOpportunity = async (req, res) => {
         // Create opportunity
         const opportunity = await Opportunity.create({
             jobTitle,
+            opportunityType: opportunityType || "Referral",
             roleDescription,
             requiredSkills: requiredSkills || [],
             experienceLevel,
             numberOfReferrals,
+            company,
+            location,
             postedBy: alumniId,
             college: alumni.college,
             status: "Open",
@@ -61,7 +67,7 @@ export const createOpportunity = async (req, res) => {
 
         // Populate alumni and college details
         await opportunity.populate([
-            { path: 'postedBy', select: 'firstName lastName email company jobTitle' },
+            { path: 'postedBy', select: 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences' },
             { path: 'college', select: 'name matchingName' }
         ]);
 
@@ -105,6 +111,8 @@ export const updateOpportunity = async (req, res) => {
             requiredSkills,
             experienceLevel,
             numberOfReferrals,
+            company,
+            location,
         } = req.body;
 
         const opportunity = await Opportunity.findById(opportunityId);
@@ -136,11 +144,13 @@ export const updateOpportunity = async (req, res) => {
         if (requiredSkills !== undefined) opportunity.requiredSkills = requiredSkills;
         if (experienceLevel !== undefined) opportunity.experienceLevel = experienceLevel;
         if (numberOfReferrals !== undefined) opportunity.numberOfReferrals = numberOfReferrals;
+        if (company !== undefined) opportunity.company = company;
+        if (location !== undefined) opportunity.location = location;
 
         await opportunity.save();
 
         await opportunity.populate([
-            { path: 'postedBy', select: 'firstName lastName email company jobTitle' },
+            { path: 'postedBy', select: 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences' },
             { path: 'college', select: 'name matchingName' }
         ]);
 
@@ -219,47 +229,31 @@ export const getOpportunities = async (req, res) => {
         const userId = req.user.id;
         const accountType = req.user.accountType;
 
-        let userCollege;
-
-        if (accountType?.toLowerCase() === "student") {
-            const student = await Student.findById(userId).select("college");
-            if (!student) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Student not found",
-                });
-            }
-            userCollege = student.college;
-        } else if (accountType?.toLowerCase() === "alumni") {
-            const alumni = await Alumni.findById(userId).select("college");
-            if (!alumni) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Alumni not found",
-                });
-            }
-            userCollege = alumni.college;
-        } else {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid account type",
-            });
-        }
-
-        if (!userCollege) {
+        if (accountType?.toLowerCase() !== "student" && accountType?.toLowerCase() !== "alumni") {
             return res.status(200).json({
                 success: true,
                 count: 0,
                 data: [],
-                message: "User must be associated with a college",
+                message: "No opportunities available for this account type",
             });
         }
 
-        const opportunities = await Opportunity.find({
-            college: userCollege,
-            status: "Open",
-        })
-        .populate('postedBy', 'firstName lastName email company jobTitle')
+        let userCollegeId = null;
+        if (accountType?.toLowerCase() === "student") {
+            const student = await Student.findById(userId).select("college");
+            if (student) userCollegeId = student.college;
+        } else if (accountType?.toLowerCase() === "alumni") {
+            const alumni = await Alumni.findById(userId).select("college");
+            if (alumni) userCollegeId = alumni.college;
+        }
+
+        const query = { status: "Open" };
+        if (userCollegeId) {
+            query.college = userCollegeId;
+        }
+
+        const opportunities = await Opportunity.find(query)
+        .populate('postedBy', 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences')
         .populate('college', 'name matchingName')
         .sort({ createdAt: -1 });
 
@@ -287,7 +281,7 @@ export const getMyOpportunities = async (req, res) => {
         const opportunities = await Opportunity.find({
             postedBy: alumniId,
         })
-        .populate('postedBy', 'firstName lastName email company jobTitle')
+        .populate('postedBy', 'firstName lastName company jobTitle skills yearsOfExperience image referralPreferences')
         .populate('college', 'name matchingName')
         .sort({ createdAt: -1 });
 

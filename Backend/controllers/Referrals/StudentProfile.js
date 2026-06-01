@@ -1,18 +1,32 @@
 import Student from "../../models/Referrals/StudentModel.js";
 import { embeddingService } from "../../services/ai/EmbeddingService.js";
 import { calculateProfileCompleteness } from "../../utils/Referrals/calculateProfileScore.js";
+import mongoose from "mongoose";
+import College from "../../models/Referrals/CollegeModel.js";
 
 // Create / Update Profile
 export const updateProfile = async (req, res) => {
     try {
         const studentId = req.user.id;
         const {
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            degree,
+            cgpa,
+            bio,
+            careerInterests,
             branch,
             graduationYear,
             skills,
             projects,
             certifications,
             preferredRoles,
+            linkedinUrl,
+            githubUrl,
+            portfolioUrl,
+            collegeName,
         } = req.body;
 
         // Validate graduationYear if provided
@@ -20,6 +34,14 @@ export const updateProfile = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Invalid graduation year",
+            });
+        }
+
+        // Validate cgpa if provided
+        if (cgpa !== undefined && cgpa !== null && (cgpa < 0 || cgpa > 10)) {
+            return res.status(400).json({
+                success: false,
+                message: "CGPA must be between 0.0 and 10.0",
             });
         }
 
@@ -33,13 +55,55 @@ export const updateProfile = async (req, res) => {
             });
         }
 
+        // Validate email uniqueness if changed
+        if (email && email !== student.email) {
+            const emailExists = await Student.findOne({ email });
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Email is already in use by another account",
+                });
+            }
+            student.email = email;
+        }
+
         // Update fields if provided
+        if (firstName !== undefined) student.firstName = firstName;
+        if (lastName !== undefined) student.lastName = lastName;
+        if (phoneNumber !== undefined) student.phoneNumber = phoneNumber;
+        if (degree !== undefined) student.degree = degree;
+        if (cgpa !== undefined) student.cgpa = cgpa;
+        if (bio !== undefined) student.bio = bio;
+        if (careerInterests !== undefined) student.careerInterests = careerInterests;
         if (branch !== undefined) student.branch = branch;
         if (graduationYear !== undefined) student.graduationYear = graduationYear;
         if (skills !== undefined) student.skills = skills;
         if (projects !== undefined) student.projects = projects;
         if (certifications !== undefined) student.certifications = certifications;
         if (preferredRoles !== undefined) student.preferredRoles = preferredRoles;
+        if (linkedinUrl !== undefined) student.linkedinUrl = linkedinUrl;
+        if (githubUrl !== undefined) student.githubUrl = githubUrl;
+        if (portfolioUrl !== undefined) student.portfolioUrl = portfolioUrl;
+
+        if (collegeName !== undefined) {
+            if (collegeName.trim()) {
+                const matchingName = collegeName.replace(/\s+/g, "").toLowerCase();
+                const college = await College.findOne({ matchingName });
+                if (!college) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `College "${collegeName}" not found in our database. Please select from registered colleges or contact support.`,
+                    });
+                }
+                student.college = college._id;
+                if (!college.Student.includes(studentId)) {
+                    college.Student.push(studentId);
+                    await college.save();
+                }
+            } else {
+                student.college = null;
+            }
+        }
 
         // Calculate and update profile completeness
         student.profileCompleteness = calculateProfileCompleteness(student);
@@ -85,6 +149,10 @@ export const getProfile = async (req, res) => {
     try {
         const studentId = req.user.id;
 
+        if (!mongoose.Types.ObjectId.isValid(studentId)) {
+             return res.status(400).json({ success: false, message: "Invalid student ID: " + studentId });
+        }
+
         // Find student and populate college
         const student = await Student.findById(studentId)
             .select("-password")
@@ -104,10 +172,10 @@ export const getProfile = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("GET PROFILE ERROR:", error);
         return res.status(500).json({
             success: false,
-            message: "Failed to fetch profile. Please try again.",
+            message: "Failed to fetch profile. Please try again. Error: " + error.message,
         });
     }
 };
@@ -116,6 +184,10 @@ export const getProfile = async (req, res) => {
 export const getProfileStatus = async (req, res) => {
     try {
         const studentId = req.user.id;
+
+        if (!mongoose.Types.ObjectId.isValid(studentId)) {
+             return res.status(400).json({ success: false, message: "Invalid student ID" });
+        }
 
         // Find student
         const student = await Student.findById(studentId);
@@ -140,9 +212,9 @@ export const getProfileStatus = async (req, res) => {
         if (!student.certifications || student.certifications.length === 0) missingFields.push("certifications");
         if (!student.preferredRoles || student.preferredRoles.length === 0) missingFields.push("preferredRoles");
         if (!student.resume || !student.resume.data) missingFields.push("resume");
-        if (!student.linkedIn || !student.linkedIn.data) missingFields.push("linkedInPdf");
-        if (!student.linkedIn || !student.linkedIn.linkedInUrl) missingFields.push("linkedInUrl");
+        if (!student.linkedinUrl) missingFields.push("linkedinUrl");
         if (!student.githubUrl) missingFields.push("githubUrl");
+        if (!student.portfolioUrl) missingFields.push("portfolioUrl");
 
         // Determine profile strength
         let strength = "Weak";
@@ -164,8 +236,9 @@ export const getProfileStatus = async (req, res) => {
                     certifications: student.certifications && student.certifications.length > 0 ? "Complete" : "Incomplete",
                     preferredRoles: student.preferredRoles && student.preferredRoles.length > 0 ? "Complete" : "Incomplete",
                     resume: student.resume && student.resume.data ? "Complete" : "Incomplete",
-                    linkedIn: student.linkedIn && (student.linkedIn.data || student.linkedIn.linkedInUrl) ? "Complete" : "Incomplete",
+                    linkedIn: student.linkedinUrl ? "Complete" : "Incomplete",
                     github: student.githubUrl ? "Complete" : "Incomplete",
+                    portfolio: student.portfolioUrl ? "Complete" : "Incomplete",
                 }
             },
             message: "Profile status fetched successfully",
@@ -176,6 +249,23 @@ export const getProfileStatus = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to fetch profile status. Please try again.",
+        });
+    }
+};
+
+// Get All Registered Colleges
+export const getColleges = async (req, res) => {
+    try {
+        const colleges = await College.find({}, "name matchingName").sort({ name: 1 });
+        return res.status(200).json({
+            success: true,
+            data: colleges,
+        });
+    } catch (error) {
+        console.error("GET COLLEGES ERROR:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch colleges. Please try again.",
         });
     }
 };

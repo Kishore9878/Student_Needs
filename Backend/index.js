@@ -70,6 +70,7 @@ import profileRoutes from "./routes/Referrals/StudentProfileRoutes.js";
 import resumeRoutes from "./routes/Referrals/StudentResumeRoutes.js";
 import linkedInRoutes from "./routes/Referrals/StudentLinkedInRoutes.js";
 import githubRoutes from "./routes/Referrals/StudentGithubRoutes.js";
+import portfolioRoutes from "./routes/Referrals/StudentPortfolioRoutes.js";
 
 import alumniAuthRoutes from "./routes/Referrals/AlumniAuthRoutes.js";
 import alumniProfileRoutes from "./routes/Referrals/AlumniProfileRoutes.js";
@@ -80,6 +81,7 @@ import externalJobRoutes from "./routes/Referrals/ExternalJobRoutes.js";
 import interviewRoutes from "./routes/Referrals/InterviewRoutes.js";
 import profileAnalysisRoutes from "./routes/Referrals/ProfileAnalysisRoutes.js";
 import recommendationRoutes from "./routes/Referrals/RecommendationRoutes.js";
+import chatRoutes from "./routes/Referrals/ChatRoutes.js";
 
 // =====================================================
 //                  EXPENSE ROUTES
@@ -105,6 +107,7 @@ import {
   monthlyAnalysisScheduler,
   recurringTransactionScheduler,
 } from "./utils/Expenses/scheduler.js";
+import { archiveCleanupScheduler } from "./utils/Referrals/scheduler.js";
 
 // =====================================================
 //                    ENV CONFIG
@@ -365,6 +368,8 @@ app.use("/api/v1/student", linkedInRoutes);
 
 app.use("/api/v1/student", githubRoutes);
 
+app.use("/api/v1/student", portfolioRoutes);
+
 app.use("/api/v1/alumni", alumniAuthRoutes);
 
 app.use("/api/v1/alumni", alumniProfileRoutes);
@@ -380,6 +385,8 @@ app.use("/api/v1", interviewRoutes);
 app.use("/api/v1", profileAnalysisRoutes);
 
 app.use("/api/v1", recommendationRoutes);
+
+app.use("/api/v1", chatRoutes);
 
 // =====================================================
 //                EXPENSE MODULE ROUTES
@@ -464,6 +471,30 @@ const initializeServer = async () => {
     await dbconnect();
     console.log("✅ Referral Database Connected");
 
+    // Dynamic LinkedIn Migration
+    try {
+      const Student = mongoose.model("ReferralStudent");
+      const studentsToMigrate = await Student.find({
+        "linkedIn.linkedInUrl": { $exists: true, $ne: "" },
+        $or: [
+          { linkedinUrl: { $exists: false } },
+          { linkedinUrl: "" }
+        ]
+      });
+
+      if (studentsToMigrate.length > 0) {
+        console.log(`🧹 Migrating ${studentsToMigrate.length} student LinkedIn profiles...`);
+        for (const student of studentsToMigrate) {
+          student.linkedinUrl = student.linkedIn.linkedInUrl;
+          student.linkedIn = undefined;
+          await student.save();
+        }
+        console.log("✅ LinkedIn URL migration complete!");
+      }
+    } catch (migErr) {
+      console.warn("⚠️ Migration warning:", migErr.message);
+    }
+
     // Expenses DB
     await connectDb();
 
@@ -471,6 +502,9 @@ const initializeServer = async () => {
     smartReminderScheduler();
     monthlyAnalysisScheduler();
     recurringTransactionScheduler();
+
+    // Referral Archival Scheduler
+    archiveCleanupScheduler();
 
     // Cloudinary
     cloudinary.cloudinaryConnect();
