@@ -329,7 +329,7 @@ const StudentDashboard = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
-          <DashboardCard title="Analytics" description="Charts from your attendance data">
+          <DashboardCard title="Analytics" description="Charts from your attendance data" className="h-auto">
             <AttendanceCharts
               bySubject={subjectProgress}
               timeline={timeline}
@@ -338,14 +338,14 @@ const StudentDashboard = () => {
           </DashboardCard>
 
           {subjectProgress.length > 0 && (
-            <DashboardCard title="Subject-wise progress" description="Per-subject breakdown">
+            <DashboardCard title="Subject-wise progress" description="Per-subject breakdown" className="h-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                 {subjectProgress.map((s) => {
                   const pct = s.percentage;
                   return (
                     <div
                       key={s.subjectId}
-                      className="p-4 rounded-lg border border-border bg-muted/30"
+                      className="p-4 rounded-lg border border-border bg-card dark:bg-secondary/20"
                     >
                       <div className="flex justify-between items-center mb-2">
                         <span className="font-semibold text-sm">{s.subjectName}</span>
@@ -364,9 +364,9 @@ const StudentDashboard = () => {
                       <p className="text-xs text-muted-foreground mb-2">
                         {s.present} present · {s.absent} absent · {s.total} total
                       </p>
-                      <div className="w-full bg-muted rounded-full h-1.5">
+                      <div className="w-full bg-muted rounded-full h-2">
                         <div
-                          className={`h-1.5 rounded-full ${
+                          className={`h-2 rounded-full ${
                             pct >= MIN_ATTENDANCE
                               ? "bg-emerald-500"
                               : pct >= 60
@@ -384,7 +384,7 @@ const StudentDashboard = () => {
           )}
         </div>
 
-        <DashboardCard title="My subjects" description="Add, edit, or remove subjects">
+        <DashboardCard title="My subjects" description="Add, edit, or remove subjects" contentClassName="max-h-96 overflow-y-auto">
           {subjects.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4">
               No subjects yet. Add your first subject to start tracking.
@@ -417,7 +417,7 @@ const StudentDashboard = () => {
         </DashboardCard>
       </div>
 
-      <DashboardCard title="Attendance history" description="Filter, edit, or delete records">
+      <DashboardCard title="Attendance history" description="Filter, edit, or delete records" contentClassName="pt-0">
         <div className="flex flex-wrap gap-3 mb-4">
           <select
             className="h-10 rounded-md border border-input bg-background px-3 text-sm"
@@ -459,7 +459,7 @@ const StudentDashboard = () => {
                   <th className="py-2 pr-4">Date</th>
                   <th className="py-2 pr-4">Subject</th>
                   <th className="py-2 pr-4">Status</th>
-                  <th className="py-2 text-right">Actions</th>
+                  <th className="py-2 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
