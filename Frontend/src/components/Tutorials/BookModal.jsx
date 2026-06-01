@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Tutorials/BookModal.css";
 import PropTypes from "prop-types";
-import ReactDOM from "react-dom";
+import { createPortal } from "react-dom";
+
+const MODAL_ROOT_ID = "modal-root";
+
+function getModalRoot() {
+  const el = document.getElementById(MODAL_ROOT_ID);
+  if (!el) {
+    throw new Error(
+      `Booking modal requires #${MODAL_ROOT_ID} in index.html (portal target missing)`
+    );
+  }
+  return el;
+}
 
 function BookModal({
   open,
@@ -10,8 +22,6 @@ function BookModal({
   tutorProfile,
   availability = [],
 }) {
-  if (!open) return null;
-
   const [selectedSlot, setSelectedSlot] = useState(null);
   const profile = tutorProfile?.profile || {};
   const tutorName = profile.fName || tutorProfile?.first_name || "Tutor";
@@ -22,13 +32,17 @@ function BookModal({
     }
   }, [open, availability]);
 
+  if (!open) {
+    return null;
+  }
+
   const groupedSlots = availability.reduce((acc, slot) => {
     if (!acc[slot.date]) acc[slot.date] = [];
     acc[slot.date].push(slot);
     return acc;
   }, {});
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <div className="overlay">
       <div className="modalContainer">
         <div className="modalRight">
@@ -38,7 +52,7 @@ function BookModal({
 
           <div className="content">
             {Object.keys(groupedSlots).length === 0 ? (
-              <p>No available slots for this tutor. Check back later. ❌</p>
+              <p>No available slots for this tutor. Check back later.</p>
             ) : (
               Object.entries(groupedSlots)?.map(([date, slots]) => (
                 <div className="time" key={date}>
@@ -60,6 +74,7 @@ function BookModal({
                       return (
                         <button
                           key={`${date}-${slot.time}-${i}`}
+                          type="button"
                           onClick={() => setSelectedSlot(slot)}
                           disabled={slot.isBooked}
                           style={{
@@ -87,6 +102,7 @@ function BookModal({
 
         <div className="btnContainer">
           <button
+            type="button"
             className="confirmBtn"
             onClick={() => confirmClasses(selectedSlot)}
             disabled={!selectedSlot}
@@ -106,7 +122,7 @@ function BookModal({
         </div>
       </div>
     </div>,
-    document.getElementById("modal-root"),
+    getModalRoot()
   );
 }
 
@@ -115,7 +131,7 @@ BookModal.propTypes = {
   handleModal: PropTypes.func,
   confirmClasses: PropTypes.func,
   tutorProfile: PropTypes.object,
-  availability: PropTypes.array, // ✅ NEW
+  availability: PropTypes.array,
 };
 
 export default BookModal;
