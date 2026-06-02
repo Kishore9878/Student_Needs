@@ -259,8 +259,8 @@ const StudentDashboard = () => {
             {initials}
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">My Attendance</h1>
-            <p className="text-muted-foreground">
+            <h1 className="dashboard-title text-foreground tracking-tight">My Attendance</h1>
+            <p className="text-muted-foreground description-text">
               Track subjects, mark classes, and monitor your progress
             </p>
           </div>

@@ -27,6 +27,7 @@ import {
   Laptop,
 } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme.js";
+import { ThemeToggle } from "@/components/ThemeToggle.jsx";
 
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -140,9 +141,12 @@ export function UnifiedLanding() {
           <a href="#testimonials">Testimonials</a>
           <a href="#about">About Us</a>
         </div>
-        <Link className="uc-primary-button" to="/role-selection">
-          Get Started
-        </Link>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <Link className="uc-primary-button" to="/role-selection">
+            Get Started
+          </Link>
+        </div>
       </nav>
 
       <section className="uc-hero">
@@ -189,49 +193,7 @@ export function UnifiedLanding() {
         </div>
       </section>
 
-      {/* Floating Theme Selector Card */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-        <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-slate-900/85 dark:bg-slate-950/85 backdrop-blur-xl border border-white/10 dark:border-cyan-500/20 shadow-lg hover:shadow-cyan-500/10 hover:scale-[1.02] transition-all duration-300">
-          <button
-            onClick={() => setTheme("light")}
-            className={`p-2 rounded-xl flex items-center justify-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-              theme === "light"
-                ? "bg-white text-slate-950 shadow-md scale-105"
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-            title="Light Mode"
-          >
-            <Sun className="w-3.5 h-3.5" />
-            <span>Light Mode ☀️</span>
-          </button>
-          
-          <button
-            onClick={() => setTheme("dark")}
-            className={`p-2 rounded-xl flex items-center justify-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-              theme === "dark"
-                ? "bg-indigo-600 text-white shadow-md scale-105"
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-            title="Dark Mode"
-          >
-            <Moon className="w-3.5 h-3.5" />
-            <span>Dark Mode 🌙</span>
-          </button>
 
-          <button
-            onClick={() => setTheme("system")}
-            className={`p-2 rounded-xl flex items-center justify-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-              theme === "system"
-                ? "bg-slate-700 text-white shadow-md scale-105"
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-            title="System Default"
-          >
-            <Laptop className="w-3.5 h-3.5" />
-            <span>System 💻</span>
-          </button>
-        </div>
-      </div>
     </main>
   );
 }

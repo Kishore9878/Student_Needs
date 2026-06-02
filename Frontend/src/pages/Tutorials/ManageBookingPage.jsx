@@ -59,9 +59,9 @@ function ManageBookingPage() {
       {isUnifiedLayout && <BackToStudentDashboard />}
 
       <div
-        className="mainDivBook h-[calc(100vh-100px)] md:h-screen overflow-y-auto"
+        className={isUnifiedLayout ? "" : "mainDivBook h-[calc(100vh-100px)] md:h-screen overflow-y-auto"}
         style={{}}
-        data-lenis-prevent="true"
+        data-lenis-prevent={isUnifiedLayout ? "false" : "true"}
       >
         <div className="innerDivBook">
           <h1 className="titleBook">📚 My Bookings</h1>

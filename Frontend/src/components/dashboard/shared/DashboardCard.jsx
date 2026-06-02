@@ -23,8 +23,8 @@ function DashboardCardComponent({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       className={cn(
-        "hover:border-primary/50 transition-colors flex flex-col h-full", 
-        onClick && "cursor-pointer hover:shadow-md pointer-events-auto outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", 
+        "premium-dashboard-card flex flex-col h-full", 
+        onClick && "cursor-pointer outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", 
         className
       )}
       onKeyDown={(e) => {
@@ -39,7 +39,7 @@ function DashboardCardComponent({
       {(title || description || action) && (
         <CardHeader className="pb-4 flex flex-row items-center justify-between">
           <div className="flex flex-col gap-y-1">
-            {title && <CardTitle className="text-lg">{title}</CardTitle>}
+            {title && <CardTitle className="section-title text-foreground">{title}</CardTitle>}
             {description && <CardDescription>{description}</CardDescription>}
           </div>
           {action && <div>{action}</div>}

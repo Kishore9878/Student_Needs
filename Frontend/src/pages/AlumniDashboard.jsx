@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useAuth } from '@/services/Auth/AuthContext';
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { showToast, dismissToast } from '@/components/TransactionToast';
@@ -16,6 +17,7 @@ import { opportunitiesApi } from '@/services/opportunities';
 import { applicationsApi } from '@/services/applications';
 
 export function AlumniDashboard() {
+  const isUnifiedLayout = useContext(LayoutContext);
   const { user, isAuthenticated } = useAuth();
   const [backendOpportunities, setBackendOpportunities] = useState([]);
   const [selectedOpportunityApplications, setSelectedOpportunityApplications] = useState([]);
@@ -378,7 +380,7 @@ export function AlumniDashboard() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 mt-20 sm:mt-24 px-4 sm:px-6 md:px-8">
+    <div className={cn("space-y-4 sm:space-y-6", isUnifiedLayout ? "mt-0" : "mt-20 sm:mt-24 px-4 sm:px-6 md:px-8")}>
   {/* Header */}
   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
     <h2 className="text-2xl font-bold tracking-tight">Alumni Dashboard</h2>

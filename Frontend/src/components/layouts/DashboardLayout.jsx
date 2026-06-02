@@ -1,18 +1,14 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { createContext, useContext } from "react";
 import Sidebar from "../dashboard/Sidebar";
 import Navbar from "../dashboard/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
+import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 
 export const LayoutContext = createContext(false);
 
-const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
-  const isNested = useContext(LayoutContext);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const DashboardLayoutContent = ({ children, pageTitle, role }) => {
+  const { isCollapsed, isMobileMenuOpen, closeMobileMenu, toggleMobileMenu } = useSidebar();
   const location = useLocation();
-
-  if (isNested) {
-    return <>{children || <Outlet />}</>;
-  }
 
   const getDynamicTitle = () => {
     if (pageTitle) return pageTitle;
@@ -63,44 +59,62 @@ const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
   };
 
   return (
-    <LayoutContext.Provider value={true}>
-      <div className="app-dashboard-layout flex h-screen w-full overflow-hidden bg-background">
-        {/* Mobile Sidebar overlay */}
-        {isMobileMenuOpen && (
-          <div
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
-
-        {/* Sidebar */}
+    <div className="app-dashboard-layout flex h-screen w-full overflow-hidden bg-background">
+      {/* Mobile Sidebar overlay */}
+      {isMobileMenuOpen && (
         <div
-          className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0 md:h-screen md:shrink-0 ${
-            isMobileMenuOpen
-              ? "translate-x-0"
-              : "-translate-x-full md:translate-x-0"
-          }`}
-        >
-          <Sidebar className="w-full" role={role} />
-        </div>
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300"
+          onClick={closeMobileMenu}
+        />
+      )}
 
-        {/* Main Content */}
-        <div
-          className="flex-1 flex flex-col min-w-0 min-h-0"
-          data-lenis-prevent="true"
-        >
-          <Navbar
-            pageTitle={getDynamicTitle()}
-            onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          />
-          <main className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <div className="max-w-7xl mx-auto space-y-6">
-              {children || <Outlet />}
-            </div>
-          </main>
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 bg-card border-r border-border sidebar-transition flex flex-col ${
+          isMobileMenuOpen
+            ? "translate-x-0 sidebar-expanded"
+            : "-translate-x-full md:translate-x-0 " + (isCollapsed ? "sidebar-collapsed" : "sidebar-expanded")
+        }`}
+      >
+        <Sidebar className="w-full h-full" role={role} />
+      </aside>
+
+      {/* Main Content */}
+      <main
+        className={`flex-1 flex flex-col min-w-0 min-h-0 sidebar-transition ${
+          isCollapsed ? "content-collapsed-offset" : "content-expanded-offset"
+        }`}
+        data-lenis-prevent="true"
+      >
+        <Navbar
+          pageTitle={getDynamicTitle()}
+          onMenuClick={toggleMobileMenu}
+        />
+        <div className="flex-1 min-h-0 overflow-y-auto dashboard-container">
+          <div className="max-w-7xl mx-auto space-y-6">
+            {children || <Outlet />}
+          </div>
         </div>
-      </div>
-    </LayoutContext.Provider>
+      </main>
+    </div>
+  );
+};
+
+const DashboardLayout = ({ children, pageTitle, role = "student" }) => {
+  const isNested = useContext(LayoutContext);
+
+  if (isNested) {
+    return <>{children || <Outlet />}</>;
+  }
+
+  return (
+    <SidebarProvider>
+      <LayoutContext.Provider value={true}>
+        <DashboardLayoutContent pageTitle={pageTitle} role={role}>
+          {children}
+        </DashboardLayoutContent>
+      </LayoutContext.Provider>
+    </SidebarProvider>
   );
 };
 

@@ -13,16 +13,20 @@ function ClassHistoryPage() {
       {!isUnifiedLayout && <Navbar />}
       {isUnifiedLayout && <BackToStudentDashboard />}
 
-      <div
-        className="flex h-[calc(100vh-100px)] md:h-screen overflow-hidden"
-        style={{}}
-        data-lenis-prevent="true"
-      >
-        <SideNav />
-        <div className="flex-1 overflow-y-auto min-h-0 min-w-0">
-          <ClassHistory />
+      {isUnifiedLayout ? (
+        <ClassHistory />
+      ) : (
+        <div
+          className="flex h-[calc(100vh-100px)] md:h-screen overflow-hidden"
+          style={{}}
+          data-lenis-prevent="true"
+        >
+          <SideNav />
+          <div className="flex-1 overflow-y-auto min-h-0 min-w-0">
+            <ClassHistory />
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

@@ -57,7 +57,7 @@ export function AttendanceCharts({ bySubject = [], timeline = [], filterSubjectI
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
       {barData.length > 0 && (
         <>
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0 overflow-hidden">
             <p className="text-sm font-medium text-muted-foreground">Attendance % by subject</p>
             <div className="h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -72,7 +72,7 @@ export function AttendanceCharts({ bySubject = [], timeline = [], filterSubjectI
             </div>
           </div>
           {pieData.length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0 overflow-hidden">
               <p className="text-sm font-medium text-muted-foreground">Present classes by subject</p>
               <div className="h-[260px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -100,7 +100,7 @@ export function AttendanceCharts({ bySubject = [], timeline = [], filterSubjectI
         </>
       )}
       {filteredTimeline.length > 0 && (
-        <div className="xl:col-span-2 space-y-2">
+        <div className="xl:col-span-2 space-y-2 min-w-0 overflow-hidden">
           <p className="text-sm font-medium text-muted-foreground">
             Attendance over time{filterSubjectId ? " (selected subject)" : ""}
           </p>

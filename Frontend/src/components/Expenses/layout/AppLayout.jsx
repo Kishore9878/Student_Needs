@@ -1,25 +1,44 @@
-import React, { useState } from "react";
+import React from "react";
 import { Outlet, Link, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import TopNavbar from "./TopNavbar";
 import { ArrowLeft } from "lucide-react";
+import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 
-const AppLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  if (!localStorage.getItem("User")) {
-    return <Navigate to="/expenses-tracker/login" />;
-  }
+const AppLayoutContent = () => {
+  const { isCollapsed, isMobileMenuOpen, closeMobileMenu } = useSidebar();
 
   return (
     <div
-      className="expenses-layout font-inter relative h-screen overflow-hidden flex flex-col md:flex-row"
+      className="expenses-layout font-inter relative h-screen overflow-hidden flex flex-col md:flex-row bg-background text-foreground animate-fade-in"
       data-lenis-prevent="true"
     >
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden backdrop-blur-sm transition-opacity duration-300"
+          onClick={closeMobileMenu}
+        />
+      )}
 
-      <main className="expenses-main flex flex-col flex-1 min-h-0">
-        <TopNavbar setIsSidebarOpen={setIsSidebarOpen} />
+      {/* Sidebar container */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 bg-card border-r border-border sidebar-transition flex flex-col ${
+          isMobileMenuOpen
+            ? "translate-x-0 sidebar-expanded"
+            : "-translate-x-full md:translate-x-0 " + (isCollapsed ? "sidebar-collapsed" : "sidebar-expanded")
+        }`}
+      >
+        <Sidebar />
+      </aside>
+
+      {/* Main Content */}
+      <main
+        className={`expenses-main flex flex-col flex-1 min-h-0 sidebar-transition ${
+          isCollapsed ? "content-collapsed-offset" : "content-expanded-offset"
+        }`}
+      >
+        <TopNavbar />
 
         <div className="expenses-content flex-1 overflow-y-auto min-h-0">
           <Outlet />
@@ -38,6 +57,18 @@ const AppLayout = () => {
         </Link>
       </div>
     </div>
+  );
+};
+
+const AppLayout = () => {
+  if (!localStorage.getItem("User")) {
+    return <Navigate to="/expenses-tracker/login" />;
+  }
+
+  return (
+    <SidebarProvider>
+      <AppLayoutContent />
+    </SidebarProvider>
   );
 };
 

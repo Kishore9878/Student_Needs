@@ -5,6 +5,7 @@ import { Input } from "../ui/input";
 import { NotificationCenter } from "../ui/NotificationCenter.jsx";
 import { ThemeToggle } from "@/components/ThemeToggle.jsx";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const STUDENT_MODULE_PATHS = [
   "/student/attendance",
@@ -22,8 +23,9 @@ const STUDENT_MODULE_PATHS = [
   "/student/chat",
 ];
 
-const Navbar = ({ onMenuClick, pageTitle = "Dashboard", showBackToDashboard }) => {
+const Navbar = ({ pageTitle = "Dashboard", showBackToDashboard }) => {
   const { user, isStudent } = useAuth();
+  const { toggleSidebar, toggleMobileMenu } = useSidebar();
   const location = useLocation();
 
   const role = (user?.role || user?.accountType || "").toLowerCase();
@@ -35,14 +37,23 @@ const Navbar = ({ onMenuClick, pageTitle = "Dashboard", showBackToDashboard }) =
       location.pathname !== "/student/dashboard" &&
       STUDENT_MODULE_PATHS.some((p) => location.pathname.startsWith(p)));
 
+  const handleHamburgerClick = () => {
+    if (window.innerWidth < 768) {
+      toggleMobileMenu();
+    } else {
+      toggleSidebar();
+    }
+  };
+
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
       <div className="flex items-center gap-3 min-w-0">
         <button
-          onClick={onMenuClick}
-          className="md:hidden p-2 -ml-2 rounded-md text-muted-foreground hover:bg-secondary shrink-0"
+          onClick={handleHamburgerClick}
+          className="p-2 -ml-2 rounded-md text-muted-foreground hover:bg-secondary shrink-0 cursor-pointer"
+          aria-label="Toggle Sidebar"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-5 h-5 text-[#111827] dark:text-[#F8FAFC]" />
         </button>
         {shouldShowBack && (
           <Link

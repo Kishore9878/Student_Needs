@@ -263,9 +263,13 @@
   color: var(--text-muted);
 }.attendance-module .empty-state svg { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }.attendance-module .empty-state p { font-size: 14px; }/* ─── CHARTS SECTION ─────────────────────────────── */.attendance-module .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   margin-top: 24px;
+}
+.attendance-module .charts-grid > div {
+  min-width: 0;
+  overflow: hidden;
 }/* ─── WARNING BANNER ─────────────────────────────── */.attendance-module .warning-banner {
   background: var(--warning-light);
   border: 1px solid var(--warning);

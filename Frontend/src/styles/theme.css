@@ -9,7 +9,7 @@
   --card-bg: #ffffff;
   --sidebar-bg: linear-gradient(180deg, #1e4a8c 0%, #163d75 42%, #0f2847 100%);
   --navbar-bg: #ffffff;
-  --text-primary: #000000;
+  --text-primary: #111827;
   --text-secondary: #374151;
   --border-color: #e5e7eb;
   --accent-blue: #2563eb;
@@ -22,17 +22,17 @@
   --glass-border: #e5e7eb;
 
   /* Centralized Typography Variables */
-  --text-heading: #000000;
+  --text-heading: #111827;
   --text-paragraph: #374151;
-  --text-label: #000000;
-  --text-table: #000000;
-  --text-input: #000000;
-  --text-button: #000000;
-  --text-navbar: #000000;
+  --text-label: #111827;
+  --text-table: #111827;
+  --text-input: #111827;
+  --text-button: #111827;
+  --text-navbar: #111827;
   --text-sidebar: #ffffff;
   --text-placeholder: #6b7280;
   --text-white: #ffffff;
-  --text-black: #000000;
+  --text-black: #111827;
 }
 
 .dark-theme {
@@ -41,7 +41,7 @@
   --card-bg: #1e293b;
   --sidebar-bg: rgba(10, 15, 35, 0.98);
   --navbar-bg: #0c1428;
-  --text-primary: #ffffff;
+  --text-primary: #F8FAFC;
   --text-secondary: #cbd5e1;
   --border-color: rgba(34, 211, 238, 0.15);
   --accent-blue: #6366f1;
@@ -60,16 +60,16 @@
   --glass-border: rgba(34, 211, 238, 0.2);
 
   /* Centralized Typography Variables */
-  --text-heading: #ffffff;
-  --text-paragraph: #d1d5db;
-  --text-label: #f1f5f9;
-  --text-table: #f1f5f9;
-  --text-input: #ffffff;
-  --text-button: #ffffff;
-  --text-navbar: #ffffff;
-  --text-sidebar: #ffffff;
+  --text-heading: #F8FAFC;
+  --text-paragraph: #cbd5e1;
+  --text-label: #F8FAFC;
+  --text-table: #F8FAFC;
+  --text-input: #F8FAFC;
+  --text-button: #F8FAFC;
+  --text-navbar: #F8FAFC;
+  --text-sidebar: #F8FAFC;
   --text-placeholder: #94a3b8;
-  --text-white: #ffffff;
+  --text-white: #F8FAFC;
   --text-black: #000000;
 }
 
@@ -137,54 +137,35 @@ body {
   color: #111827 !important;
 }
 
-/* ----- Sidebar: navy gradient, white text ----- */
+/* ----- Sidebar: crisp light sidebar in light theme ----- */
 .light-theme .app-dashboard-layout aside {
-  background: linear-gradient(
-    180deg,
-    #1e4a8c 0%,
-    #163d75 42%,
-    #0f2847 100%
-  ) !important;
-  border-right-color: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
-  box-shadow: 4px 0 24px rgba(15, 40, 80, 0.12);
+  background: #ffffff !important;
+  border-right: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
 }
 
 .light-theme .app-dashboard-layout aside .text-foreground,
 .light-theme .app-dashboard-layout aside .text-xl {
-  color: #ffffff !important;
+  color: #111827 !important;
 }
 
 .light-theme .app-dashboard-layout aside .text-muted-foreground {
-  color: rgba(255, 255, 255, 0.78) !important;
+  color: #111827 !important;
 }
 
-.light-theme .app-dashboard-layout aside a:not([class*="bg-primary"]) {
-  color: rgba(255, 255, 255, 0.85) !important;
+.light-theme .app-dashboard-layout aside a:not([class*="active-link"]) {
+  color: #111827 !important;
 }
 
-.light-theme .app-dashboard-layout aside a:not([class*="bg-primary"]):hover {
-  background: rgba(255, 255, 255, 0.12) !important;
-  color: #ffffff !important;
-}
-
-.light-theme .app-dashboard-layout aside a[class*="bg-primary"] {
-  background: #2563eb !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+.light-theme .app-dashboard-layout aside a:not([class*="active-link"]):hover {
+  background: rgba(108, 99, 255, 0.08) !important;
+  color: #111827 !important;
 }
 
 .light-theme .app-dashboard-layout aside .border-border,
 .light-theme .app-dashboard-layout aside .border-t {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
-
-.light-theme .app-dashboard-layout aside .bg-primary {
-  background-color: #3b82f6 !important;
-}
-
-.light-theme .app-dashboard-layout aside .text-primary-foreground {
-  color: #ffffff !important;
+  border-color: #e5e7eb !important;
 }
 
 /* Mobile menu scrim — dim, not white haze */
@@ -451,12 +432,12 @@ button {
 }
 
 .premium-sidebar .text-muted-foreground {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: #cbd5e1 !important;
 }
 
 .premium-sidebar nav a,
 .premium-sidebar nav button {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: #F8FAFC !important;
   transition: all 0.2s ease-in-out;
 }
 

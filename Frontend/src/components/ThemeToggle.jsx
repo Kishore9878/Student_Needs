@@ -1,68 +1,49 @@
 import React from "react";
 import { Moon, Sun } from "lucide-react";
-import { motion } from "framer-motion";
 import { useTheme } from "@/hooks/useTheme.js";
 import { cn } from "@/lib/utils";
 
-/**
- * Global theme toggle — sun (light) / moon (dark).
- * Use in any navbar; stays synced with ThemeProvider + settings.
- */
-export const ThemeToggle = ({ className, size = "default" }) => {
-  const { theme, toggleTheme } = useTheme();
+export const ThemeToggle = ({ className }) => {
+  const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
 
-  const sizeClasses =
-    size === "sm" ? "w-9 h-9" : size === "lg" ? "w-11 h-11" : "w-10 h-10";
-  const iconSize = size === "sm" ? "w-4 h-4" : "w-5 h-5";
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    setTheme(isDark ? "light" : "dark");
+  };
 
   return (
-    <motion.button
-      type="button"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={toggleTheme}
+    <div
+      onClick={handleToggle}
       className={cn(
-        "relative rounded-xl flex items-center justify-center transition-colors",
-        "bg-secondary hover:bg-secondary/80 border border-border/50",
-        "text-foreground shadow-sm",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "min-w-[40px] min-h-[40px]",
-        sizeClasses,
-        className,
+        "relative flex items-center justify-between p-1 rounded-full cursor-pointer select-none transition-all duration-300 ease-out hover:scale-[1.03]",
+        "w-[110px] h-10 bg-white/70 dark:bg-slate-950/65 backdrop-blur-[20px] border border-white/30 dark:border-cyan-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(99,102,241,0.15)]",
+        className
       )}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      title={isDark ? "Light mode" : "Dark mode"}
+      role="switch"
+      aria-checked={isDark}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      <span className="flex items-center justify-center w-full h-full">
-        <motion.div
-          initial={false}
-          animate={{
-            scale: isDark ? 1 : 0,
-            opacity: isDark ? 1 : 0,
-            rotate: isDark ? 0 : 180,
-          }}
-          transition={{ duration: 0.2 }}
-          className="absolute text-slate-600 dark:text-slate-300"
-        >
-          <Moon className={iconSize} />
-        </motion.div>
-      </span>
-      <span className="flex items-center justify-center w-full h-full">
-        <motion.div
-          initial={false}
-          animate={{
-            scale: !isDark ? 1 : 0,
-            opacity: !isDark ? 1 : 0,
-            rotate: !isDark ? 0 : -180,
-          }}
-          transition={{ duration: 0.2 }}
-          className="absolute text-amber-500"
-        >
-          <Sun className={iconSize} />
-        </motion.div>
-      </span>
-    </motion.button>
+      {/* Sun Icon */}
+      <div className="flex items-center justify-center w-12 h-8 z-10 transition-colors duration-300 text-amber-500">
+        <Sun className={cn("w-4.5 h-4.5 transition-transform duration-300", !isDark ? "opacity-100 scale-100" : "opacity-40 scale-90")} />
+      </div>
+
+      {/* Slider Knob */}
+      <div
+        className={cn(
+          "absolute left-1 top-1 bottom-1 w-12 rounded-full bg-white dark:bg-indigo-600 shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-white/10 dark:border-indigo-500/35 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center justify-center",
+          isDark ? "translate-x-[54px]" : "translate-x-0"
+        )}
+      >
+        <div className="w-2.5 h-2.5 rounded-full bg-indigo-500/30 dark:bg-white" />
+      </div>
+
+      {/* Moon Icon */}
+      <div className="flex items-center justify-center w-12 h-8 z-10 transition-colors duration-300 text-slate-400 dark:text-indigo-200">
+        <Moon className={cn("w-4.5 h-4.5 transition-transform duration-300", isDark ? "opacity-100 scale-100" : "opacity-40 scale-90")} />
+      </div>
+    </div>
   );
 };
 

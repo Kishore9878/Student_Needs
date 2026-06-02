@@ -6,7 +6,7 @@ export const DashboardSection = React.memo(({ title, description, children, acti
     <section className={cn("space-y-4", className)}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
+          <h2 className="section-title text-foreground tracking-tight">
             {title}
           </h2>
           {description && (

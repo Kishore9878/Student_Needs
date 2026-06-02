@@ -111,10 +111,10 @@ export function VerifierDashboard() {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+            <h1 className="dashboard-title text-foreground tracking-tight">
               Verifier Dashboard
             </h1>
-            <p className="text-muted-foreground mt-1 text-sm">
+            <p className="text-muted-foreground description-text mt-1">
               Welcome back, {verifierName}
             </p>
           </div>

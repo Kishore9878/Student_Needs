@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import studyImg from "../../assets/images/study2.jpg";
 import "../../styles/Tutorials/TutorAvailability.css";
 import { useNavigate } from "react-router-dom";
 import { saveTutorAvailability } from "@/services/api/tutorialsApi.js";
 import Navbar from "../../components/Tutorials/Navbar";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
 
 function TutorAvailability() {
+  const isUnifiedLayout = useContext(LayoutContext);
   const navigate = useNavigate();
 
   const [subjects, setSubjects] = useState([]);
@@ -79,12 +81,12 @@ function TutorAvailability() {
 
   return (
     <>
-      <Navbar />
+      {!isUnifiedLayout && <Navbar />}
 
       <div
-        className="availability-page h-[calc(100vh-100px)] overflow-y-auto"
+        className={isUnifiedLayout ? "" : "availability-page h-[calc(100vh-100px)] overflow-y-auto"}
         style={{}}
-        data-lenis-prevent="true"
+        data-lenis-prevent={isUnifiedLayout ? "false" : "true"}
       >
         <div className="availability-container">
           {/* LEFT */}

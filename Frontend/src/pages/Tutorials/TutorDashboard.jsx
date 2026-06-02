@@ -55,8 +55,8 @@ function TutorDashboard() {
     <DashboardLayout pageTitle="Tutor Dashboard" role="tutor">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">👨‍🏫 Tutor Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Manage your teaching schedule and students</p>
+          <h1 className="dashboard-title text-foreground tracking-tight">👨‍🏫 Tutor Dashboard</h1>
+          <p className="text-muted-foreground description-text mt-1">Manage your teaching schedule and students</p>
         </div>
       </div>
 

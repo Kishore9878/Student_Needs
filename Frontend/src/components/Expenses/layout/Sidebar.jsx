@@ -7,8 +7,15 @@ import {
   MdPieChart,
   MdArrowBack,
 } from "react-icons/md";
+import { useSidebar } from "@/contexts/SidebarContext";
+import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
 
-const Sidebar = ({ isOpen, setIsOpen }) => {
+const Sidebar = () => {
+  const { isCollapsed, toggleSidebar, closeMobileMenu } = useSidebar();
+  const { user } = useAuth();
+
   const navItems = [
     { name: "Dashboard", path: "/expenses-tracker", icon: <MdDashboard size={24} /> },
     {
@@ -21,59 +28,137 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   ];
 
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden backdrop-blur-sm transition-opacity"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+    <div className={cn(
+      "flex flex-col h-full bg-card sidebar-transition select-none",
+      isCollapsed ? "px-2 py-6" : ""
+    )}>
+      {/* Branding */}
+      <div className="flex items-center justify-center h-20 border-b border-border shrink-0">
+        <h1 className="text-2xl font-bold font-mont tracking-wider text-foreground">
+          {isCollapsed ? (
+            <span className="text-brand-primary">F<span className="text-foreground">T</span></span>
+          ) : (
+            <><span className="text-brand-primary">Fin</span>Track</>
+          )}
+        </h1>
+      </div>
 
-      {/* Sidebar container */}
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 premium-sidebar border-l-0 rounded-l-none transform transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:flex md:flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
-        <div className="flex items-center justify-center h-24 border-b border-border/50">
-          <h1 className="text-2xl font-bold font-mont tracking-wider text-foreground">
-            <span className="text-brand-primary">Fin</span>Track
-          </h1>
-        </div>
-
-        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
-          <Link
-            to="/student/dashboard"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-4 px-4 py-3 mb-4 rounded-xl text-muted-foreground hover:bg-white/10 transition-all duration-200 group"
+      {/* Navigation */}
+      <nav className={cn(
+        "flex flex-col flex-1 overflow-y-auto overflow-x-hidden",
+        isCollapsed ? "items-center gap-3 py-6" : "px-4 py-6 space-y-1.5"
+      )}>
+        <Link
+          to="/student/dashboard"
+          onClick={closeMobileMenu}
+          className={cn(
+            "group relative flex items-center transition-all duration-200 sidebar-link-btn",
+            isCollapsed 
+              ? "w-12 h-12 justify-center p-0 rounded-2xl mb-4" 
+              : "gap-4 px-4 py-3 mb-4 rounded-xl"
+          )}
+        >
+          <div className="flex-shrink-0 transition-transform group-hover:-translate-x-1 duration-200">
+            <MdArrowBack size={24} />
+          </div>
+          {!isCollapsed && <span>Back to Dashboard</span>}
+          {isCollapsed && (
+            <div className="absolute left-16 scale-0 rounded-md px-2 py-1 bg-slate-900 text-white text-xs font-semibold shadow-md transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+              Back to Dashboard
+            </div>
+          )}
+        </Link>
+        
+        {navItems?.map((item) => (
+          <NavLink
+            key={item.name}
+            to={item.path}
+            end={item.path === "/expenses-tracker"}
+            onClick={closeMobileMenu}
+            className={({ isActive }) =>
+              cn(
+                "group relative flex items-center transition-all duration-200 sidebar-link-btn",
+                isCollapsed 
+                  ? "w-12 h-12 justify-center p-0 rounded-2xl" 
+                  : "gap-4 px-4 py-3 rounded-xl",
+                isActive ? "active-link" : ""
+              )
+            }
           >
             <div className="flex-shrink-0 transition-transform group-hover:scale-110 duration-200">
-              <MdArrowBack size={24} />
+              {item.icon}
             </div>
-            <span className="font-medium">Back to Dashboard</span>
-          </Link>
-          {navItems?.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              end={item.path === "/expenses-tracker"}
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
-                  isActive
-                    ? "active"
-                    : "text-muted-foreground hover:bg-white/10"
-                }`
-              }
-            >
-              <div className="flex-shrink-0 transition-transform group-hover:scale-110 duration-200">
-                {item.icon}
+            {!isCollapsed && <span>{item.name}</span>}
+            {isCollapsed && (
+              <div className="absolute left-16 scale-0 rounded-md px-2 py-1 bg-slate-900 text-white text-xs font-semibold shadow-md transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+                {item.name}
               </div>
-              <span className="font-medium">{item.name}</span>
-            </NavLink>
-          ))}
-        </nav>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Bottom Actions */}
+      <div className={cn(
+        "mt-auto border-t border-border shrink-0 flex flex-col",
+        isCollapsed ? "items-center gap-3 p-2" : "space-y-3 p-4"
+      )}>
+        {/* User Card */}
+        <div className={cn(
+          "flex items-center rounded-2xl bg-secondary/35 border border-border/50 transition-all duration-200 overflow-hidden",
+          isCollapsed ? "w-12 h-12 justify-center p-0" : "gap-3 p-3"
+        )}>
+          {/* Avatar */}
+          <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center shrink-0 font-bold text-primary">
+            {user?.profilePic ? (
+              <img
+                src={user.profilePic}
+                alt="User avatar"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-sm uppercase">{(user?.username || user?.name || 'U')[0].toUpperCase()}</span>
+            )}
+          </div>
+          
+          {/* Name & Role */}
+          {!isCollapsed && (
+            <div className="flex-1 flex items-center justify-between min-w-0">
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-semibold text-foreground truncate">{user?.username || user?.name || "User"}</span>
+                <span className="text-xs text-muted-foreground capitalize truncate">Student</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 ml-2" />
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar Collapse Toggle Button */}
+        <button
+          onClick={toggleSidebar}
+          className={cn(
+            "group relative flex items-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-all duration-200 w-full cursor-pointer",
+            isCollapsed ? "w-12 h-12 justify-center p-0 rounded-2xl" : "gap-3 px-3 py-2.5 rounded-xl"
+          )}
+          aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+        >
+          <svg
+            className={cn("w-5 h-5 shrink-0 transform transition-transform duration-300", isCollapsed ? "rotate-180" : "")}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          </svg>
+          {!isCollapsed && <span className="sidebar-label">Collapse</span>}
+          {isCollapsed && (
+            <div className="absolute left-16 scale-0 rounded-md px-2 py-1 bg-slate-900 text-white text-xs font-semibold shadow-md transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+              Expand
+            </div>
+          )}
+        </button>
       </div>
-    </>
+    </div>
   );
 };
 

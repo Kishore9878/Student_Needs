@@ -9,13 +9,24 @@ import { NotificationCenter } from '../../ui/NotificationCenter.jsx';
 import { ThemeToggle } from '@/components/ThemeToggle.jsx';
 import { useAuth } from '@/contexts/GlobalAuthContext.jsx';
 
-const TopNavbar = ({ setIsSidebarOpen }) => {
+import { useSidebar } from "@/contexts/SidebarContext";
+
+const TopNavbar = () => {
   const navigate = useNavigate();
   const ref = useRef(null);
   const { user, logout } = useAuth();
+  const { toggleSidebar, toggleMobileMenu } = useSidebar();
 
   const logoutHandle = () => {
     logout();
+  };
+
+  const handleHamburgerClick = () => {
+    if (window.innerWidth < 768) {
+      toggleMobileMenu();
+    } else {
+      toggleSidebar();
+    }
   };
 
   return (
@@ -24,10 +35,11 @@ const TopNavbar = ({ setIsSidebarOpen }) => {
       
       <div className="flex items-center gap-4 min-w-0">
         <button 
-          onClick={() => setIsSidebarOpen(true)}
-          className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors md:hidden focus-animation rounded-lg shrink-0"
+          onClick={handleHamburgerClick}
+          className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors focus-animation rounded-lg shrink-0 cursor-pointer"
+          aria-label="Toggle Sidebar"
         >
-          <HiOutlineMenuAlt2 size={24} />
+          <HiOutlineMenuAlt2 size={24} className="text-[#111827] dark:text-[#F8FAFC]" />
         </button>
 
         <Link

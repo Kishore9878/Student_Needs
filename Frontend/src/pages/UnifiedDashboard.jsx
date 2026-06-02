@@ -261,10 +261,10 @@ const UnifiedDashboard = () => {
             {initials}
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1 className="dashboard-title text-foreground tracking-tight">
               Welcome, {user?.name || user?.firstName || "Student"}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground description-text">
               Overview across attendance, expenses, tutorials, and referrals
             </p>
           </div>

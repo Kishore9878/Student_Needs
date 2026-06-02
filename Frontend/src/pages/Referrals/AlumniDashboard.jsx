@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
 import { Button } from '@/components/Referrals/ui/button.jsx';
 import { Input } from '@/components/Referrals/ui/input.jsx';
 import { Label } from '@/components/Referrals/ui/label.jsx';
@@ -37,6 +38,7 @@ import { alumniProfileApi } from '@/services/Referrals/alumniProfile.js';
 import { BASE_URL } from '@/services/api/tutorialsApi.js';
 
 export function AlumniDashboard() {
+  const isUnifiedLayout = useContext(LayoutContext);
   const { user, isAuthenticated } = useAuth();
   const [backendOpportunities, setBackendOpportunities] = useState([]);
   const [verifiedCandidates, setVerifiedCandidates] = useState({});
@@ -662,14 +664,14 @@ export function AlumniDashboard() {
   }, {});
 
   return (
-    <div className="space-y-4 sm:space-y-6 mt-20 sm:mt-24 px-4 sm:px-6 md:px-8">
+    <div className={cn("space-y-4 sm:space-y-6", isUnifiedLayout ? "mt-0" : "mt-20 sm:mt-24 px-4 sm:px-6 md:px-8")}>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col items-start justify-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 leading-tight text-foreground">
+            <h1 className="dashboard-title text-foreground tracking-tight mb-2">
               <span className="gradient-text2">Alumni </span> 
               <span className="gradient-text3">Dashboard</span>
             </h1>
-            <p className="text-sm sm:text-base text-muted-foreground">
+            <p className="text-muted-foreground description-text">
               {user ? `Welcome back, ${alumniName}!` : 'Create jobs and provide signed referrals to verified students'}
             </p>
         </div>
