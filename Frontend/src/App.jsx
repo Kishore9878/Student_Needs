@@ -105,11 +105,7 @@ const AlumniDashboard = React.lazy(() =>
     default: m.AlumniDashboard,
   })),
 );
-const VerifierDashboard = React.lazy(() =>
-  import("@/pages/Referrals/VerifierDashboard.jsx").then((m) => ({
-    default: m.VerifierDashboard,
-  })),
-);
+
 const ReferralsStudentDashboard = React.lazy(() =>
   import("@/pages/Referrals/StudentDashboard.jsx").then((m) => ({
     default: m.StudentDashboard,
@@ -124,6 +120,9 @@ import {
   RoleSelectionPage,
   UnifiedLanding,
 } from "@/pages/UnifiedFlow.jsx";
+import VerifyOtp from "@/pages/VerifyOtp.jsx";
+import ForgotPassword from "@/pages/ForgotPassword.jsx";
+import SocialSuccess from "@/pages/SocialSuccess.jsx";
 
 // ======================================================
 //                    TUTORIALS
@@ -217,6 +216,9 @@ const AttendanceRoutes = () => {
 
       <Route path="/" element={<UnifiedLanding />} />
       <Route path="/role-selection" element={<RoleSelectionPage />} />
+      <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/auth/social-success" element={<SocialSuccess />} />
       <Route
         path="/role-selector"
         element={<Navigate to="/role-selection" replace />}
@@ -245,14 +247,7 @@ const AttendanceRoutes = () => {
         path="/auth/alumni/signup"
         element={<Navigate to="/signup/alumni" replace />}
       />
-      <Route
-        path="/auth/verifier/login"
-        element={<Navigate to="/login/verifier" replace />}
-      />
-      <Route
-        path="/auth/verifier/signup"
-        element={<Navigate to="/signup/verifier" replace />}
-      />
+
 
       <Route
         path="/student/expenses"
@@ -686,29 +681,7 @@ const AttendanceRoutes = () => {
         />
       </Route>
 
-      {/* Verifier Protected Group */}
-      <Route
-        element={
-          <GlobalProtectedRoute allowedRoles={["verifier"]}>
-            <Outlet />
-          </GlobalProtectedRoute>
-        }
-      >
-        <Route
-          path="/verifier/dashboard"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <DashboardLayout role="verifier" pageTitle="Verifier Dashboard">
-                <VerifierDashboard />
-              </DashboardLayout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/verifier/*"
-          element={<Navigate to="/verifier/dashboard" replace />}
-        />
-      </Route>
+
       <Route
         path="/auth/*"
         element={

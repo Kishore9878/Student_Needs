@@ -232,9 +232,9 @@ const About = () => {
               },
               {
                 step: '02',
-                title: 'Verify Credentials',
-                description: 'College verifiers authenticate student resumes on-chain, creating trusted profiles.',
-                color: 'from-verifier/20 to-verifier/10',
+                title: 'Get Verified',
+                description: 'Students complete their profiles and verify their credentials on-chain to build trusted profiles.',
+                color: 'from-primary/20 to-primary/10',
               },
               {
                 step: '03',

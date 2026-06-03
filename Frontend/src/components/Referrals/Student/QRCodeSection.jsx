@@ -72,7 +72,7 @@ export function QRCodeSection({ student, address }) {
         
         <p className="text-sm text-muted-foreground text-center mb-6">
           This QR code contains your encoded student data and resume hash. 
-          Share it with verifiers or employers for quick verification via blockchain.
+          Share it with employers for quick verification via blockchain.
         </p>
 
         {qrCodeData ? (

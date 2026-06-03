@@ -24,7 +24,7 @@ import { applicationsApi } from "@/services/Referrals/application.js";
 import { showToast } from "@/components/Referrals/TransactionToast.jsx";
 
 /**
- * Modal component to display a detailed student profile to alumni/verifiers.
+ * Modal component to display a detailed student profile to alumni.
  * @param {Object} props
  * @param {boolean} props.isOpen - Controls visibility
  * @param {Function} props.onClose - Close handler

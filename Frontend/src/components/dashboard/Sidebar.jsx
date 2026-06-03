@@ -70,14 +70,6 @@ const Sidebar = ({ className, role = "student" }) => {
         icon: MessageSquare,
       },
     ];
-  } else if (currentRole === "verifier") {
-    links = [
-      {
-        name: "Dashboard",
-        href: "/verifier/dashboard",
-        icon: LayoutDashboard,
-      },
-    ];
   } else {
     // Default Student Links
     links = [

@@ -5,12 +5,10 @@ const STORAGE_KEYS = {
   REFERRALS: "alumni_referral_referrals",
   REFERRAL_APPLICATIONS: "alumni_referral_referral_applications",
   CURRENT_ROLE: "alumni_referral_current_role",
-  VERIFIER_ADDRESS: "alumni_referral_verifier_address",
+
 };
 
-// Default verifier address
-const DEFAULT_VERIFIER =
-  "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+
 
 export const storage = {
   // Students
@@ -157,17 +155,7 @@ export const storage = {
       .filter((a) => a.referralId === referralId);
   },
 
-  // Verifier address
-  getVerifierAddress: () => {
-    return (
-      localStorage.getItem(STORAGE_KEYS.VERIFIER_ADDRESS) ||
-      DEFAULT_VERIFIER
-    );
-  },
 
-  setVerifierAddress: (address) => {
-    localStorage.setItem(STORAGE_KEYS.VERIFIER_ADDRESS, address);
-  },
 
   // Generate hash from file
   generateHash: async (file) => {

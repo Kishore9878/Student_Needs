@@ -108,9 +108,12 @@ export function useStudentSignup() {
     if (!form.data.password) {
       form.setError('password', 'Password is required');
       isValid = false;
-    } else if (form.data.password.length < 6) {
-      form.setError('password', 'Password must be at least 6 characters');
-      isValid = false;
+    } else {
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!regex.test(form.data.password)) {
+        form.setError('password', 'Password must be at least 8 characters, with 1 uppercase, 1 lowercase, 1 number, and 1 special character.');
+        isValid = false;
+      }
     }
 
     if (!form.data.collegeName || !form.data.collegeName.trim()) {
@@ -121,32 +124,7 @@ export function useStudentSignup() {
     return isValid;
   }, [form]);
 
-  // const handleSubmit = useCallback(async () => {
-  //   if (!validate()) {
-  //     return { success: false, message: 'Please fix form errors' };
-  //   }
-
-  //   form.setSubmitting(true);
-  //   try {
-  //     const response = await studentSignup(form.data);
-  //     if (response.success) {
-  //       form.resetForm();
-  //       navigate('/student/dashboard');
-  //     } else {
-  //       form.setSubmitError(response.message);
-  //     }
-  //     return response;
-  //   } catch (error) {
-  //     const message = error instanceof Error ? error.message : 'Signup failed';
-  //     form.setSubmitError(message);
-  //     return { success: false, message };
-  //   } finally {
-  //     form.setSubmitting(false);
-  //   }
-  // }, [form, studentSignup, navigate, validate]);
-
   const handleSubmit = useCallback(async () => {
-
     if (!validate()) {
       return {
         success: false,
@@ -157,51 +135,32 @@ export function useStudentSignup() {
     form.setSubmitting(true);
 
     try {
-
-      console.log("SIGNUP FORM DATA:", form.data);
-
       const response = await studentSignup(form.data);
-
-      console.log("SIGNUP RESPONSE:", response);
-
       if (response.success) {
-
+        const userEmail = form.data.email;
         form.resetForm();
-
-        // Delay avoids auth timing issues
         setTimeout(() => {
-          navigate('/student/dashboard');
+          navigate(`/verify-otp?email=${encodeURIComponent(userEmail)}&role=student`);
         }, 100);
-
       } else {
-
         form.setSubmitError(
           response.message || 'Signup failed'
         );
       }
-
       return response;
-
     } catch (error) {
-
-      console.log("SIGNUP HOOK ERROR:", error);
-
       const message =
         error?.response?.data?.message ||
         error?.message ||
         'Signup failed';
-
       form.setSubmitError(message);
-
       return {
         success: false,
         message
       };
-
     } finally {
       form.setSubmitting(false);
     }
-
   }, [form, studentSignup, navigate, validate]);
 
   return {
@@ -320,7 +279,6 @@ export function useStudentLogin() {
       const response = await studentLogin(form.data);
 
       if (response.success) {
-
         const token =
           response.token ||
           response.data?.token;
@@ -351,13 +309,18 @@ export function useStudentLogin() {
 
         form.resetForm();
 
-        // Delay avoids protected route timing issue
         setTimeout(() => {
           navigate('/student/dashboard');
         }, 100);
 
+      } else if (response.isVerified === false) {
+        // Redirect to OTP verification page if login response returns unverified
+        const userEmail = form.data.email;
+        form.resetForm();
+        setTimeout(() => {
+          navigate(`/verify-otp?email=${encodeURIComponent(userEmail)}&role=student`);
+        }, 100);
       } else {
-
         form.setSubmitError(
           response.message || 'Login failed'
         );
@@ -435,9 +398,12 @@ export function useAlumniSignup() {
     if (!form.data.password) {
       form.setError('password', 'Password is required');
       isValid = false;
-    } else if (form.data.password.length < 6) {
-      form.setError('password', 'Password must be at least 6 characters');
-      isValid = false;
+    } else {
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!regex.test(form.data.password)) {
+        form.setError('password', 'Password must be at least 8 characters, with 1 uppercase, 1 lowercase, 1 number, and 1 special character.');
+        isValid = false;
+      }
     }
 
     if (!form.data.collegeName.trim()) {
@@ -457,8 +423,11 @@ export function useAlumniSignup() {
     try {
       const response = await alumniSignup(form.data);
       if (response.success) {
+        const userEmail = form.data.email;
         form.resetForm();
-        navigate('/login/alumni');
+        setTimeout(() => {
+          navigate(`/verify-otp?email=${encodeURIComponent(userEmail)}&role=alumni`);
+        }, 100);
       } else {
         form.setSubmitError(response.message);
       }
@@ -542,6 +511,12 @@ export function useAlumniLogin() {
         setTimeout(() => {
           navigate('/alumni/dashboard');
         }, 100);
+      } else if (response.isVerified === false) {
+        const userEmail = form.data.email;
+        form.resetForm();
+        setTimeout(() => {
+          navigate(`/verify-otp?email=${encodeURIComponent(userEmail)}&role=alumni`);
+        }, 100);
       } else {
         form.setSubmitError(response.message || 'Login failed');
       }
@@ -562,220 +537,7 @@ export function useAlumniLogin() {
   };
 }
 
-// ============================================
-// Verifier Signup Hook
-// ============================================
 
-const initialVerifierSignup = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-};
-
-export function useVerifierSignup() {
-  const { setUser } = useAuth();
-  const navigate = useNavigate();
-  const form = useAuthForm(initialVerifierSignup);
-
-  const validate = useCallback(() => {
-    let isValid = true;
-
-    if (!form.data.firstName.trim()) {
-      form.setError('firstName', 'First name is required');
-      isValid = false;
-    }
-
-    if (!form.data.lastName.trim()) {
-      form.setError('lastName', 'Last name is required');
-      isValid = false;
-    }
-
-    if (!form.data.email.trim()) {
-      form.setError('email', 'Email is required');
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.data.email)) {
-      form.setError('email', 'Invalid email format');
-      isValid = false;
-    }
-
-    if (!form.data.password) {
-      form.setError('password', 'Password is required');
-      isValid = false;
-    } else if (form.data.password.length < 6) {
-      form.setError('password', 'Password must be at least 6 characters');
-      isValid = false;
-    }
-
-
-    return isValid;
-  }, [form]);
-
-  const handleSubmit = useCallback(async () => {
-    if (!validate()) {
-      return { success: false, message: 'Please fix form errors' };
-    }
-
-    form.setSubmitting(true);
-    try {
-      const { data } = await referralsApiClient.post(AUTH_ENDPOINTS.student.signup, {
-        ...form.data,
-        accountType: 'verifier',
-      });
-
-      if (data.success) {
-        form.resetForm();
-        showToast({
-          type: 'success',
-          message: 'Verifier signup successful!',
-          description: 'Please log in with your verifier account.'
-        });
-
-        // Clear stale auth localStorage keys
-        localStorage.removeItem('token');
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('User');
-        localStorage.removeItem('auth_user');
-        localStorage.removeItem('auth_data');
-
-        setUser(null);
-
-        setTimeout(() => {
-          navigate('/login/verifier', { replace: true });
-        }, 100);
-      } else {
-        form.setSubmitError(data.message || 'Signup failed');
-      }
-      return data;
-    } catch (error) {
-      const message = error?.response?.data?.message || error?.message || 'Signup failed';
-      form.setSubmitError(message);
-      return { success: false, message };
-    } finally {
-      form.setSubmitting(false);
-    }
-  }, [form, setUser, navigate, validate]);
-
-  return {
-    ...form,
-    handleSubmit,
-    validate,
-  };
-}
-
-// ============================================
-// Verifier Login Hook
-// ============================================
-
-export function useVerifierLogin() {
-  const { studentLogin, setUser } = useAuth();
-  const navigate = useNavigate();
-  const form = useAuthForm(initialLogin);
-  const submitLockRef = useRef(false);
-
-  const validate = useCallback(() => {
-    let isValid = true;
-
-    if (!form.data.email.trim()) {
-      form.setError('email', 'Email is required');
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.data.email)) {
-      form.setError('email', 'Invalid email format');
-      isValid = false;
-    }
-
-    if (!form.data.password) {
-      form.setError('password', 'Password is required');
-      isValid = false;
-    }
-
-    return isValid;
-  }, [form]);
-
-  const handleSubmit = useCallback(async () => {
-    if (submitLockRef.current) {
-      return { success: false, message: 'Login already in progress' };
-    }
-
-    if (!validate()) {
-      return { success: false, message: 'Please fix form errors' };
-    }
-
-    submitLockRef.current = true;
-    form.setSubmitting(true);
-    try {
-      const response = await studentLogin(form.data);
-      if (response.success && response.user) {
-        const userRole = (response.user.role || response.user.accountType || "").toLowerCase();
-        if (userRole !== 'verifier') {
-          // Revert the global login state since this is not a verifier
-          localStorage.removeItem('token');
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('user');
-          localStorage.removeItem('User');
-          localStorage.removeItem('auth_user');
-          localStorage.removeItem('auth_data');
-          setUser(null);
-          form.setSubmitError('Unauthorized. Only verifier accounts can access this portal.');
-          return { success: false, message: 'Unauthorized access' };
-        }
-
-        // 1. Normalize verifier user
-        const normalizedUser = {
-          ...response.user,
-          role: "verifier",
-          accountType: "verifier",
-        };
-
-        const token = response.token || response.data?.token || localStorage.getItem('token') || localStorage.getItem('auth_token');
-
-        // 2. Persist ALL auth keys
-        if (token) {
-          localStorage.setItem('token', token);
-          localStorage.setItem('auth_token', token);
-        }
-        localStorage.setItem('user', JSON.stringify(normalizedUser));
-        localStorage.setItem('User', JSON.stringify(normalizedUser));
-        localStorage.setItem('auth_user', JSON.stringify(normalizedUser));
-        localStorage.setItem('auth_data', JSON.stringify({ token, user: normalizedUser }));
-
-        // 3. Update auth context with normalized verifier user
-        setUser(normalizedUser);
-
-        // 4. Show success toast
-        showToast({
-          type: 'success',
-          message: 'Login successful!',
-          description: 'Welcome to your verifier dashboard.'
-        });
-
-        form.resetForm();
-
-        // 5. Use delayed navigation
-        setTimeout(() => {
-          navigate('/verifier/dashboard', { replace: true });
-        }, 100);
-      } else {
-        form.setSubmitError(response.message || 'Login failed');
-      }
-      return response;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Login failed';
-      form.setSubmitError(message);
-      return { success: false, message };
-    } finally {
-      submitLockRef.current = false;
-      form.setSubmitting(false);
-    }
-  }, [form.data, form.setSubmitting, form.setSubmitError, form.resetForm, studentLogin, setUser, navigate, validate]);
-
-  return {
-    ...form,
-    handleSubmit,
-    validate,
-  };
-}
 
 // ============================================
 // Role-Based Auth Hook
