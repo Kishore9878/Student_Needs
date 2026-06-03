@@ -393,7 +393,6 @@ export const AuthProvider = ({ children }) => {
     isStudent: userRole === 'student',
     isTutor: userRole === 'tutor',
     isAlumni: userRole === 'alumni',
-    isVerifier: userRole === 'verifier',
 
     login,
     logout,

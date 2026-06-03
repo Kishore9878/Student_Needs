@@ -191,16 +191,16 @@ const WorkProcess = React.memo(() => {
             </div>
 
             <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground mb-2">
-              Verifier Approves and Verifies Credentials
+              Verify Profile On-Chain
             </h3>
             <p className="text-sm sm:text-base text-muted-foreground">
-              College authority verifies authenticity of credentials
+              Students complete on-chain identity check and verify resume credentials
             </p>
           </div>
           <div className="w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[32rem] aspect-[4/5] lg:aspect-auto lg:h-full relative overflow-hidden flex justify-center items-center border rounded-xl order-1 lg:order-2">
             <img
               src="/W2.png"
-              alt="Verifier Approves and Verifies Credentials"
+              alt="Verify Profile On-Chain"
               loading="lazy"
               decoding="async"
               className="absolute w-full h-full rounded-lg object-fill object-center z-0"

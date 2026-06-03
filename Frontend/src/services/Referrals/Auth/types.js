@@ -1,7 +1,7 @@
 // Authentication Types
 
 /**
- * @typedef {'Student' | 'Alumni' | 'Verifier'} AccountType
+ * @typedef {'Student' | 'Alumni'} AccountType
  */
 
 // Base user documentation
@@ -45,16 +45,8 @@
  * @property {string} [referralPreferences]
  */
 
-// Verifier specific user
 /**
- * @typedef {BaseUser & Object} VerifierUser
- * @property {'Verifier'} accountType
- * @property {string} [verifierRole]
- * @property {string} [department]
- */
-
-/**
- * @typedef {StudentUser | AlumniUser | VerifierUser} AuthUser
+ * @typedef {StudentUser | AlumniUser} AuthUser
  */
 
 // Signup request payloads

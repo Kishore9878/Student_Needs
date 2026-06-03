@@ -35,8 +35,7 @@ import { Button } from "@/components/ui/button";
 
 import TutorLoginPage from "./Tutorials/TutorLoginPage";
 import TutorRegisterPage from "./Tutorials/TutorRegisterPage";
-import { VerifierLoginPage } from "@/components/Referrals/Verifier/Auth/VerifierLogin.jsx";
-import { VerifierSignupPage } from "@/components/Referrals/Verifier/Auth/VerifierSignup.jsx";
+
 import {
   useAlumniLogin,
   useAlumniSignup,
@@ -90,13 +89,7 @@ const roles = [
     icon: Briefcase,
     loginTo: "/login/alumni",
   },
-  {
-    id: "verifier",
-    title: "Verifier",
-    description: "Verify students and opportunities",
-    icon: ShieldCheck,
-    loginTo: "/login/verifier",
-  },
+
 ];
 
 const studentModules = [
@@ -243,9 +236,7 @@ export function RoleAuthPage({ mode = "login" }) {
     return mode === "signup" ? <AlumniSignupFlow /> : <AlumniLoginFlow />;
   }
 
-  if (normalizedRole === "verifier") {
-    return mode === "signup" ? <VerifierSignupPage /> : <VerifierLoginPage />;
-  }
+
 
   if (normalizedRole === "tutor") {
     return mode === "signup" ? <TutorRegisterPage /> : <TutorLoginPage />;

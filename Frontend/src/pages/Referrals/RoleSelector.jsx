@@ -18,15 +18,7 @@ const roles = [
     color: "student",
     gradient: "from-student to-primary",
   },
-  {
-    id: "verifier",
-    image: "/Verifier.png",
-    title: "Resume Verifier",
-    description: "College authority to verify student resumes",
-    icon: ShieldCheck,
-    color: "verifier",
-    gradient: "from-verifier to-primary",
-  },
+
   {
     id: "alumni",
     image: "/Alumni.png",
@@ -48,10 +40,7 @@ export function RoleSelector() {
       return;
     }
     
-    if (roleId === 'verifier') {
-      navigate('/auth/verifier/login');
-      return;
-    }
+
     
     if (roleId === 'alumni') {
       navigate('/auth/alumni/login');
@@ -125,7 +114,7 @@ export function RoleSelector() {
         >
           <p className="text-xs sm:text-sm text-muted-foreground text-center">
             <strong className="text-primary">Choose Your Role:</strong> Select
-            Student to apply for referrals, Alumni to post opportunities, or Verifier to validate resumes.
+            Student to apply for referrals, or Alumni to post opportunities.
           </p>
         </motion.div>
       </div>

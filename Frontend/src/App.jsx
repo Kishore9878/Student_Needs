@@ -105,11 +105,7 @@ const AlumniDashboard = React.lazy(() =>
     default: m.AlumniDashboard,
   })),
 );
-const VerifierDashboard = React.lazy(() =>
-  import("@/pages/Referrals/VerifierDashboard.jsx").then((m) => ({
-    default: m.VerifierDashboard,
-  })),
-);
+
 const ReferralsStudentDashboard = React.lazy(() =>
   import("@/pages/Referrals/StudentDashboard.jsx").then((m) => ({
     default: m.StudentDashboard,
@@ -251,14 +247,7 @@ const AttendanceRoutes = () => {
         path="/auth/alumni/signup"
         element={<Navigate to="/signup/alumni" replace />}
       />
-      <Route
-        path="/auth/verifier/login"
-        element={<Navigate to="/login/verifier" replace />}
-      />
-      <Route
-        path="/auth/verifier/signup"
-        element={<Navigate to="/signup/verifier" replace />}
-      />
+
 
       <Route
         path="/student/expenses"
@@ -692,29 +681,7 @@ const AttendanceRoutes = () => {
         />
       </Route>
 
-      {/* Verifier Protected Group */}
-      <Route
-        element={
-          <GlobalProtectedRoute allowedRoles={["verifier"]}>
-            <Outlet />
-          </GlobalProtectedRoute>
-        }
-      >
-        <Route
-          path="/verifier/dashboard"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <DashboardLayout role="verifier" pageTitle="Verifier Dashboard">
-                <VerifierDashboard />
-              </DashboardLayout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/verifier/*"
-          element={<Navigate to="/verifier/dashboard" replace />}
-        />
-      </Route>
+
       <Route
         path="/auth/*"
         element={
