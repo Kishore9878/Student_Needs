@@ -46,6 +46,8 @@ export default function SocialSuccess() {
       setTimeout(() => {
         if (role === "alumni") {
           navigate("/alumni/dashboard");
+        } else if (role === "verifier") {
+          navigate("/verifier/dashboard");
         } else {
           navigate("/student/dashboard");
         }

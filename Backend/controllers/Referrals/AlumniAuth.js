@@ -349,21 +349,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Gate unverified accounts
-    if (!alumni.isVerified) {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      alumni.otp = hashOtp(otp);
-      alumni.otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
-      await alumni.save();
-
-      await sendOtpEmail(alumni.email, otp);
-
-      return res.status(403).json({
-        success: false,
-        isVerified: false,
-        message: "Your alumni account email is unverified. We have sent a fresh OTP verification code to your email. Please verify to log in.",
-      });
-    }
 
     return handleAuthSuccess(alumni, res, "Alumni logged in successfully");
 

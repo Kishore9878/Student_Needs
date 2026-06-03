@@ -34,7 +34,10 @@ router.get("/me", auth, getStudentData);
 // ================= SOCIAL GOOGLE AUTH =================
 router.get(
   "/auth/google",
-  passport.authenticate("google-student", { session: false, scope: ["profile", "email"] })
+  (req, res, next) => {
+    const role = req.query.role || "student";
+    passport.authenticate("google-student", { session: false, scope: ["profile", "email"], state: role })(req, res, next);
+  }
 );
 
 router.get("/auth/google/callback", (req, res, next) => {
@@ -96,7 +99,10 @@ router.get("/auth/google/callback", (req, res, next) => {
 // ================= SOCIAL GITHUB AUTH =================
 router.get(
   "/auth/github",
-  passport.authenticate("github-student", { session: false, scope: ["user:email"] })
+  (req, res, next) => {
+    const role = req.query.role || "student";
+    passport.authenticate("github-student", { session: false, scope: ["user:email"], state: role })(req, res, next);
+  }
 );
 
 router.get("/auth/github/callback", (req, res, next) => {

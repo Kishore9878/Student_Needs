@@ -5,26 +5,29 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import Student from "../../models/Referrals/StudentModel.js";
 import Alumni from "../../models/Referrals/AlumniModel.js";
+import College from "../../models/Referrals/CollegeModel.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const handleSocialAuth = async (profile, done) => {
+const handleSocialAuth = async (profile, targetRole = "student", done) => {
   try {
     const email = profile.emails?.[0]?.value;
     if (!email) {
       return done(null, false, { message: "No email returned from provider" });
     }
 
-    // 1. Search Student DB
-    let user = await Student.findOne({ email });
-    let role = "student";
+    let user = null;
+    let role = targetRole;
 
-    if (!user) {
-      // 2. Search Alumni DB
+    if (targetRole === "alumni") {
+      // Search Alumni DB strictly
       user = await Alumni.findOne({ email });
-      if (user) {
-        role = "alumni";
+    } else {
+      // Search Student DB strictly
+      user = await Student.findOne({ email });
+      if (user && user.accountType) {
+        role = user.accountType;
       }
     }
 
@@ -38,25 +41,56 @@ const handleSocialAuth = async (profile, done) => {
       return done(null, { user, role });
     }
 
-    // 3. User does not exist, auto-create as student
+    // User does not exist, auto-create based on targetRole
     const displayName = profile.displayName || "User";
     const firstName = profile.name?.givenName || displayName.split(" ")[0];
-    const lastName = profile.name?.familyName || displayName.split(" ").slice(1).join(" ") || "Student";
+    const lastName = profile.name?.familyName || displayName.split(" ").slice(1).join(" ") || (targetRole === "alumni" ? "Alumni" : "Student");
     const randomPassword = crypto.randomBytes(16).toString("hex");
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
-    const newUser = await Student.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      isVerified: true,
-      provider: profile.provider,
-      accountType: "student",
-      image: profile.photos?.[0]?.value || `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}%20${lastName}`,
-    });
+    if (targetRole === "alumni") {
+      const collegeName = "Default College";
+      const matchingName = "defaultcollege";
+      let college = await College.findOne({ matchingName });
+      if (!college) {
+        college = await College.create({
+          name: collegeName,
+          matchingName,
+          Student: [],
+          Alumni: [],
+        });
+      }
 
-    return done(null, { user: newUser, role: "student" });
+      const newUser = await Alumni.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        isVerified: true,
+        provider: profile.provider,
+        accountType: "alumni",
+        college: college._id,
+        image: profile.photos?.[0]?.value || `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}%20${lastName}`,
+      });
+
+      college.Alumni.push(newUser._id);
+      await college.save();
+
+      return done(null, { user: newUser, role: "alumni" });
+    } else {
+      const newUser = await Student.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        isVerified: true,
+        provider: profile.provider,
+        accountType: "student",
+        image: profile.photos?.[0]?.value || `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}%20${lastName}`,
+      });
+
+      return done(null, { user: newUser, role: "student" });
+    }
   } catch (error) {
     return done(error, null);
   }
@@ -71,10 +105,11 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: "http://localhost:8000/api/v1/student/auth/google/callback",
-        passReqToCallback: false,
+        passReqToCallback: true,
       },
-      async (accessToken, refreshToken, profile, done) => {
-        return handleSocialAuth(profile, done);
+      async (req, accessToken, refreshToken, profile, done) => {
+        const targetRole = req.query.state || "student";
+        return handleSocialAuth(profile, targetRole, done);
       }
     )
   );
@@ -90,8 +125,9 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
         callbackURL: "http://localhost:8000/api/v1/student/auth/github/callback",
         scope: ["user:email"],
+        passReqToCallback: true,
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (req, accessToken, refreshToken, profile, done) => {
         // GitHub profiles sometimes require fetching email separately
         if (!profile.emails || profile.emails.length === 0) {
           try {
@@ -107,7 +143,8 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
             console.error("Failed to fetch Github email:", e.message);
           }
         }
-        return handleSocialAuth(profile, done);
+        const targetRole = req.query.state || "student";
+        return handleSocialAuth(profile, targetRole, done);
       }
     )
   );

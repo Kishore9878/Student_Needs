@@ -358,22 +358,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Gate unverified users from logging in
-    if (!student.isVerified) {
-      // Auto-trigger a new OTP
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      student.otp = hashOtp(otp);
-      student.otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
-      await student.save();
-
-      await sendOtpEmail(student.email, otp);
-
-      return res.status(403).json({
-        success: false,
-        isVerified: false,
-        message: "Your account email is unverified. We have sent a fresh OTP verification code to your email. Please verify to log in.",
-      });
-    }
 
     return handleAuthSuccess(student, res, "Login successful");
 

@@ -363,7 +363,7 @@ function RoleAuthShell({
               <div className="uc-social-buttons flex gap-3 w-full">
                 <button
                   type="button"
-                  onClick={() => window.location.href = `http://localhost:8000/api/v1/student/auth/google`}
+                  onClick={() => window.location.href = `http://localhost:8000/api/v1/student/auth/google?role=${role}`}
                   className="uc-social-btn flex-grow py-2.5 px-4 rounded-xl border border-indigo-950/60 bg-indigo-950/20 text-sm font-semibold text-slate-300 hover:bg-indigo-950/40 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -376,7 +376,7 @@ function RoleAuthShell({
                 </button>
                 <button
                   type="button"
-                  onClick={() => window.location.href = `http://localhost:8000/api/v1/student/auth/github`}
+                  onClick={() => window.location.href = `http://localhost:8000/api/v1/student/auth/github?role=${role}`}
                   className="uc-social-btn flex-grow py-2.5 px-4 rounded-xl border border-indigo-950/60 bg-indigo-950/20 text-sm font-semibold text-slate-300 hover:bg-indigo-950/40 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
