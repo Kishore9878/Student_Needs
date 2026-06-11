@@ -10,9 +10,6 @@ const getInitialTheme = () => {
   const saved = localStorage.getItem(THEME_STORAGE_KEY);
   if (saved === "light" || saved === "dark" || saved === "system") return saved;
 
-  const legacy = localStorage.getItem("theme");
-  if (legacy === "light" || legacy === "dark" || legacy === "system") return legacy;
-
   return "system";
 };
 
@@ -33,7 +30,6 @@ const applyThemeToDocument = (theme) => {
   root.style.colorScheme = resolved;
 
   localStorage.setItem(THEME_STORAGE_KEY, theme);
-  localStorage.setItem("theme", theme);
 };
 
 export const ThemeProvider = ({ children }) => {

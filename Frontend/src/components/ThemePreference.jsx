@@ -1,5 +1,5 @@
 import React from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Laptop } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme.js";
 import { cn } from "@/lib/utils";
 
@@ -16,8 +16,9 @@ export const ThemePreference = ({
   const { theme, setTheme } = useTheme();
 
   const options = [
-    { id: "light", label: "Light Mode", icon: Sun },
-    { id: "dark", label: "Dark Mode", icon: Moon },
+    { id: "light", label: "Light Mode", icon: Sun, desc: "Clean modern dashboard" },
+    { id: "system", label: "System Default", icon: Laptop, desc: "Sync with your device settings" },
+    { id: "dark", label: "Dark Mode", icon: Moon, desc: "Premium neon cyber style" },
   ];
 
   if (variant === "inline") {
@@ -60,8 +61,8 @@ export const ThemePreference = ({
         <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         <p className="text-sm text-muted-foreground mt-1">{description}</p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {options.map(({ id, label, icon: Icon }) => {
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {options.map(({ id, label, icon: Icon, desc }) => {
           const active = theme === id;
           return (
             <button
@@ -77,7 +78,7 @@ export const ThemePreference = ({
             >
               <div
                 className={cn(
-                  "w-10 h-10 rounded-lg flex items-center justify-center",
+                  "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
                   active
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground",
@@ -87,11 +88,7 @@ export const ThemePreference = ({
               </div>
               <div>
                 <p className="font-medium text-foreground">{label}</p>
-                <p className="text-xs text-muted-foreground">
-                  {id === "light"
-                    ? "Clean modern dashboard"
-                    : "Premium neon cyber style"}
-                </p>
+                <p className="text-xs text-muted-foreground">{desc}</p>
               </div>
             </button>
           );

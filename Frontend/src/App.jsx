@@ -115,11 +115,25 @@ const ReferralsInterviewPage = React.lazy(
   () => import("@/pages/Referrals/InterviewPage.jsx"),
 );
 const ChatPage = React.lazy(() => import("@/pages/Referrals/ChatPage.jsx"));
+const TutorStudentChatPage = React.lazy(() => import("./pages/ChatPage.jsx"));
 import {
   RoleAuthPage,
   RoleSelectionPage,
-  UnifiedLanding,
 } from "@/pages/UnifiedFlow.jsx";
+
+const MarketingLayout = React.lazy(() => import("@/pages/Marketing/MarketingLayout.jsx"));
+const MarketingHome = React.lazy(() => import("@/pages/Marketing/Home.jsx"));
+const MarketingFeatures = React.lazy(() => import("@/pages/Marketing/Features.jsx"));
+const ModuleDetail = React.lazy(() => import("@/pages/Marketing/ModuleDetail.jsx"));
+const MarketingHowItWorks = React.lazy(() => import("@/pages/Marketing/HowItWorks.jsx"));
+const MarketingAbout = React.lazy(() => import("@/pages/Marketing/About.jsx"));
+const MarketingGallery = React.lazy(() => import("@/pages/Marketing/Gallery.jsx"));
+const MarketingCareers = React.lazy(() => import("@/pages/Marketing/Careers.jsx"));
+const MarketingUpdates = React.lazy(() => import("@/pages/Marketing/Updates.jsx"));
+const MarketingSecurity = React.lazy(() => import("@/pages/Marketing/Security.jsx"));
+const MarketingArchitecture = React.lazy(() => import("@/pages/Marketing/Architecture.jsx"));
+const MarketingBlog = React.lazy(() => import("@/pages/Marketing/Blog.jsx"));
+const ContactMessagesAdmin = React.lazy(() => import("@/pages/Marketing/ContactMessagesAdmin.jsx"));
 import VerifyOtp from "@/pages/VerifyOtp.jsx";
 import ForgotPassword from "@/pages/ForgotPassword.jsx";
 import SocialSuccess from "@/pages/SocialSuccess.jsx";
@@ -215,7 +229,24 @@ const AttendanceRoutes = () => {
                       UNIFIED OPENING FLOW
       ====================================================== */}
 
-      <Route path="/" element={<UnifiedLanding />} />
+      <Route element={
+        <Suspense fallback={<DashboardSkeleton />}>
+          <MarketingLayout />
+        </Suspense>
+      }>
+        <Route path="/" element={<MarketingHome />} />
+        <Route path="/features" element={<MarketingFeatures />} />
+        <Route path="/features/:module" element={<ModuleDetail />} />
+        <Route path="/how-it-works" element={<MarketingHowItWorks />} />
+        <Route path="/about" element={<MarketingAbout />} />
+        <Route path="/gallery" element={<MarketingGallery />} />
+        <Route path="/blog" element={<MarketingBlog />} />
+        <Route path="/careers" element={<MarketingCareers />} />
+        <Route path="/updates" element={<MarketingUpdates />} />
+        <Route path="/security" element={<MarketingSecurity />} />
+        <Route path="/architecture" element={<MarketingArchitecture />} />
+        <Route path="/admin/contact-messages" element={<ContactMessagesAdmin />} />
+      </Route>
       <Route path="/role-selection" element={<RoleSelectionPage />} />
       <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -591,6 +622,22 @@ const AttendanceRoutes = () => {
             </Suspense>
           }
         />
+        <Route
+          path="/tutorials/chat"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorStudentChatPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/chat/:conversationId"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorStudentChatPage />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* Expense Tracker Routes */}
@@ -817,6 +864,22 @@ const AttendanceRoutes = () => {
           element={
             <Suspense fallback={<DashboardSkeleton />}>
               <TutorEditProfilePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/chat"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorStudentChatPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tutorials/chat/:conversationId"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <TutorStudentChatPage />
             </Suspense>
           }
         />

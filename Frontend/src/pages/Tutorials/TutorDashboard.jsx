@@ -5,10 +5,10 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { DashboardSection } from "../../components/dashboard/shared/DashboardSection";
 import { DashboardCard } from "../../components/dashboard/shared/DashboardCard";
 import { BookingActivityTimeline } from "../../components/dashboard/tutor/BookingActivityTimeline";
-import { apiClient } from "@/services/apiClient";
+import { apiClient, tutorsApiClient } from "@/services/apiClient";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, BookOpen, Inbox } from "lucide-react";
+import { Calendar, User, BookOpen, Inbox, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 function TutorDashboard() {
@@ -16,6 +16,7 @@ function TutorDashboard() {
 
   const { on, off } = useWebSocket();
   const [analytics, setAnalytics] = useState({ recentRequests: [], activityTimeline: [] });
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchAnalytics = useCallback(async () => {
     try {
@@ -28,18 +29,33 @@ function TutorDashboard() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [fetchAnalytics]);
+  const fetchUnread = useCallback(async () => {
+    try {
+      const { data } = await tutorsApiClient.get("/chat/conversations");
+      if (data?.success) {
+        const totalUnread = data.data.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
+        setUnreadCount(totalUnread);
+      }
+    } catch (err) {
+      console.error("Failed to load chat unreads in tutor dashboard", err);
+    }
+  }, []);
 
   useEffect(() => {
-    const handler = () => fetchAnalytics();
+    fetchAnalytics();
+    fetchUnread();
+  }, [fetchAnalytics, fetchUnread]);
+
+  useEffect(() => {
+    const handler = () => {
+      fetchAnalytics();
+      fetchUnread();
+    };
     on("dashboard_refresh", handler);
     return () => {
       if (off) off("dashboard_refresh", handler);
     };
-  }, [on, off, fetchAnalytics]);
-
+  }, [on, off, fetchAnalytics, fetchUnread]);
 
   return (
     <DashboardLayout pageTitle="Tutor Dashboard" role="tutor">
@@ -108,12 +124,27 @@ function TutorDashboard() {
                   Open Attendance Hub
                 </Button>
               </DashboardCard>
+
+              <DashboardCard className="border-l-4 border-l-pink-500" contentClassName="flex flex-col items-start p-6">
+                <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-500 mb-4 relative">
+                  <MessageSquare className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 flex items-center justify-center text-[9px] font-bold text-white bg-primary rounded-full animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-semibold text-lg mb-1">Chat / Messages</h3>
+                <p className="text-sm text-muted-foreground mb-4">Chat with your students in real-time</p>
+                <Button variant="outline" className="w-full mt-auto font-medium" onClick={() => navigate("/tutorials/chat")}>
+                  Open Chat Room
+                </Button>
+              </DashboardCard>
             </div>
           </DashboardSection>
         </div>
 
         <div className="space-y-6">
-
           <DashboardCard title="Activity Timeline" description="Your recent booking activity">
             {analytics.activityTimeline.length > 0 ? (
               <BookingActivityTimeline activities={analytics.activityTimeline} />

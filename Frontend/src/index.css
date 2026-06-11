@@ -980,3 +980,27 @@ input[type="radio"],
     flex-direction: column;
   }
 }
+
+/* ======================================================
+   LENIS SMOOTH SCROLL INTEGRATION SUPPORT
+   ====================================================== */
+html.lenis,
+html.lenis body {
+  height: auto !important;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  scroll-behavior: shrink;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
