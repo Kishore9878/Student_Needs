@@ -168,6 +168,8 @@ const TutorDashboard = React.lazy(
 import TutorSchedulePage from "./pages/Tutorials/TutorSchedulePage";
 import TutorAcceptPage from "./pages/Tutorials/TutorAcceptPage";
 import TutorEditProfilePage from "./pages/Tutorials/TutorEditProfilePage";
+import TutorialWorkspaceLayout from "./layouts/TutorialWorkspaceLayout";
+import TutorialDashboard from "./pages/Tutorials/TutorialDashboard";
 
 // ======================================================
 //                    EXPENSES
@@ -359,14 +361,6 @@ const AttendanceRoutes = () => {
           }
         />
         <Route
-          path="/tutorials/online-attendance"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <OnlineAttendanceView />
-            </Suspense>
-          }
-        />
-        <Route
           path="/tutorials/attendance/dashboard"
           element={
             <Suspense fallback={<DashboardSkeleton />}>
@@ -547,97 +541,37 @@ const AttendanceRoutes = () => {
           element={<Navigate to="/student/dashboard" replace />}
         />
 
-        {/* Tutorials module home (entry hub — not search/book) */}
-        <Route
-          path="/tutorials/home"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <TutorialsHome />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/student/tutorials"
-          element={<Navigate to="/tutorials/home" />}
-        />
+      </Route>
 
-        {/* Tutorials feature routes */}
-        <Route
-          path="/tutorials/searchTutor"
-          element={<Navigate to="/tutorials/home" replace />}
-        />
-        <Route
-          path="/tutorials/book"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <BookClass />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tutorials/profile"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <Profile />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tutorials/profile/editProfile"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <EditProfilePage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tutorials/profile/manageBooking"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <ManageBookingPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tutorials/profile/classHistory"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <ClassHistoryPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tutorials/profile/accountSettings"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <AccountSettingPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/student/settings"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <Settings />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tutorials/chat"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <TutorStudentChatPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tutorials/chat/:conversationId"
-          element={
-            <Suspense fallback={<DashboardSkeleton />}>
-              <TutorStudentChatPage />
-            </Suspense>
-          }
-        />
+      {/* ======================================================
+                        STUDENT TUTORIALS MODULE (WORKSPACE)
+      ====================================================== */}
+      <Route
+        element={
+          <GlobalProtectedRoute allowedRoles={["student"]}>
+            <TutorialWorkspaceLayout />
+          </GlobalProtectedRoute>
+        }
+      >
+        <Route path="/tutorials/home" element={<Suspense fallback={<DashboardSkeleton />}><TutorialDashboard /></Suspense>} />
+        {/* Core feature routes */}
+        <Route path="/tutorials/find" element={<Suspense fallback={<DashboardSkeleton />}><BookClass /></Suspense>} />
+        <Route path="/tutorials/bookings" element={<Suspense fallback={<DashboardSkeleton />}><ManageBookingPage /></Suspense>} />
+        <Route path="/tutorials/history" element={<Suspense fallback={<DashboardSkeleton />}><ClassHistoryPage /></Suspense>} />
+        <Route path="/tutorials/online-attendance" element={<Suspense fallback={<DashboardSkeleton />}><OnlineAttendanceView /></Suspense>} />
+        <Route path="/tutorials/chat" element={<Suspense fallback={<DashboardSkeleton />}><TutorStudentChatPage /></Suspense>} />
+        <Route path="/tutorials/chat/:conversationId" element={<Suspense fallback={<DashboardSkeleton />}><TutorStudentChatPage /></Suspense>} />
+        <Route path="/tutorials/profile" element={<Suspense fallback={<DashboardSkeleton />}><Profile /></Suspense>} />
+        <Route path="/tutorials/profile/editProfile" element={<Suspense fallback={<DashboardSkeleton />}><EditProfilePage /></Suspense>} />
+        <Route path="/tutorials/settings" element={<Suspense fallback={<DashboardSkeleton />}><AccountSettingPage /></Suspense>} />
+        
+        {/* Backward compatibility redirects */}
+        <Route path="/student/tutorials" element={<Navigate to="/tutorials/home" replace />} />
+        <Route path="/tutorials/searchTutor" element={<Navigate to="/tutorials/find" replace />} />
+        <Route path="/tutorials/book" element={<Navigate to="/tutorials/find" replace />} />
+        <Route path="/tutorials/profile/manageBooking" element={<Navigate to="/tutorials/bookings" replace />} />
+        <Route path="/tutorials/profile/classHistory" element={<Navigate to="/tutorials/history" replace />} />
+        <Route path="/tutorials/profile/accountSettings" element={<Navigate to="/tutorials/settings" replace />} />
       </Route>
 
       {/* Expense Tracker Routes */}

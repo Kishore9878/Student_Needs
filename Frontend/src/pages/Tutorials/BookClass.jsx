@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../components/Tutorials/Navbar";
-import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
+
 import { LayoutContext } from "@/components/layouts/DashboardLayout";
 import SearchTutor from "../../components/Tutorials/SearchTutor";
 import "../../styles/Tutorials/BookClass.css";
@@ -344,7 +344,7 @@ function BookClass() {
       {!isUnifiedLayout && <Navbar />}
       {isUnifiedLayout && (
         <div className="px-2 pt-2 flex flex-wrap gap-4">
-          <BackToStudentDashboard />
+
           <Link
             to="/tutorials/home"
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary"

@@ -4,7 +4,7 @@ import API, { getBookings } from "@/services/api/tutorialsApi.js";
 import "../../styles/Tutorials/ManageBook.css";
 import Navbar from "../../components/Tutorials/Navbar";
 import { LayoutContext } from "@/components/layouts/DashboardLayout";
-import BackToStudentDashboard from "@/components/dashboard/BackToStudentDashboard";
+
 
 function ManageBookingPage() {
   const isUnifiedLayout = useContext(LayoutContext);
@@ -58,7 +58,7 @@ function ManageBookingPage() {
   return (
     <>
       {!isUnifiedLayout && <Navbar />}
-      {isUnifiedLayout && <BackToStudentDashboard />}
+
 
       <div
         className={isUnifiedLayout ? "" : "mainDivBook h-[calc(100vh-100px)] md:h-screen overflow-y-auto"}
