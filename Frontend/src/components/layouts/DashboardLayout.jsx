@@ -3,6 +3,7 @@ import Sidebar from "../dashboard/Sidebar";
 import Navbar from "../dashboard/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
+import GlobalCallListener from "../Tutorials/calls/GlobalCallListener";
 
 export const LayoutContext = createContext(false);
 
@@ -95,6 +96,7 @@ const DashboardLayoutContent = ({ children, pageTitle, role }) => {
             {children || <Outlet />}
           </div>
         </div>
+        <GlobalCallListener />
       </main>
     </div>
   );

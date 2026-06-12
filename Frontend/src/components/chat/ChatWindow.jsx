@@ -46,15 +46,6 @@ export const ChatWindow = ({
 
   useEffect(() => {
     if (!socket) return;
-    const handleIncomingCall = (data) => {
-      // Only show incoming if we are not already in a call
-      if (!callState) {
-        setIncomingCallData(data);
-        setCallState("incoming");
-      } else {
-        // Emit busy or handled silently
-      }
-    };
     
     const handleCallAccepted = (data) => {
       setIsCallLoading(false);
@@ -73,16 +64,22 @@ export const ChatWindow = ({
       toast.error(data.message || "Call error.");
     };
 
-    socket.on("call:incoming", handleIncomingCall);
+    const handleUserOffline = (data) => {
+      setIsCallLoading(false);
+      setCallState(null);
+      toast.error(data.message || "User unavailable. Try later.");
+    };
+
     socket.on("call:accepted", handleCallAccepted);
     socket.on("call:declined", handleCallDeclined);
     socket.on("call:error", handleCallError);
+    socket.on("call:user_offline", handleUserOffline);
 
     return () => {
-      socket.off("call:incoming", handleIncomingCall);
       socket.off("call:accepted", handleCallAccepted);
       socket.off("call:declined", handleCallDeclined);
       socket.off("call:error", handleCallError);
+      socket.off("call:user_offline", handleUserOffline);
     };
   }, [socket, callState]);
 
@@ -362,25 +359,27 @@ export const ChatWindow = ({
         chatContext={{ messages, booking: chat.booking }}
       />
 
-      {/* Video Call Modal */}
-      <VideoCallModal 
-        socket={socket}
-        conversationId={chat._id}
-        currentUserId={currentUserId}
-        callState={callState}
-        incomingCallData={incomingCallData}
-        onAccept={() => setCallState("active")}
-        onClose={() => {
-          setCallState(null);
-          setIncomingCallData(null);
-          setIsCallLoading(false);
-        }}
-        onSwitchToBrowser={() => {
-          // Fallback to meetingLink or generated route
-          window.open(chat.booking?.meetingLink || `/tutorials/live/${chat._id}`, '_blank');
-        }}
-        meetingLink={chat.booking?.meetingLink}
-      />
+      {/* Video Call Modal for Caller */}
+      {callState && callState !== "incoming" && (
+        <VideoCallModal 
+          socket={socket}
+          conversationId={chat._id}
+          currentUserId={currentUserId}
+          callState={callState}
+          incomingCallData={incomingCallData}
+          onAccept={() => setCallState("active")}
+          onClose={() => {
+            setCallState(null);
+            setIncomingCallData(null);
+            setIsCallLoading(false);
+          }}
+          onSwitchToBrowser={() => {
+            // Fallback to meetingLink or generated route
+            window.open(chat.booking?.meetingLink || `/tutorials/live/${chat._id}`, '_blank');
+          }}
+          meetingLink={chat.booking?.meetingLink}
+        />
+      )}
     </div>
   );
 };

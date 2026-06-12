@@ -4,6 +4,8 @@ import { registerChatHandlers } from "./chat.js";
 import { registerTutorChatHandlers } from "../socket/socketServer.js";
 import { registerTutorCallHandlers } from "./tutorialCallSocket.js";
 
+export const onlineUsers = new Map();
+
 let io;
 
 export const initSocket = (server) => {
@@ -18,6 +20,8 @@ export const initSocket = (server) => {
       credentials: true,
     },
     transports: ["websocket", "polling"], // Allow polling fallback
+    pingInterval: 15000,
+    pingTimeout: 30000,
   });
 
   // Apply authentication middleware
@@ -27,7 +31,9 @@ export const initSocket = (server) => {
     // Automatically join a room for this specific user
     const userId = socket.user.id || socket.user._id;
     if (userId) {
-      socket.join(userId);
+      socket.join(userId.toString());
+      onlineUsers.set(userId.toString(), socket.id);
+      console.log(`[CONNECT] user: ${userId} socket: ${socket.id}`);
     }
 
     // Role-based rooms
@@ -40,6 +46,13 @@ export const initSocket = (server) => {
     registerChatHandlers(io, socket);
     registerTutorChatHandlers(io, socket);
     registerTutorCallHandlers(io, socket);
+
+    socket.on("disconnect", () => {
+      if (userId) {
+        onlineUsers.delete(userId.toString());
+        console.log(`[DISCONNECT] user: ${userId} socket: ${socket.id}`);
+      }
+    });
   });
 
   console.log("✅ WebSocket Server Initialized");
