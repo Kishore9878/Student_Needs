@@ -7,7 +7,7 @@ import OnlineBadge from "./OnlineBadge.jsx";
 import { cn } from "@/lib/utils.js";
 import toast from "react-hot-toast";
 import VideoCallModal from "../Tutorials/calls/VideoCallModal.jsx";
-import AIAssistantDrawer from "./AIAssistantDrawer.jsx";
+import TutorialAssistantDrawer from "./TutorialAssistantDrawer.jsx";
 
 export const ChatWindow = ({
   chat,
@@ -353,10 +353,10 @@ export const ChatWindow = ({
       )}
 
       {/* AI Assistant Drawer */}
-      <AIAssistantDrawer 
+      <TutorialAssistantDrawer 
         isOpen={isAiDrawerOpen}
         onClose={() => setIsAiDrawerOpen(false)}
-        chatContext={{ messages, booking: chat.booking }}
+        chatContext={{ conversationId: chat._id, messages, booking: chat.booking }}
       />
 
       {/* Video Call Modal for Caller */}

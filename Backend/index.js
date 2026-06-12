@@ -52,6 +52,7 @@ import authTutorialRoutes from "./routes/Tutorials/auth.js";
 import tutorRoutes from "./routes/Tutorials/tutorRoutes.js";
 import uploadRoutes from "./routes/Tutorials/uploadRoutes.js";
 import tutorialChatRoutes from "./routes/Tutorials/tutorialChatRoutes.js";
+import assistantRoutes from "./routes/assistantRoutes.js";
 
 // =====================================================
 //                  ATTENDANCE ROUTES
@@ -351,6 +352,8 @@ app.use("/api/tutor", tutorRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.use("/api/tutorial-chat", tutorialChatRoutes);
+
+app.use("/api/tutorial-assistant", assistantRoutes);
 
 // =====================================================
 //                ATTENDANCE MODULE ROUTES

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useAuth } from "@/contexts/GlobalAuthContext";
+import { NotificationCenter } from "@/components/ui/NotificationCenter";
 
 const TutorialTopbar = () => {
   const { toggleMobileMenu } = useSidebar();
@@ -32,10 +33,9 @@ const TutorialTopbar = () => {
       <div className="flex items-center gap-3">
         <ThemeToggle className="border-border/60" />
 
-        <Button variant="ghost" size="icon" className="relative rounded-full text-muted-foreground hover:text-foreground hidden sm:flex">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full border-2 border-card"></span>
-        </Button>
+        <div className="hidden sm:block">
+          <NotificationCenter />
+        </div>
 
         <div className="flex items-center gap-3 ml-2 border-l pl-4">
           <div className="text-right hidden sm:block">

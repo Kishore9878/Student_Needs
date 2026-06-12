@@ -50,6 +50,7 @@ const Sidebar = ({ className, role = "student" }) => {
       { name: "Requests", href: "/tutorials/tutor/accept", icon: Inbox },
       { name: "Profile", href: "/tutorials/tutor/editProfile", icon: Users },
       { name: "Attendance", href: "/tutorials/attendance", icon: CalendarCheck },
+      { name: "Chat", href: "/tutorials/chat", icon: MessageSquare },
     ];
   } else if (currentRole === "teacher") {
     links = [

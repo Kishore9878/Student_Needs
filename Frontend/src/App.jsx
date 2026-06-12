@@ -559,8 +559,6 @@ const AttendanceRoutes = () => {
         <Route path="/tutorials/bookings" element={<Suspense fallback={<DashboardSkeleton />}><ManageBookingPage /></Suspense>} />
         <Route path="/tutorials/history" element={<Suspense fallback={<DashboardSkeleton />}><ClassHistoryPage /></Suspense>} />
         <Route path="/tutorials/online-attendance" element={<Suspense fallback={<DashboardSkeleton />}><OnlineAttendanceView /></Suspense>} />
-        <Route path="/tutorials/chat" element={<Suspense fallback={<DashboardSkeleton />}><TutorStudentChatPage /></Suspense>} />
-        <Route path="/tutorials/chat/:conversationId" element={<Suspense fallback={<DashboardSkeleton />}><TutorStudentChatPage /></Suspense>} />
         <Route path="/tutorials/profile" element={<Suspense fallback={<DashboardSkeleton />}><Profile /></Suspense>} />
         <Route path="/tutorials/profile/editProfile" element={<Suspense fallback={<DashboardSkeleton />}><EditProfilePage /></Suspense>} />
         <Route path="/tutorials/settings" element={<Suspense fallback={<DashboardSkeleton />}><AccountSettingPage /></Suspense>} />
@@ -801,6 +799,18 @@ const AttendanceRoutes = () => {
             </Suspense>
           }
         />
+      </Route>
+
+      {/* ======================================================
+                        SHARED CHAT ROUTE
+      ====================================================== */}
+      <Route
+        element={
+          <GlobalProtectedRoute allowedRoles={["student", "tutor", "teacher"]}>
+            <ChatLayoutWrapper />
+          </GlobalProtectedRoute>
+        }
+      >
         <Route
           path="/tutorials/chat"
           element={
@@ -841,6 +851,14 @@ const AttendanceRoutes = () => {
 // ======================================================
 //                    MAIN APP
 // ======================================================
+
+const ChatLayoutWrapper = () => {
+  const { user } = useAuth();
+  if (user?.role === "tutor" || user?.role === "teacher") {
+    return <DashboardLayout role={user?.role} />;
+  }
+  return <TutorialWorkspaceLayout />;
+};
 
 function App() {
   useEffect(() => {
