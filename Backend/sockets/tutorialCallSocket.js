@@ -1,5 +1,6 @@
 import TutorialMessage from "../models/Tutorials/TutorialMessage.js";
 import TutorialConversation from "../models/Tutorials/TutorialConversation.js";
+import { onlineUsers } from "./index.js";
 
 const activeCalls = new Map(); // conversationId -> { caller, receiver, startTime, timeout, type }
 
@@ -54,16 +55,26 @@ export const registerTutorCallHandlers = (io, socket) => {
         status: "calling"
       });
 
-      // Emit incoming call to receiver
-      io.to(receiverId.toString()).emit("call:incoming", {
-        conversationId,
-        callerId: userId,
-        type,
-        callerInfo: {
-          name: socket.user.name,
-          role: socket.user.role,
-        }
-      });
+      console.log(`[CALL START] caller: ${userId} receiver: ${receiverId}`);
+
+      const receiverSocketId = onlineUsers.get(receiverId.toString());
+      if (receiverSocketId) {
+        console.log(`[CALL SENT] receiver socket: ${receiverSocketId}`);
+        // Emit incoming call to receiver
+        io.to(receiverSocketId).emit("call:incoming", {
+          conversationId,
+          callerId: userId,
+          type,
+          callerInfo: {
+            name: socket.user.name,
+            role: socket.user.role,
+          }
+        });
+      } else {
+        clearTimeout(timeout);
+        activeCalls.delete(conversationId);
+        return socket.emit("call:user_offline", { message: "Tutor unavailable, Try later" });
+      }
     } catch (err) {
       console.error("Error starting call:", err);
     }
