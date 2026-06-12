@@ -30,7 +30,7 @@ const DashboardLayoutContent = ({ children, pageTitle, role }) => {
       if (path.includes("/profile/editProfile")) return "Edit Profile";
       if (path.includes("/profile/manageBooking")) return "Manage Bookings";
       if (path.includes("/profile/classHistory")) return "Class History";
-      if (path.includes("/profile/accountSettings")) return "Account Settings";
+      if (path.includes("/profile/accountSettings") || path.includes("/tutor/settings")) return "Account Settings";
       if (path.includes("/profile")) return "Tutorial Profile";
       if (path.includes("/tutorials/online-attendance"))
         return "View Online Attendance";

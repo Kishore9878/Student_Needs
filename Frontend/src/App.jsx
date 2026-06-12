@@ -799,6 +799,14 @@ const AttendanceRoutes = () => {
             </Suspense>
           }
         />
+        <Route
+          path="/tutorials/tutor/settings"
+          element={
+            <Suspense fallback={<DashboardSkeleton />}>
+              <AccountSettingPage />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* ======================================================

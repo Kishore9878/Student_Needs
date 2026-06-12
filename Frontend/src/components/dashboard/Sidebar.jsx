@@ -169,6 +169,8 @@ const Sidebar = ({ className, role = "student" }) => {
                 ? "/student/settings"
                 : currentRole === "alumni"
                 ? "/alumni/settings"
+                : currentRole === "tutor"
+                ? "/tutorials/tutor/settings"
                 : "/tutorials/profile/accountSettings"
             }
             className={cn(
