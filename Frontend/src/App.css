@@ -164,11 +164,9 @@ img {
 
 /* ======================================================
    CARD COMPONENT
+   Note: .card base padding is handled by Tailwind utilities
+   on the component level. No global padding override here.
 ====================================================== */
-
-.card {
-  padding: 2em;
-}
 
 /* ======================================================
    TEXT HELPERS

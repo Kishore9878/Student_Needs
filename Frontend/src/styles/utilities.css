@@ -1,27 +1,36 @@
 /* ======================================================
-   DESIGN SYSTEM UTILITIES
+   DESIGN SYSTEM UTILITIES v2.0
+   Rules:
+   - Named utility classes only.
+   - NO global h1/h2/h3/h4/h5/h6 overrides (breaks Tailwind text-* utilities).
+   - NO p/li/span/label/div/button/input global font-family override
+     (those are set in index.css @layer base, which Tailwind can override).
+   - Image filters, skeleton loaders, spotlight effects are safe.
    ====================================================== */
 
-/* Typography Utilities */
+/* ─────────────────────────────────────────────────────
+   1. FONT FAMILY UTILITY CLASSES — Named only
+   ───────────────────────────────────────────────────── */
+
+/* Use .font-content class on specific elements that should use serif */
 .font-content {
   font-family: "Libre Baskerville", Georgia, Cambria, serif !important;
 }
 
+/* Use .font-ui class to explicitly override to sans-serif */
 .font-ui {
   font-family: "Inter", -apple-system, sans-serif !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Libre Baskerville", Georgia, serif;
-  color: var(--text-heading);
-  letter-spacing: -0.01em;
-}
+/* NOTE: We do NOT set font-family on h1-h6 globally here.
+   The base font is set in index.css @layer base via font-sans.
+   Dashboard headings use Tailwind font-sans (Inter) which is correct.
+   Marketing/landing page headings that need serif should use .font-content explicitly. */
 
-p, li, span, label, div, button, input, textarea, select {
-  font-family: "Inter", sans-serif;
-}
+/* ─────────────────────────────────────────────────────
+   2. IMAGE FILTERS — Dark mode archival look
+   ───────────────────────────────────────────────────── */
 
-/* Image Filters - Warmed archival look in dark mode, normal in light mode */
 img {
   border-radius: var(--image-border-radius);
   transition: filter var(--transition-normal) var(--ease-standard);
@@ -33,7 +42,10 @@ img {
   filter: var(--image-filter) !important;
 }
 
-/* Shimmer Skeleton Loaders */
+/* ─────────────────────────────────────────────────────
+   3. SHIMMER SKELETON LOADERS
+   ───────────────────────────────────────────────────── */
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -44,13 +56,21 @@ img {
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border-color) 50%, var(--bg-secondary) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--border-color) 50%,
+    var(--bg-secondary) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite var(--ease-standard);
   border-radius: var(--radius-sm);
 }
 
-/* Ambient Spotlights */
+/* ─────────────────────────────────────────────────────
+   4. AMBIENT SPOTLIGHTS — Background effects
+   ───────────────────────────────────────────────────── */
+
 .dashboard-background {
   position: relative;
   z-index: 0;
@@ -82,7 +102,10 @@ img {
   z-index: -1;
 }
 
-/* Future-Proofing Theme Utilities */
+/* ─────────────────────────────────────────────────────
+   5. THEME-AWARE UTILITY CLASSES
+   ───────────────────────────────────────────────────── */
+
 .theme-text-primary {
   color: var(--text-primary) !important;
 }
@@ -116,6 +139,10 @@ img {
   color: var(--text-primary) !important;
 }
 
+/* ─────────────────────────────────────────────────────
+   6. RADIAL SPOTLIGHT BACKGROUND
+   ───────────────────────────────────────────────────── */
+
 .bg-radial-spotlight {
   position: relative;
   overflow: hidden;
@@ -127,13 +154,20 @@ img {
   left: 30%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.08) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: 0;
   filter: blur(40px);
 }
 
-/* Unified Spacing & Typography Recovery Classes */
+/* ─────────────────────────────────────────────────────
+   7. TEXT WRAPPING UTILITIES — Safe named classes
+   ───────────────────────────────────────────────────── */
+
 .uc-description {
   display: block;
   line-height: 1.7;

@@ -10,6 +10,7 @@
 @import "./styles/components.css";
 @import "./styles/utilities.css";
 @import "./styles/responsive.css";
+@import "./styles/polish.css";
 
 /* Fonts integration */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
@@ -189,19 +190,14 @@ a:focus-visible {
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Set font-family and base tracking only.
+     Do NOT set color or font-size here — Tailwind text-* utilities must win. */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-bold tracking-tight;
-    color: var(--text-heading);
+    @apply font-sans tracking-tight;
   }
 
-  p, li {
-    color: var(--text-paragraph);
-  }
-
-  label {
-    color: var(--text-label);
-    @apply font-medium text-sm;
-  }
+  /* NOTE: Do NOT globally style p, li, label with font-size or font-weight.
+     Use Tailwind utilities directly on elements instead. */
 }
 
 /* ======================================================

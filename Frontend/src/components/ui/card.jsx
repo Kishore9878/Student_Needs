@@ -51,7 +51,7 @@ CardContent.displayName = "CardContent"
 const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
+    className={cn("flex items-center px-6 pb-6 pt-0", className)}
     {...props}
   />
 ))
@@ -82,15 +82,15 @@ const PremiumCard = React.forwardRef(({
         <div className="absolute -right-20 -top-20 w-40 h-40 rounded-full bg-[var(--accent)]/10 blur-3xl pointer-events-none z-0" />
       )}
       {(title || description || action) && (
-        <CardHeader className="pb-4 flex flex-row items-start justify-between z-10 relative">
-          <div className="flex flex-col gap-y-1">
+        <CardHeader className="px-6 pt-6 pb-5 flex flex-row items-start justify-between z-10 relative border-b border-[var(--border-color)]">
+          <div className="flex flex-col gap-y-1.5">
             {title && <CardTitle>{title}</CardTitle>}
-            {description && <CardDescription>{description}</CardDescription>}
+            {description && <CardDescription className="text-sm">{description}</CardDescription>}
           </div>
           {action && <div className="ml-4 shrink-0">{action}</div>}
         </CardHeader>
       )}
-      <CardContent className="z-10 relative flex-1">
+      <CardContent className="p-6 z-10 relative flex-1">
         {children}
       </CardContent>
     </Card>
