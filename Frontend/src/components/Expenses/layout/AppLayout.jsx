@@ -1,8 +1,7 @@
 import React from "react";
-import { Outlet, Link, Navigate } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import TopNavbar from "./TopNavbar";
-import { ArrowLeft } from "lucide-react";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 
 const AppLayoutContent = () => {
@@ -45,17 +44,6 @@ const AppLayoutContent = () => {
         </div>
       </main>
 
-      {/* Floating Back to Dashboard FAB */}
-      <div className="fixed bottom-6 left-6 z-50">
-        <Link
-          to="/student/dashboard"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--bg-nav-container)]/80 backdrop-blur-xl border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] shadow-[var(--shadow-lg)] hover:scale-105 transition-all duration-300 text-sm font-semibold cursor-pointer"
-          title="Back to Student Dashboard"
-        >
-          <ArrowLeft className="w-4 h-4 text-[var(--primary)]" />
-          <span>Dashboard</span>
-        </Link>
-      </div>
     </div>
   );
 };
