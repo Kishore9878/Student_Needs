@@ -9,6 +9,8 @@ import { Badge } from "../../components/ui/badge";
 import { Skeleton } from "../../components/ui/skeleton";
 import ExpenseFilters from "../../components/Expenses/shared/ExpenseFilters";
 import { getExpenseStatus } from "../../utils/Expenses/helpers";
+import { getCurrencySymbol } from "../../utils/formatters";
+
 
 const BillHistory = () => {
   const [history, setHistory] = useState([]);
@@ -38,9 +40,8 @@ const BillHistory = () => {
     loadHistory();
   }, []);
 
-  const getCurrencySymbol = () => {
-    return settings?.currency === "USD" ? "$" : settings?.currency === "EUR" ? "€" : settings?.currency === "GBP" ? "£" : "₹";
-  };
+  // Currency symbol — always correct via Intl.NumberFormat
+  const currencySymbol = getCurrencySymbol(settings?.currency || "INR");
 
   // Extract list of unique months in paidDate to populate the month filter dropdown
   const uniqueMonths = useMemo(() => {
@@ -59,7 +60,7 @@ const BillHistory = () => {
   const filteredHistory = useMemo(() => {
     return history.filter(item => {
       const matchesSearch = item.billName.toLowerCase().includes(search.toLowerCase());
-      
+
       let matchesMonth = true;
       if (selectedMonth !== "" && item.paidDate) {
         const date = new Date(item.paidDate);
@@ -70,8 +71,6 @@ const BillHistory = () => {
       return matchesSearch && matchesMonth;
     });
   }, [history, search, selectedMonth]);
-
-  const currencySymbol = getCurrencySymbol();
 
   return (
     <PageLayout className="w-full animate-fade-in-up px-6 py-6">

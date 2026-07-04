@@ -24,6 +24,7 @@ export const PremiumCard = React.forwardRef(({
   hoverEffect = true,
   glow = false,
   gradient = false,
+  noPadding = false,
   ...props
 }, ref) => {
   return (
@@ -39,7 +40,7 @@ export const PremiumCard = React.forwardRef(({
         }
       }}
       className={cn(
-        "flex flex-col h-full relative overflow-hidden",
+        "flex flex-col relative overflow-hidden",
         hoverEffect && "cursor-pointer hover:border-[var(--accent)] hover:shadow-[var(--shadow-glow)]",
         gradient && "bg-gradient-to-b from-[var(--card-bg)] to-[var(--bg-secondary)]",
         className
@@ -52,15 +53,15 @@ export const PremiumCard = React.forwardRef(({
       )}
       
       {(title || description || action) && (
-        <div className="pb-4 flex flex-row items-start justify-between z-10 border-b border-[var(--border-color)] mb-4">
-          <div className="flex flex-col gap-y-1">
+        <div className="px-6 lg:px-8 pt-6 lg:pt-8 pb-5 flex flex-row items-start justify-between z-10 border-b border-[var(--border-color)]">
+          <div className="flex flex-col gap-y-1.5">
             {title && (
               <h3 className="text-base font-semibold leading-none tracking-tight text-[var(--text-primary)]">
                 {title}
               </h3>
             )}
             {description && (
-              <p className="text-xs text-[var(--text-muted)] description-text">
+              <p className="text-sm text-[var(--text-muted)] description-text">
                 {description}
               </p>
             )}
@@ -68,7 +69,7 @@ export const PremiumCard = React.forwardRef(({
           {action && <div className="ml-4 shrink-0">{action}</div>}
         </div>
       )}
-      <div className="flex-1 flex flex-col z-10">
+      <div className={cn("flex-1 flex flex-col gap-6 z-10", noPadding ? "p-0" : "p-6 lg:p-8")}>
         {children}
       </div>
     </MotionCard>
@@ -216,7 +217,7 @@ export const ActivityFeed = ({ items, className, ...props }) => {
     <div className={cn("space-y-space-md", className)} {...props}>
       {items && items.length > 0 ? (
         items.map((item, idx) => (
-          <div key={idx} className="flex gap-space-md items-start p-space-sm hover:bg-[var(--bg-secondary)]/50 rounded-[var(--radius-sm)] transition-all border-b border-[var(--border-color)]/30 last:border-0 pb-3">
+          <div key={idx} className="flex gap-4 items-start p-3 hover:bg-[var(--bg-secondary)]/50 rounded-[var(--radius-sm)] transition-all border-b border-[var(--border-color)]/30 last:border-0 pb-4">
             {item.icon && (
               <div className={cn("p-2 rounded-full shrink-0 flex items-center justify-center bg-[var(--accent)]/10 text-[var(--accent)]", item.iconClassName)}>
                 {item.icon}

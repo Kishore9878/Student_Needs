@@ -1,0 +1,610 @@
+/* ======================================================
+   STUDENT NEEDS PLATFORM — CSS POLISH v3.0
+   Purpose: Visual refinements, micro-animations, layout tokens.
+   Rules:
+   - NO global h1/h2/h3/h4/h5/h6/p/span/label/button overrides.
+   - NO !important on grid gaps (breaks Tailwind gap-* utilities).
+   - NO !important on min-height (breaks min-h-[*] utilities).
+   - NO !important on padding of generic .card/.stat-card (breaks p-* utilities).
+   - NO overriding .space-y-* utilities.
+   - YES to scoped component classes (.expenses-layout, sidebar, etc.)
+   - YES to animations and micro-interactions.
+   ====================================================== */
+
+/* ─────────────────────────────────────────────────────
+   1. DESIGN TOKENS — Polish-specific only
+   ───────────────────────────────────────────────────── */
+:root {
+  /* Card visual polish tokens (used only by named card classes) */
+  --card-radius:  18px;
+  --card-shadow:  0 4px 18px rgba(0, 0, 0, 0.05);
+  --card-border:  1px solid rgba(0, 0, 0, 0.08);
+
+  /* Button specs */
+  --btn-height:    46px;
+  --btn-padding-h: 22px;
+  --btn-radius:    12px;
+
+  /* Input specs */
+  --input-height: 48px;
+  --input-pl:     16px;
+  --input-radius: 10px;
+
+  /* Table row height */
+  --table-row-h:  56px;
+  --table-head-h: 52px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.10);
+}
+
+[data-theme="dark"] {
+  --card-border:  1px solid rgba(255, 255, 255, 0.08);
+  --card-shadow:  0 4px 18px rgba(0, 0, 0, 0.25);
+  --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md:    0 4px 18px rgba(0, 0, 0, 0.4);
+  --shadow-lg:    0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────
+   2. EXPENSES LAYOUT — Inner scroll (scoped, safe to use !important)
+   These are scoped to .expenses-layout so they won't bleed.
+   ───────────────────────────────────────────────────── */
+
+.expenses-layout {
+  display: flex !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.expenses-main {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.expenses-content {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  min-height: 0 !important;
+  padding: 32px;
+}
+
+@media (max-width: 1279px) {
+  .expenses-content { padding: 28px; }
+}
+@media (max-width: 1023px) {
+  .expenses-content { padding: 24px; }
+}
+@media (max-width: 767px) {
+  .expenses-content { padding: 16px; }
+}
+
+/* ─────────────────────────────────────────────────────
+   3. PAGE LAYOUT — Centered max-width containers
+   Scoped to specific named layout classes only.
+   ───────────────────────────────────────────────────── */
+
+.page-layout,
+.animate-fade-in-up {
+  width: 100%;
+  max-width: 1480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-container,
+.dashboard-container,
+.content-wrapper,
+.settings-container,
+.management-container,
+.analytics-container,
+.profile-container,
+.main-profile {
+  width: 100%;
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ─────────────────────────────────────────────────────
+   4. SECTION VERTICAL SPACING — Scoped to explicit classes
+   ───────────────────────────────────────────────────── */
+
+/* NOTE: We do NOT apply margin-bottom to the generic `section` element.
+   That overrides Tailwind space-y-* and gap-* utilities.
+   Only target named section helper classes. */
+.dashboard-section,
+.settings-section,
+.profile-block {
+  margin-bottom: 40px;
+}
+
+/* ─────────────────────────────────────────────────────
+   5. NAMED CARD CLASSES — Polish only (NOT .card generic)
+   These class names (.glass-card, .premium-dashboard-card, etc.)
+   are used in legacy pages. They are NOT applied to React component
+   cards (which use Tailwind directly). We do NOT use !important here
+   so Tailwind utilities can still override them.
+   ───────────────────────────────────────────────────── */
+
+.glass-card,
+.premium-dashboard-card,
+.dashboard-card,
+.content-card,
+.hero-card,
+.highlight-card,
+.feature-card {
+  border-radius: var(--card-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition:
+    transform    200ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow   200ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Subtle hover lift on legacy named cards */
+.glass-card:hover,
+.dashboard-card:hover,
+.content-card:hover {
+  transform:  translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.10);
+}
+
+[data-theme="dark"] .glass-card:hover,
+[data-theme="dark"] .dashboard-card:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+}
+
+/* ─────────────────────────────────────────────────────
+   6. NAMED GRID CLASSES — Legacy support
+   We do NOT touch Tailwind grid utilities (.grid, .grid-cols-*)
+   Only our own named grid classes.
+   ───────────────────────────────────────────────────── */
+
+/* 4-column stat grid (legacy class only) */
+.uc-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+@media (max-width: 1279px) {
+  .uc-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .uc-stat-grid { grid-template-columns: 1fr; }
+}
+
+/* 2-column dashboard grid (legacy class only) */
+.uc-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+@media (max-width: 1023px) {
+  .uc-dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* ─────────────────────────────────────────────────────
+   7. DASHBOARD HEADER TYPOGRAPHY — Scoped only
+   ───────────────────────────────────────────────────── */
+
+/* ONLY scope heading sizes to explicit wrapper classes.
+   We do NOT globally style h1, h2, h3, h4. */
+.uc-dashboard-header h1,
+.dashboard-header h1 {
+  font-size: clamp(24px, 2.5vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.uc-content h2 {
+  font-size: clamp(17px, 1.8vw, 22px);
+  font-weight: 700;
+}
+
+.uc-content h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Hero section heading (scoped to .uc-hero-copy) */
+.uc-hero-copy h1 {
+  font-size: clamp(28px, 6vw, 76px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+/* ─────────────────────────────────────────────────────
+   8. NAVBAR POLISH — Scoped to header
+   ───────────────────────────────────────────────────── */
+
+header.sticky.top-0,
+header[class*="h-[72px]"],
+header.h-\[72px\] {
+  height: 72px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-left:  24px !important;
+  padding-right: 24px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 30 !important;
+}
+
+/* Nav search bar */
+.nav-search-input,
+header input[type="search"],
+header form input {
+  height:        40px;
+  border-radius: 10px;
+  padding-left:  36px;
+  font-size:     13.5px;
+  min-width:     240px;
+}
+
+/* ─────────────────────────────────────────────────────
+   9. SIDEBAR POLISH — Scoped to aside/sidebar selectors
+   ───────────────────────────────────────────────────── */
+
+aside nav a,
+[class*="sidebar-link"],
+.sidebar-link-btn {
+  padding:       10px 14px;
+  border-radius: 10px;
+  gap:           12px;
+  font-size:     13.5px;
+  font-weight:   600;
+  min-height:    42px;
+}
+
+aside nav a svg,
+[class*="sidebar-link"] svg {
+  width:      20px;
+  height:     20px;
+  flex-shrink: 0;
+}
+
+aside nav,
+[class*="sidebar"] nav.flex.flex-col {
+  gap: 4px;
+}
+
+/* ─────────────────────────────────────────────────────
+   10. BUTTONS — Named class variants only
+   We do NOT override Tailwind button utilities.
+   ───────────────────────────────────────────────────── */
+
+.btn {
+  height:        var(--btn-height);
+  padding-left:  var(--btn-padding-h);
+  padding-right: var(--btn-padding-h);
+  border-radius: var(--btn-radius);
+  font-size:     14px;
+  font-weight:   600;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           8px;
+  white-space:   nowrap;
+  transition:
+    background-color 150ms ease,
+    transform        150ms ease,
+    box-shadow       150ms ease;
+}
+
+.btn-sm {
+  height:        32px;
+  padding-left:  14px;
+  padding-right: 14px;
+  font-size:     12px;
+  border-radius: 8px;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+}
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+  background-color: var(--bg-tertiary);
+  transform: translateY(-1px);
+}
+.btn-secondary:active { transform: translateY(0); }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+.btn-outline:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─────────────────────────────────────────────────────
+   11. FORM INPUTS — Named class variants only
+   We do NOT override type selectors (input[type="text"], etc.)
+   globally with !important. That breaks Tailwind h-* and p-* utilities.
+   ───────────────────────────────────────────────────── */
+
+.premium-input,
+.form-input,
+.form-select {
+  border-radius: var(--input-radius);
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  height: var(--input-height);
+  width: 100%;
+  transition:
+    border-color 150ms ease,
+    box-shadow   150ms ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.premium-input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  outline: none !important;
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 110px;
+  padding: 14px var(--input-pl);
+  border-radius: var(--input-radius);
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+  resize: vertical;
+}
+
+/* ─────────────────────────────────────────────────────
+   12. TABLES — Scoped to table elements (not overriding td padding globally)
+   ───────────────────────────────────────────────────── */
+
+.table-responsive,
+.table-wrap {
+  border-radius: var(--card-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table thead th,
+[data-slot="table-head"] {
+  height:          var(--table-head-h);
+  padding:         0 20px;
+  font-size:       12px;
+  font-weight:     700;
+  letter-spacing:  0.06em;
+  text-transform:  uppercase;
+  color:           var(--text-muted);
+  background-color: var(--bg-secondary);
+  border-bottom:   2px solid var(--border-color);
+  white-space:     nowrap;
+}
+
+table tbody td,
+[data-slot="table-cell"] {
+  height:        var(--table-row-h);
+  padding:       0 20px;
+  font-size:     14px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+tbody tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* ─────────────────────────────────────────────────────
+   13. SETTINGS PAGE — Scoped
+   ───────────────────────────────────────────────────── */
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  width: 100%;
+  align-items: start;
+}
+@media (max-width: 1023px) {
+  .settings-grid {
+    grid-template-columns: 240px 1fr;
+    gap: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.settings-content,
+.settings-panel {
+  padding: 28px;
+  border-radius: var(--card-radius);
+  border: var(--card-border);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+/* ─────────────────────────────────────────────────────
+   14. EXPENSE DASHBOARD WIDGETS — Scoped
+   ───────────────────────────────────────────────────── */
+
+.expense-right-col > * + * {
+  margin-top: 24px;
+}
+
+.bills-list > * + * {
+  margin-top: 12px;
+}
+
+/* ─────────────────────────────────────────────────────
+   15. CHART IMPROVEMENTS — Scoped to recharts
+   ───────────────────────────────────────────────────── */
+
+.recharts-wrapper {
+  padding: 4px;
+}
+
+.recharts-wrapper svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.recharts-legend-wrapper {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────
+   16. BADGES — Named class only
+   ───────────────────────────────────────────────────── */
+
+.badge,
+[data-slot="badge"] {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────────
+   17. MODALS — Scoped to dialog role
+   ───────────────────────────────────────────────────── */
+
+div[role="dialog"] {
+  border-radius: 20px;
+  border: var(--card-border);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────
+   18. EMPTY STATES
+   ───────────────────────────────────────────────────── */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 32px;
+  border-radius: var(--card-radius);
+  border: 1px dashed var(--border-color);
+  background: var(--bg-secondary);
+  margin: 32px auto;
+  max-width: 480px;
+  gap: 12px;
+}
+
+/* ─────────────────────────────────────────────────────
+   19. SCROLLBAR — Thin themed
+   ───────────────────────────────────────────────────── */
+
+*::-webkit-scrollbar { width: 5px; height: 5px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─────────────────────────────────────────────────────
+   20. MICRO-ANIMATIONS
+   ───────────────────────────────────────────────────── */
+
+@keyframes uc-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: uc-fade-up 350ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ─────────────────────────────────────────────────────
+   21. RESPONSIVE — Scoped overrides only
+   ───────────────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .dashboard-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-grid-4,
+  .dashboard-grid-3,
+  .dashboard-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─────────────────────────────────────────────────────
+   END — CSS POLISH v3.0
+   No global element overrides. No Tailwind utility conflicts.
+   ───────────────────────────────────────────────────── */

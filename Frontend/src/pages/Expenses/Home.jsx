@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { expensesApi } from "../../services/api/expensesApi";
 import { getUserId } from "../../utils/Expenses/authHelper";
+import { getCurrencySymbol } from "../../utils/formatters";
+
 import { MetricCard } from "../../components/ui/card";
 import { CategoryPieChart } from "../../components/Expenses/dashboard/CategoryPieChart";
 import MonthlyExpenseChart from "../../components/Expenses/dashboard/MonthlyExpenseChart";
@@ -193,9 +195,8 @@ const Home = () => {
     }
   };
 
-  const getCurrencySymbol = () => {
-    return settings?.currency === "USD" ? "$" : settings?.currency === "EUR" ? "€" : settings?.currency === "GBP" ? "£" : "₹";
-  };
+  // Currency symbol — always correct via Intl.NumberFormat
+  const currencySymbol = getCurrencySymbol(settings?.currency || "INR");
 
   // CSV Export Trigger
   const downloadCSV = () => {
@@ -209,7 +210,6 @@ const Home = () => {
 
   // Calculations for prediction
   const budgetPercentage = summary?.utilizationPercentage || 0;
-  const currencySymbol = getCurrencySymbol();
 
   // Status mapping via helper
   const utilizationStatus = getExpenseStatus(budgetPercentage > 90 ? "Critical" : budgetPercentage > 75 ? "High" : "Active");

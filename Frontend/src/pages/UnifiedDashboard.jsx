@@ -57,6 +57,7 @@ import {
   DashboardGrid,
 } from "@/components/dashboard/shared/Primitives";
 import { DashboardWideSkeleton } from "@/components/dashboard/shared/Skeleton";
+import { formatINR, getCurrencySymbol as getSymbol } from "@/utils/formatters";
 
 const parseTime = (value) => {
   if (!value) return 0;
@@ -236,7 +237,7 @@ const UnifiedDashboard = () => {
     attendanceData.forEach((r, i) => {
       items.push({
         id: `att-${i}-${r._id || i}`,
-        label: `${r.subject || r.subjectName || "Class"} — ${r.attendance || r.status || "recorded"}`,
+        label: `${r.subject || r.subjectName || "Class"} â€” ${r.attendance || r.status || "recorded"}`,
         meta: r.date ? new Date(r.date).toLocaleDateString() : "Attendance",
         module: "Attendance",
         time: parseTime(r.date),
@@ -519,527 +520,599 @@ const UnifiedDashboard = () => {
       };
     });
   }, [recentActivity]);
+    // Current month days
+    
 
   if (loading) {
     return <DashboardWideSkeleton />;
   }
 
-  const currencySymbol =
-    expenseSummary?.currency === "USD"
-      ? "$"
-      : expenseSummary?.currency === "EUR"
-      ? "€"
-      : expenseSummary?.currency === "GBP"
-      ? "£"
-      : "₹";
+  // ── Currency symbol (always correct via Intl) ──────────────────
+  const currencySymbol = getSymbol(expenseSummary?.currency || "INR");
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const firstName = displayName.split(" ")[0];
+
+  // ── Stat card definitions (declarative, no logic) ────────────────
+  const statCards = [
+    {
+      id: "attendance",
+      label: "Class Attendance",
+      value: attendanceStats.percentage > 0 ? `${attendanceStats.percentage}%` : "94.2%",
+      subtitle: "This semester",
+      status: attendanceStats.total > 0
+        ? `${attendanceStats.present} attended · ${attendanceStats.total - attendanceStats.present} missed`
+        : "27 attended · 3 missed",
+      progress: attendanceStats.percentage > 0 ? Number(attendanceStats.percentage) : 94.2,
+      iconBg: "#EFF6FF",
+      iconColor: "#3B82F6",
+      barColor: "#3B82F6",
+      Icon: GraduationCap,
+    },
+    {
+      id: "spending",
+      label: "Total Spending",
+      value: expenseSummary?.totalSpent !== undefined
+        ? `${currencySymbol}${expenseSummary.totalSpent.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+        : "₹4,257",
+      subtitle: "This month",
+      status: expenseSummary?.remainingBudget !== undefined && expenseSummary?.monthlyBudget !== undefined
+        ? `${currencySymbol}${expenseSummary.remainingBudget.toLocaleString()} left of ${currencySymbol}${expenseSummary.monthlyBudget.toLocaleString()}`
+        : "₹1,743 left of ₹6,000",
+      progress: expenseSummary?.totalSpent && expenseSummary?.monthlyBudget
+        ? Math.min((expenseSummary.totalSpent / expenseSummary.monthlyBudget) * 100, 100)
+        : 70.9,
+      iconBg: "#F5F3FF",
+      iconColor: "#8B5CF6",
+      barColor: "#8B5CF6",
+      Icon: Wallet,
+    },
+    {
+      id: "profile",
+      label: "Profile Progress",
+      value: profileCompleteness !== null ? `${profileCompleteness}%` : "100%",
+      subtitle: "Completion",
+      status: profileCompleteness !== null && profileCompleteness < 100
+        ? `${100 - profileCompleteness}% tasks remaining`
+        : "All tasks completed",
+      progress: profileCompleteness !== null ? profileCompleteness : 100,
+      iconBg: "#ECFDF5",
+      iconColor: "#10B981",
+      barColor: "#10B981",
+      Icon: TrendingUp,
+    },
+    {
+      id: "referrals",
+      label: "Referrals Made",
+      value: opportunities.length > 0 ? String(opportunities.length) : "8",
+      subtitle: "Opportunities",
+      status: (opportunities.length || 8) >= 8 ? "Top tier advocate" : `${opportunities.length || 8} tracked`,
+      progress: Math.min((opportunities.length || 8) * 10, 100),
+      iconBg: "#FFFBEB",
+      iconColor: "#F59E0B",
+      barColor: "#F59E0B",
+      Icon: Gift,
+    },
+  ];
+
+  // ── Quick module definitions ─────────────────────────────────────
+  const quickModules = [
+    { label: "Tutorials", desc: "Browse & learn", Icon: GraduationCap, to: TUTORIAL_PATHS.unifiedEntry, color: "#6366F1" },
+    { label: "Attendance", desc: "View records", Icon: CheckSquare, to: "/student/attendance", color: "#10B981" },
+    { label: "My Bookings", desc: "Upcoming classes", Icon: CalendarIcon, to: "/tutorials/profile/manageBooking", color: "#3B82F6" },
+    { label: "Expenses", desc: "Track spending", Icon: Wallet, to: "/expenses-tracker", color: "#8B5CF6" },
+    { label: "Resources", desc: "Study materials", Icon: BookOpen, to: TUTORIAL_PATHS.unifiedEntry, color: "#F59E0B" },
+    { label: "Ask a Doubt", desc: "Chat with tutors", Icon: MessageSquare, to: "/chat", color: "#EF4444" },
+  ];
+
+  // ────────────────────────────────────────────────────────────────
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className="space-y-10 relative pb-16 px-1 w-full min-w-0 max-w-full overflow-hidden box-border"
+      className="min-h-full w-full"
+      style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "32px", boxSizing: "border-box" }}
     >
-      {/* 👋 Welcome Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-[var(--border-color)] mb-2 w-full min-w-0 max-w-full box-border overflow-hidden">
-        <div className="space-y-1.5 min-w-0 max-w-full">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 capitalize tracking-wider shrink-0">
-              {displayRole} Portal
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight flex flex-wrap items-center gap-2 mt-1 break-words whitespace-normal leading-tight max-w-full">
-            Welcome back, <span className="text-[var(--accent)] break-all">{displayName}</span> <span className="animate-bounce shrink-0">👋</span>
+
+      {/* ══════════════════════════════════════════════════════════
+          SECTION 1 — PAGE HEADER
+         ══════════════════════════════════════════════════════════ */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+        <div>
+          <h1 style={{ fontSize: "36px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.15, margin: 0 }}>
+            {greeting}, <span style={{ color: "var(--accent)" }}>{firstName}</span> 👋
           </h1>
-          <p className="text-sm text-[var(--text-muted)] font-medium break-words whitespace-normal max-w-full">Here's what's happening with your academic journey today.</p>
+          <p style={{ fontSize: "15px", color: "var(--text-muted)", marginTop: "8px", fontWeight: 500 }}>
+            Here's your academic overview for today.
+          </p>
         </div>
-        <div className="flex items-center gap-3 self-start md:self-center shrink-0">
-          <div className="px-4 py-2.5 rounded-2xl bg-[var(--card-bg)] border border-[var(--border-color)] text-xs font-bold text-[var(--text-muted)] shadow-sm flex items-center gap-2 shrink-0">
-            <CalendarIcon size={14} className="text-[var(--accent)] shrink-0" />
-            <span className="whitespace-normal break-words">{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-          </div>
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "10px 16px",
+          borderRadius: "12px",
+          background: "var(--card-bg)",
+          border: "1px solid var(--border-color)",
+          fontSize: "13px",
+          fontWeight: 600,
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+        }}>
+          <CalendarIcon size={14} color="var(--accent)" />
+          {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
         </div>
       </div>
 
-      {/* Row 1: KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full min-w-0 max-w-full">
-        {/* Card 1: Attendance */}
-        <PremiumCard className="hover:border-[var(--accent)]/30 min-h-[170px]" hoverEffect={true}>
-          <div className="flex justify-between items-center gap-4 w-full min-w-0 pt-1">
-            <div className="space-y-1 min-w-0 text-left">
-              <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase break-words whitespace-normal block">Class Attendance</span>
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[var(--text-primary)] tracking-tight mt-1.5 break-words whitespace-normal block leading-none">
-                {attendanceStats.percentage > 0 ? `${attendanceStats.percentage}%` : "94.2%"}
-              </h3>
-              <span className="text-xs text-[var(--text-muted)] block font-semibold mt-1 break-words whitespace-normal">This Month</span>
-            </div>
-            <div className="p-3.5 rounded-[14px] bg-[var(--accent)]/10 text-[var(--accent)] transition-transform duration-300 group-hover:scale-105 border border-[var(--accent)]/20 shadow-[0_2px_8px_rgba(59,130,246,0.08)] dark:shadow-[0_0_15px_rgba(59,130,246,0.15)] shrink-0 self-center">
-              <GraduationCap size={20} className="shrink-0" />
-            </div>
-          </div>
-          <div className="mt-6 w-full min-w-0 pb-1">
-            <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[var(--accent)] rounded-full" 
-                style={{ width: `${attendanceStats.percentage > 0 ? attendanceStats.percentage : 94.2}%` }}
-              />
-            </div>
-            <span className="text-[10px] text-[var(--text-muted)] font-semibold block mt-2.5 break-words whitespace-normal leading-normal text-left">
-              {attendanceStats.total > 0 ? `${attendanceStats.present} attended • ${attendanceStats.total - attendanceStats.present} missed` : "27 attended • 3 missed"}
-            </span>
-          </div>
-        </PremiumCard>
-
-        {/* Card 2: Total Spending */}
-        <PremiumCard className="hover:border-[var(--accent)]/30 min-h-[170px]" hoverEffect={true}>
-          <div className="flex justify-between items-center gap-4 w-full min-w-0 pt-1">
-            <div className="space-y-1 min-w-0 text-left">
-              <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase break-words whitespace-normal block">Total Spending</span>
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[var(--text-primary)] tracking-tight mt-1.5 break-words whitespace-normal block leading-none">
-                {expenseSummary?.totalSpent !== undefined ? `${currencySymbol}${expenseSummary.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : "₹4,257.01"}
-              </h3>
-              <span className="text-xs text-[var(--text-muted)] block font-semibold mt-1 break-words whitespace-normal">This Month</span>
-            </div>
-            <div className="p-3.5 rounded-[14px] bg-[var(--accent)]/10 text-[var(--accent)] transition-transform duration-300 group-hover:scale-105 border border-[var(--accent)]/20 shadow-[0_2px_8px_rgba(59,130,246,0.08)] dark:shadow-[0_0_15px_rgba(59,130,246,0.15)] shrink-0 self-center">
-              <Wallet size={20} className="shrink-0" />
-            </div>
-          </div>
-          <div className="mt-6 w-full min-w-0 pb-1">
-            <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[var(--accent)] rounded-full" 
-                style={{ 
-                  width: `${
-                    expenseSummary?.totalSpent && expenseSummary?.monthlyBudget
-                      ? Math.min((expenseSummary.totalSpent / expenseSummary.monthlyBudget) * 100, 100)
-                      : 70.9
-                  }%` 
-                }}
-              />
-            </div>
-            <span className="text-[10px] text-[var(--text-muted)] font-semibold block mt-2.5 break-words whitespace-normal leading-normal text-left">
-              {expenseSummary?.remainingBudget !== undefined && expenseSummary?.monthlyBudget !== undefined 
-                ? `${currencySymbol}${expenseSummary.remainingBudget.toLocaleString()} left of ${currencySymbol}${expenseSummary.monthlyBudget.toLocaleString()}` 
-                : "₹1,743 left of ₹6,000"}
-            </span>
-          </div>
-        </PremiumCard>
-
-        {/* Card 3: Profile Progress */}
-        <PremiumCard className="hover:border-[var(--accent)]/30 min-h-[170px]" hoverEffect={true}>
-          <div className="flex justify-between items-center gap-4 w-full min-w-0 pt-1">
-            <div className="space-y-1 min-w-0 text-left">
-              <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase break-words whitespace-normal block">Profile Progress</span>
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[var(--text-primary)] tracking-tight mt-1.5 break-words whitespace-normal block leading-none">
-                {profileCompleteness !== null ? `${profileCompleteness}%` : "100%"}
-              </h3>
-              <span className="text-xs text-[var(--text-muted)] block font-semibold mt-1 break-words whitespace-normal">Complete</span>
-            </div>
-            <div className="p-3.5 rounded-[14px] bg-[var(--success)]/10 text-[var(--success)] transition-transform duration-300 group-hover:scale-105 border border-[var(--success)]/20 shadow-[0_2px_8px_rgba(16,185,129,0.08)] dark:shadow-[0_0_15px_rgba(16,185,129,0.15)] shrink-0 self-center">
-              <TrendingUp size={20} className="shrink-0" />
-            </div>
-          </div>
-          <div className="mt-6 w-full min-w-0 pb-1">
-            <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[var(--success)] rounded-full" 
-                style={{ width: `${profileCompleteness !== null ? profileCompleteness : 100}%` }}
-              />
-            </div>
-            <div className="flex items-center gap-2 mt-2.5 min-w-0 text-left">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)] animate-pulse shrink-0" />
-              <span className="text-[10px] text-[var(--text-muted)] font-semibold break-words whitespace-normal leading-normal">
-                {profileCompleteness !== null && profileCompleteness < 100 ? `${100 - profileCompleteness}% tasks remaining` : "All tasks completed"}
-              </span>
-            </div>
-          </div>
-        </PremiumCard>
-
-        {/* Card 4: Referrals Made */}
-        <PremiumCard className="hover:border-[var(--accent)]/30 min-h-[170px]" hoverEffect={true}>
-          <div className="flex justify-between items-center gap-4 w-full min-w-0 pt-1">
-            <div className="space-y-1 min-w-0 text-left">
-              <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase break-words whitespace-normal block">Referrals Made</span>
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[var(--text-primary)] tracking-tight mt-1.5 break-words whitespace-normal block leading-none">
-                {opportunities.length > 0 ? opportunities.length : "8"}
-              </h3>
-              <span className="text-xs text-[var(--text-muted)] block font-semibold mt-1 break-words whitespace-normal">Opportunities</span>
-            </div>
-            <div className="p-3.5 rounded-[14px] bg-[var(--accent)]/10 text-[var(--accent)] transition-transform duration-300 group-hover:scale-105 border border-[var(--accent)]/20 shadow-[0_2px_8px_rgba(59,130,246,0.08)] dark:shadow-[0_0_15px_rgba(59,130,246,0.15)] shrink-0 self-center">
-              <Gift size={20} className="shrink-0" />
-            </div>
-          </div>
-          <div className="mt-6 w-full min-w-0 pb-1">
-            <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[var(--accent)] rounded-full" 
-                style={{ width: `${Math.min((opportunities.length || 8) * 10, 100)}%` }}
-              />
-            </div>
-            <span className="text-[10px] text-[var(--text-muted)] font-semibold block mt-2.5 break-words whitespace-normal leading-normal text-left">
-              {(opportunities.length || 8) >= 8 ? "Top tier advocate status" : `${opportunities.length || 8} tracked applications`}
-            </span>
-          </div>
-        </PremiumCard>
-      </div>
-
-      {/* Row 2: Upcoming Classes & Expense Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full min-w-0 max-w-full">
-        {/* Column 1: Upcoming Classes */}
-        <PremiumCard className="lg:col-span-5" hoverEffect={false}>
-          <div className="flex justify-between items-center pb-4 border-b border-[var(--border-color)] mb-4 w-full gap-2 min-w-0">
-            <div className="min-w-0">
-              <h3 className="text-sm font-bold text-[var(--text-primary)] tracking-wide break-words whitespace-normal">Upcoming Classes</h3>
-              <p className="text-[11px] text-[var(--text-muted)] font-semibold mt-0.5 break-words whitespace-normal">Tutorial sessions scheduled for your modules</p>
-            </div>
-            <button 
-              onClick={() => navigate("/tutorials/profile/manageBooking")}
-              className="text-[11px] font-bold text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors cursor-pointer shrink-0"
+      {/* ══════════════════════════════════════════════════════════
+          SECTION 2 — STATS GRID (4 equal cards)
+         ══════════════════════════════════════════════════════════ */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
+        {statCards.map((card) => {
+          const Icon = card.Icon;
+          return (
+            <div
+              key={card.id}
+              style={{
+                background: "var(--card-bg)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "20px",
+                padding: "24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                transition: "box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease",
+                cursor: "default",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.04)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
-              View all
-            </button>
-          </div>
-          
-          <div className="flex-1 flex flex-col justify-center space-y-4 py-2 w-full min-w-0">
-            {upcomingClasses.length > 0 ? (
-              upcomingClasses.map((item) => (
-                <div key={item.id} className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-4 flex items-center justify-between hover:border-[var(--accent)]/40 transition-all duration-200 group gap-3 min-w-0 max-w-full overflow-hidden box-border">
-                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                    <div className="p-3 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)] shrink-0">
-                      <CalendarIcon size={16} className="shrink-0" />
-                    </div>
-                    <div className="min-w-0 flex-1 text-left">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-bold bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 mb-1.5 shrink-0 whitespace-nowrap">
-                        UPCOMING
-                      </span>
-                      <h4 className="text-xs font-bold text-[var(--text-primary)] break-words whitespace-normal leading-normal group-hover:text-[var(--accent)] transition-colors mt-1">{item.title}</h4>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 break-words whitespace-normal font-medium flex items-center gap-1.5 min-w-0 w-full">
-                        <Clock size={10} className="text-[var(--text-muted)] shrink-0" />
-                        <span className="break-words">{item.date} • Online Session</span>
-                      </p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => navigate("/tutorials")}
-                    className="p-2 rounded-xl bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors shrink-0 cursor-pointer shadow-[0_2px_8px_rgba(59,130,246,0.2)]"
-                  >
-                    <ArrowRight size={12} className="stroke-[3] shrink-0" />
-                  </button>
+              {/* Card top row: icon + label */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+                <div style={{
+                  width: "44px",
+                  height: "44px",
+                  borderRadius: "12px",
+                  background: card.iconBg,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <Icon size={20} color={card.iconColor} />
                 </div>
-              ))
-            ) : (
-              /* Mock booking layout */
-              <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-4 flex items-center justify-between hover:border-[var(--accent)]/40 transition-all duration-200 group gap-3 min-w-0 max-w-full overflow-hidden box-border">
-                <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                  <div className="p-3 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)] shrink-0">
-                    <CalendarIcon size={16} className="shrink-0" />
-                  </div>
-                  <div className="min-w-0 flex-1 text-left">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-bold bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 mb-1.5 shrink-0 whitespace-nowrap">
-                      UPCOMING
-                    </span>
-                    <h4 className="text-xs font-bold text-[var(--text-primary)] break-words whitespace-normal leading-normal group-hover:text-[var(--accent)] transition-colors mt-1">CS-301 Algorithms with Dr. Marcus</h4>
-                    <p className="text-[10px] text-[var(--text-muted)] mt-1 break-words whitespace-normal font-semibold flex items-center gap-1.5 min-w-0 w-full">
-                      <Clock size={10} className="shrink-0" />
-                      <span className="break-words">17 Jun, 05:30 PM • Online Session</span>
-                    </p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => navigate("/tutorials")}
-                  className="p-2 rounded-xl bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors shrink-0 cursor-pointer shadow-[0_2px_8px_rgba(59,130,246,0.2)]"
-                >
-                  <ArrowRight size={12} className="stroke-[3] shrink-0" />
-                </button>
-              </div>
-            )}
-          </div>
-        </PremiumCard>
-
-        {/* Column 2: Expense Overview */}
-        <PremiumCard className="lg:col-span-7" hoverEffect={false}>
-          <div className="flex justify-between items-center pb-4 border-b border-[var(--border-color)] mb-4 w-full gap-2 min-w-0">
-            <div className="min-w-0">
-              <h3 className="text-sm font-bold text-[var(--text-primary)] tracking-wide break-words whitespace-normal">Expense Overview</h3>
-              <p className="text-[11px] text-[var(--text-muted)] font-semibold mt-0.5 break-words whitespace-normal">Visual breakdown of your expenses</p>
-            </div>
-            <button 
-              onClick={() => navigate("/expenses-tracker")}
-              className="text-[11px] font-bold text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors cursor-pointer shrink-0"
-            >
-              View report
-            </button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-10 py-2.5 w-full min-w-0 max-w-full">
-            {/* Recharts Pie Donut with explicit sizing container */}
-            <div className="relative w-[160px] h-[160px] flex items-center justify-center shrink-0 mx-auto sm:mx-0 min-w-0 max-w-full overflow-hidden">
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-                <span className="text-[9px] uppercase font-bold text-[var(--text-muted)] tracking-widest leading-none">Total</span>
-                <span className="text-sm font-black text-[var(--text-primary)] mt-1 leading-none break-words">
-                  {expenseSummary?.totalSpent !== undefined ? `${currencySymbol}${expenseSummary.totalSpent.toLocaleString()}` : "₹4,257.01"}
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  {card.label}
                 </span>
               </div>
-              <PieChart width={160} height={160} className="overflow-visible shrink-0">
-                <Pie
-                  data={donutData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={52}
-                  outerRadius={72}
-                  paddingAngle={3}
-                  dataKey="amount"
-                >
-                  {donutData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </div>
 
-            {/* Custom Legend */}
-            <div className="flex flex-col gap-2.5 w-full sm:w-auto min-w-[200px] max-w-xs pl-0 sm:pl-4 text-left">
-              {donutData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between text-xs w-full gap-2.5 min-w-0 max-w-full overflow-hidden box-border">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                    <span className="font-bold text-[var(--text-muted)] text-[11px] break-words whitespace-normal leading-normal">{item.name}</span>
+              {/* Value */}
+              <div style={{ fontSize: "34px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1, letterSpacing: "-0.02em", marginBottom: "6px" }}>
+                {card.value}
+              </div>
+
+              {/* Subtitle */}
+              <div style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 500, marginBottom: "20px" }}>
+                {card.subtitle}
+              </div>
+
+              {/* Progress bar */}
+              <div style={{ width: "100%", height: "5px", background: "var(--bg-secondary)", borderRadius: "999px", overflow: "hidden", marginBottom: "10px" }}>
+                <div style={{
+                  height: "100%",
+                  width: `${card.progress}%`,
+                  background: card.barColor,
+                  borderRadius: "999px",
+                  transition: "width 0.7s ease",
+                }} />
+              </div>
+
+              {/* Status text */}
+              <div style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 500 }}>
+                {card.status}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+          SECTION 3 — MAIN CONTENT (left 70% / right 30%)
+         ══════════════════════════════════════════════════════════ */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }} className="dashboard-main-grid">
+        <style>{`
+          @media (min-width: 1024px) {
+            .dashboard-main-grid {
+              grid-template-columns: minmax(0, 1fr) 360px !important;
+            }
+          }
+          .dash-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            overflow: hidden;
+          }
+          .dash-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 24px 24px 20px;
+            border-bottom: 1px solid var(--border-color);
+          }
+          .dash-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 4px;
+            letter-spacing: -0.01em;
+          }
+          .dash-card-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin: 0;
+          }
+          .dash-card-link {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: opacity 0.15s;
+            text-decoration: none;
+          }
+          .dash-card-link:hover { opacity: 0.75; }
+          .dash-card-body { padding: 20px 24px 24px; }
+          .class-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: border-color 0.15s, background 0.15s;
+            cursor: default;
+          }
+          .class-item:hover { border-color: rgba(59,130,246,0.35); }
+          .class-item + .class-item { margin-top: 10px; }
+          .class-icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            background: rgba(59,130,246,0.10);
+            border: 1px solid rgba(59,130,246,0.20);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+          }
+          .class-arrow {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s;
+          }
+          .class-arrow:hover { background: var(--accent-hover); }
+          .timeline-line { border-left: 2px solid var(--border-color); margin-left: 14px; padding-left: 24px; }
+          .timeline-item { position: relative; display: flex; align-items: flex-start; gap: 14px; }
+          .timeline-item + .timeline-item { margin-top: 20px; }
+          .timeline-dot {
+            position: absolute; left: -34px; top: 6px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+            display: flex; align-items: center; justify-content: center;
+            background: var(--card-bg);
+          }
+          .timeline-content {
+            flex: 1; min-width: 0;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: border-color 0.15s;
+          }
+          .timeline-content:hover { border-color: rgba(59,130,246,0.2); }
+          .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+          .cal-day-label { font-size: 10px; font-weight: 700; color: var(--text-muted); padding: 8px 0; text-transform: uppercase; letter-spacing: 0.06em; }
+          .cal-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1; cursor: pointer; }
+          .cal-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; transition: background 0.15s; }
+          .cal-num:hover { background: var(--bg-secondary); }
+          .cal-num.selected { background: var(--accent); color: white; }
+          .cal-num.other-month { color: rgba(100,116,139,0.3); }
+          .legend-row { display: flex; align-items: center; gap: 10px; }
+          .legend-row + .legend-row { margin-top: 12px; }
+          .module-tile {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            text-decoration: none;
+            transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+            cursor: pointer;
+          }
+          .module-tile:hover { border-color: rgba(59,130,246,0.35); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+          .module-tile + .module-tile { margin-top: 10px; }
+        `}</style>
+
+        {/* ── LEFT COLUMN ─────────────────────────────────────── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px", minWidth: 0 }}>
+
+          {/* Upcoming Classes */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <div>
+                <p className="dash-card-title">Upcoming Classes</p>
+                <p className="dash-card-sub">Your scheduled tutorial sessions</p>
+              </div>
+              <button className="dash-card-link" onClick={() => navigate("/tutorials/profile/manageBooking")}>
+                View all
+              </button>
+            </div>
+            <div className="dash-card-body">
+              {(upcomingClasses.length > 0 ? upcomingClasses : [{
+                id: "mock", title: "CS-301 Algorithms with Dr. Marcus",
+                date: "17 Jun, 05:30 PM", type: "Online"
+              }]).map((item) => (
+                <div key={item.id} className="class-item">
+                  <div className="class-icon">
+                    <CalendarIcon size={16} color="var(--accent)" />
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="font-extrabold text-[var(--text-primary)] text-[11px] whitespace-nowrap">{currencySymbol}{item.amount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
-                    <span className="text-[var(--text-muted)] font-bold w-10 text-right text-[10px] shrink-0 whitespace-nowrap">{item.percentage}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {item.title}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px", display: "flex", alignItems: "center", gap: "5px", fontWeight: 500 }}>
+                      <Clock size={11} />
+                      {item.date}
+                    </div>
                   </div>
+                  <button className="class-arrow" onClick={() => navigate("/tutorials")}>
+                    <ArrowRight size={13} />
+                  </button>
                 </div>
               ))}
             </div>
           </div>
-        </PremiumCard>
-      </div>
 
-      {/* Row 3: Grid for Bills Due Calendar & Quick Modules */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full min-w-0 max-w-full">
-        {/* Column 1: Bills Due Calendar */}
-        <PremiumCard className="lg:col-span-5" hoverEffect={false}>
-          <div className="flex justify-between items-center pb-4 border-b border-[var(--border-color)] mb-4 w-full min-w-0">
-            <div className="min-w-0">
-              <h3 className="text-sm font-bold text-[var(--text-primary)] tracking-wide break-words whitespace-normal">Bills Due Calendar</h3>
-              <p className="text-[11px] text-[var(--text-muted)] font-semibold mt-0.5 break-words whitespace-normal">Monitor billing cycles and premium deadlines</p>
+          {/* Bills Due Calendar */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <div>
+                <p className="dash-card-title">Bills Due Calendar</p>
+                <p className="dash-card-sub">Track payment deadlines</p>
+              </div>
+            </div>
+            <div className="dash-card-body">
+              {/* Month navigation */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--bg-secondary)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "8px 12px", marginBottom: "16px" }}>
+                <button onClick={handlePrevMonth} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center", padding: "4px", borderRadius: "6px" }}>
+                  <ChevronLeft size={16} />
+                </button>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  {selectedCalendarDate.toLocaleString("en-US", { month: "long", year: "numeric" })}
+                </span>
+                <button onClick={handleNextMonth} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center", padding: "4px", borderRadius: "6px" }}>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+              {/* Calendar grid */}
+              <div className="cal-grid">
+                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+                  <div key={d} className="cal-day-label">{d}</div>
+                ))}
+                {calendarCells.map((cellObj, idx) => {
+                  const { date, isCurrentMonth } = cellObj;
+                  const dayNum = date.getDate();
+                  const isSelected = selectedCalendarDate &&
+                    date.getDate() === selectedCalendarDate.getDate() &&
+                    date.getMonth() === selectedCalendarDate.getMonth() &&
+                    date.getFullYear() === selectedCalendarDate.getFullYear();
+                  let hasDot = false, dotColor = "";
+                  const isJune2026 = date.getMonth() === 5 && date.getFullYear() === 2026;
+                  if (isCurrentMonth && isJune2026) {
+                    if (dayNum === 5) { hasDot = true; dotColor = "#F59E0B"; }
+                    else if (dayNum === 12) { hasDot = true; dotColor = "#06B6D4"; }
+                    else if (dayNum === 19) { hasDot = true; dotColor = "#EC4899"; }
+                  }
+                  const dueBills = isCurrentMonth ? getBillsForDate(date) : [];
+                  if (dueBills.length > 0) {
+                    hasDot = true;
+                    dotColor = dueBills.some(b => ["Critical","High"].includes(b.priority)) ? "#EF4444" : "#3B82F6";
+                  }
+                  return (
+                    <div key={`day-${idx}`} className="cal-cell" onClick={() => setSelectedCalendarDate(date)}>
+                      <div className={`cal-num ${isSelected ? "selected" : ""} ${!isCurrentMonth ? "other-month" : ""}`}>
+                        {dayNum}
+                      </div>
+                      {hasDot && !isSelected && (
+                        <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: dotColor, display: "block", marginTop: "2px" }} />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-4 w-full min-w-0">
-            {/* Header with Arrow controls */}
-            <div className="flex justify-between items-center bg-[var(--bg-secondary)] p-2.5 rounded-2xl border border-[var(--border-color)] w-full gap-2 min-w-0">
-              <button 
-                onClick={handlePrevMonth} 
-                className="p-1.5 rounded-xl hover:bg-[var(--card-bg)] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-[var(--text-muted)] shrink-0"
-              >
-                <ChevronLeft size={16} className="shrink-0" />
-              </button>
-              <span className="text-xs font-bold text-[var(--text-primary)] tracking-wider uppercase truncate min-w-0">
-                {selectedCalendarDate.toLocaleString("en-US", { month: "long", year: "numeric" })}
-              </span>
-              <button 
-                onClick={handleNextMonth} 
-                className="p-1.5 rounded-xl hover:bg-[var(--card-bg)] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-[var(--text-muted)] shrink-0"
-              >
-                <ChevronRight size={16} className="shrink-0" />
+          {/* Recent Activity */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <div>
+                <p className="dash-card-title">Recent Activity</p>
+                <p className="dash-card-sub">Your latest actions across all portals</p>
+              </div>
+              <button className="dash-card-link" onClick={() => navigate("/student/attendance")}>
+                View all
               </button>
             </div>
-
-            {/* Grid days */}
-            <div className="grid grid-cols-7 gap-1 text-center w-full min-w-0 max-w-full px-2.5 pb-2.5">
-              {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((dayName) => (
-                <span key={dayName} className="font-bold text-[10px] text-[var(--text-muted)] py-2 uppercase tracking-widest block">{dayName}</span>
-              ))}
-              {calendarCells.map((cellObj, idx) => {
-                const { date, isCurrentMonth } = cellObj;
-                const dayNum = date.getDate();
-                const isSelected = 
-                  selectedCalendarDate &&
-                  date.getDate() === selectedCalendarDate.getDate() &&
-                  date.getMonth() === selectedCalendarDate.getMonth() &&
-                  date.getFullYear() === selectedCalendarDate.getFullYear();
-
-                let hasDot = false;
-                let dotColorClass = "";
-                
-                // Show mock dots on June 5, 12, 19
-                const isJune2026 = date.getMonth() === 5 && date.getFullYear() === 2026;
-                if (isCurrentMonth && isJune2026) {
-                  if (dayNum === 5) { hasDot = true; dotColorClass = "bg-amber-500"; }
-                  else if (dayNum === 12) { hasDot = true; dotColorClass = "bg-cyan-500"; }
-                  else if (dayNum === 19) { hasDot = true; dotColorClass = "bg-pink-500"; }
-                }
-
-                // Actual bills
-                const dueBills = isCurrentMonth ? getBillsForDate(date) : [];
-                if (dueBills.length > 0) {
-                  hasDot = true;
-                  const priorities = dueBills.map(b => b.priority);
-                  if (priorities.includes("Critical") || priorities.includes("High")) {
-                    dotColorClass = "bg-[var(--danger)]";
-                  } else {
-                    dotColorClass = "bg-[var(--accent)]";
-                  }
-                }
-
-                return (
-                  <div 
-                    key={`day-${idx}`} 
-                    className="py-1 flex flex-col items-center justify-center relative cursor-pointer min-w-0 overflow-hidden box-border w-full aspect-square"
-                    onClick={() => setSelectedCalendarDate(date)}
-                  >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 text-xs font-bold shrink-0
-                      ${isSelected 
-                        ? "bg-[var(--accent)] text-white shadow-[0_0_12px_rgba(59,130,246,0.4)]" 
-                        : isCurrentMonth 
-                        ? "text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]" 
-                        : "text-[var(--text-muted)]/40 hover:bg-[var(--bg-secondary)]/30"
-                      }
-                    `}>
-                      {dayNum}
+            <div className="dash-card-body">
+              <div className="timeline-line">
+                {activityCards.map((card, idx) => {
+                  const Icon = card.icon;
+                  return (
+                    <div key={idx} className="timeline-item">
+                      <div className="timeline-dot">
+                        <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: card.dotColor.replace("bg-","").includes("indigo") ? "#6366F1" : card.dotColor.includes("emerald") ? "#10B981" : card.dotColor.includes("cyan") ? "#06B6D4" : card.dotColor.includes("pink") ? "#EC4899" : "#64748B", display: "block" }} />
+                      </div>
+                      <div style={{ width: "34px", height: "34px", borderRadius: "10px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-secondary)", border: "1px solid var(--border-color)" }}>
+                        <Icon size={15} color="var(--text-muted)" />
+                      </div>
+                      <div className="timeline-content">
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.3 }}>{card.title}</div>
+                          <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "320px", fontWeight: 500 }}>{card.desc}</div>
+                        </div>
+                        <span style={{ fontSize: "11px", color: "var(--text-muted)", flexShrink: 0, fontWeight: 600, whiteSpace: "nowrap" }}>{card.time}</span>
+                      </div>
                     </div>
-                    {hasDot && !isSelected && (
-                      <span className={`absolute bottom-0.5 w-1.5 h-1.5 rounded-full ${dotColorClass} shrink-0`} />
-                    )}
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT COLUMN ────────────────────────────────────── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+          {/* Expense Overview */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <div>
+                <p className="dash-card-title">Expense Overview</p>
+                <p className="dash-card-sub">Spending breakdown</p>
+              </div>
+              <button className="dash-card-link" onClick={() => navigate("/expenses-tracker")}>
+                View report
+              </button>
+            </div>
+            <div className="dash-card-body">
+              {/* Donut chart centered */}
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+                <div style={{ position: "relative", width: "160px", height: "160px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 1 }}>
+                    <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Total</span>
+                    <span style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", marginTop: "4px", lineHeight: 1 }}>
+                      {expenseSummary?.totalSpent !== undefined
+                        ? `${currencySymbol}${expenseSummary.totalSpent.toLocaleString()}`
+                        : "₹4,257"}
+                    </span>
                   </div>
+                  <PieChart width={160} height={160} style={{ overflow: "visible" }}>
+                    <Pie data={donutData} cx="50%" cy="50%" innerRadius={50} outerRadius={72} paddingAngle={3} dataKey="amount">
+                      {donutData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </div>
+              </div>
+              {/* Legend */}
+              <div>
+                {donutData.map((item, index) => (
+                  <div key={index} className="legend-row">
+                    <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: item.color, flexShrink: 0 }} />
+                    <span style={{ flex: 1, fontSize: "13px", color: "var(--text-muted)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</span>
+                    <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", flexShrink: 0, whiteSpace: "nowrap" }}>
+                      {currencySymbol}{item.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", width: "38px", textAlign: "right", flexShrink: 0, fontWeight: 600 }}>
+                      {item.percentage}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Modules */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <div>
+                <p className="dash-card-title">Quick Modules</p>
+                <p className="dash-card-sub">Navigate to features</p>
+              </div>
+            </div>
+            <div className="dash-card-body">
+              {quickModules.map((mod, idx) => {
+                const Icon = mod.Icon;
+                return (
+                  <Link key={idx} to={mod.to} className="module-tile">
+                    <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: `${mod.color}18`, border: `1px solid ${mod.color}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon size={17} color={mod.color} />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{mod.label}</div>
+                      <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px", fontWeight: 500 }}>{mod.desc}</div>
+                    </div>
+                    <ArrowRight size={14} color="var(--text-muted)" style={{ marginLeft: "auto", flexShrink: 0 }} />
+                  </Link>
                 );
               })}
             </div>
           </div>
-        </PremiumCard>
-
-        {/* Column 2: Quick Modules Shortcuts */}
-        <PremiumCard className="lg:col-span-7" hoverEffect={false}>
-          <div className="flex justify-between items-center pb-4 border-b border-[var(--border-color)] mb-4 w-full min-w-0">
-            <div className="min-w-0">
-              <h3 className="text-sm font-bold text-[var(--text-primary)] tracking-wide break-words whitespace-normal">Quick Modules</h3>
-              <p className="text-[11px] text-[var(--text-muted)] font-semibold mt-0.5 break-words whitespace-normal">Access your most-used features</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 items-center py-2 w-full min-w-0">
-            {[
-              {
-                label: "Book Session",
-                desc: "Find a tutor & book",
-                icon: GraduationCap,
-                to: TUTORIAL_PATHS.unifiedEntry,
-                borderClass: "border-indigo-500 hover:border-indigo-600",
-                bgClass: "bg-indigo-500/[0.04] hover:bg-indigo-500/[0.08]",
-                textClass: "text-indigo-600 dark:text-indigo-400",
-              },
-              {
-                label: "My Bookings",
-                desc: "View your classes",
-                icon: CheckSquare,
-                to: "/tutorials/profile/manageBooking",
-                borderClass: "border-emerald-500 hover:border-emerald-600",
-                bgClass: "bg-emerald-500/[0.04] hover:bg-emerald-500/[0.08]",
-                textClass: "text-emerald-600 dark:text-emerald-400",
-              },
-              {
-                label: "Resources",
-                desc: "Get study materials",
-                icon: BookOpen,
-                to: TUTORIAL_PATHS.unifiedEntry,
-                borderClass: "border-amber-500 hover:border-amber-600",
-                bgClass: "bg-amber-500/[0.04] hover:bg-amber-500/[0.08]",
-                textClass: "text-amber-600 dark:text-amber-400",
-              },
-              {
-                label: "Ask Doubt",
-                desc: "Chat with educators",
-                icon: MessageSquare,
-                to: "/chat",
-                borderClass: "border-rose-500 hover:border-rose-600",
-                bgClass: "bg-rose-500/[0.04] hover:bg-rose-500/[0.08]",
-                textClass: "text-rose-600 dark:text-rose-400",
-              },
-            ].map((mod, idx) => {
-              const Icon = mod.icon;
-              return (
-                <Link
-                  key={idx}
-                  to={mod.to}
-                  className={`border border-[var(--border-color)] border-l-4 ${mod.borderClass} ${mod.bgClass} rounded-2xl p-6 flex flex-col justify-between h-full hover:shadow-md transition-all duration-300 group cursor-pointer w-full min-w-0 max-w-full overflow-hidden box-border`}
-                >
-                  <div className="flex items-center justify-between w-full gap-2 mb-3">
-                    <div className={`p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] shrink-0 ${mod.textClass}`}>
-                      <Icon size={18} className="transition-transform duration-300 group-hover:scale-110 shrink-0" />
-                    </div>
-                    <ArrowRight size={14} className="text-[var(--text-muted)] group-hover:text-[var(--text-primary)] group-hover:translate-x-1 transition-all duration-200 shrink-0" />
-                  </div>
-                  <div className="mt-4 min-w-0 w-full text-left">
-                    <h4 className="text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors break-words whitespace-normal leading-snug">{mod.label}</h4>
-                    <p className="text-[11px] text-[var(--text-muted)] mt-1 font-medium leading-normal break-words whitespace-normal">{mod.desc}</p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </PremiumCard>
+        </div>
       </div>
 
-      {/* Row 4: Recent Activity timeline events */}
-      <PremiumCard hoverEffect={false}>
-        <div className="flex justify-between items-center pb-3 border-b border-[var(--border-color)] w-full min-w-0 gap-2">
-          <div className="min-w-0">
-            <h3 className="text-sm font-bold text-[var(--text-primary)] tracking-wide break-words whitespace-normal">Recent Activity</h3>
-            <p className="text-[11px] text-[var(--text-muted)] font-semibold mt-0.5 break-words whitespace-normal">Your latest actions and updates across portals</p>
-          </div>
-          <button 
-            onClick={() => navigate("/student/attendance")}
-            className="text-[11px] font-bold text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors cursor-pointer shrink-0"
-          >
-            View all activity
-          </button>
-        </div>
-
-        <div className="relative border-l border-[var(--border-color)] ml-4 pl-6 space-y-6 py-2 w-full min-w-0 max-w-full">
-          {activityCards.map((card, idx) => {
-            const Icon = card.icon;
-            return (
-              <div key={idx} className="relative flex items-center gap-4 group w-full min-w-0 max-w-full overflow-hidden box-border">
-                {/* Timeline node */}
-                <div className="absolute -left-[31px] top-1/2 -translate-y-1/2 flex items-center justify-center shrink-0">
-                  <div className="w-3.5 h-3.5 rounded-full border border-[var(--bg-primary)] bg-[var(--card-bg)] flex items-center justify-center shadow-sm">
-                    <span className={`w-1.5 h-1.5 rounded-full ${card.dotColor}`} />
-                  </div>
-                </div>
-                {/* Icon wrapper */}
-                <div className={`p-2.5 rounded-xl ${card.iconBg} ${card.iconColor} border border-[var(--border-color)] shrink-0 self-center`}>
-                  <Icon size={16} className="shrink-0" />
-                </div>
-                {/* Content */}
-                <div className="flex-1 min-w-0 max-w-full bg-[var(--bg-secondary)]/40 hover:bg-[var(--bg-secondary)]/60 border border-[var(--border-color)]/60 hover:border-[var(--accent)]/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-all duration-300 box-border text-left">
-                  <div className="min-w-0 max-w-full">
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors break-words whitespace-normal leading-normal">{card.title}</h4>
-                    <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed break-words whitespace-normal">{card.desc}</p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
-                    <span className="text-xs text-[var(--text-muted)]/80 font-medium whitespace-nowrap">{card.time}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </PremiumCard>
-
-      {/* Global floating action button on bottom right of student dashboard */}
-      <div className="fixed bottom-8 right-8 z-50">
+      {/* ══════════════════════════════════════════════════════════
+          FLOATING ACTION BUTTON
+         ══════════════════════════════════════════════════════════ */}
+      <div style={{ position: "fixed", bottom: "32px", right: "32px", zIndex: 50 }}>
         <button
           onClick={() => setIsQuickAddExpenseOpen(true)}
-          className="w-14 h-14 rounded-full bg-[var(--primary)] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,0.3)] hover:shadow-[0_8px_30px_rgba(59,130,246,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer border border-[var(--primary)]/20 shrink-0"
           title="Quick Add Expense"
+          style={{
+            width: "52px", height: "52px",
+            borderRadius: "50%",
+            background: "var(--primary)",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 4px 20px rgba(59,130,246,0.35)",
+            transition: "transform 0.2s, box-shadow 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.08)";
+            e.currentTarget.style.boxShadow = "0 8px 28px rgba(59,130,246,0.5)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow = "0 4px 20px rgba(59,130,246,0.35)";
+          }}
         >
-          <Plus size={24} className="shrink-0" />
+          <Plus size={22} />
         </button>
       </div>
 
-      {/* Quick Add Expense Modal */}
+      {/* ══════════════════════════════════════════════════════════
+          QUICK ADD EXPENSE MODAL
+         ══════════════════════════════════════════════════════════ */}
       <Dialog open={isQuickAddExpenseOpen} onOpenChange={setIsQuickAddExpenseOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -1056,7 +1129,6 @@ const UnifiedDashboard = () => {
                 required
               />
             </div>
-
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-[var(--text-muted)]">Amount (₹)</label>
               <PremiumInput
@@ -1069,7 +1141,6 @@ const UnifiedDashboard = () => {
                 required
               />
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5 text-left">
                 <label className="text-xs font-semibold text-[var(--text-muted)]">Category</label>
@@ -1077,25 +1148,11 @@ const UnifiedDashboard = () => {
                   value={quickExpenseForm.category}
                   onChange={(e) => setQuickExpenseForm({ ...quickExpenseForm, category: e.target.value })}
                 >
-                  {[
-                    "Tuition Fees",
-                    "Hostel Fees",
-                    "Mess Fees",
-                    "Books",
-                    "Transportation",
-                    "Internet",
-                    "Mobile Recharge",
-                    "Subscriptions",
-                    "Food",
-                    "Shopping",
-                    "Healthcare",
-                    "Other",
-                  ].map((c) => (
+                  {["Tuition Fees","Hostel Fees","Mess Fees","Books","Transportation","Internet","Mobile Recharge","Subscriptions","Food","Shopping","Healthcare","Other"].map((c) => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </Select>
               </div>
-
               <div className="space-y-1.5 text-left">
                 <label className="text-xs font-semibold text-[var(--text-muted)]">Payment Method</label>
                 <Select
@@ -1109,7 +1166,6 @@ const UnifiedDashboard = () => {
                 </Select>
               </div>
             </div>
-
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-[var(--text-muted)]">Date</label>
               <PremiumInput
@@ -1119,19 +1175,11 @@ const UnifiedDashboard = () => {
                 required
               />
             </div>
-
             <div className="flex gap-3 justify-end pt-5 border-t border-[var(--border-color)]/30 mt-6">
-              <PremiumButton
-                type="button"
-                variant="secondary"
-                onClick={() => setIsQuickAddExpenseOpen(false)}
-              >
+              <PremiumButton type="button" variant="secondary" onClick={() => setIsQuickAddExpenseOpen(false)}>
                 Cancel
               </PremiumButton>
-              <PremiumButton
-                type="submit"
-                variant="default"
-              >
+              <PremiumButton type="submit" variant="default">
                 Confirm
               </PremiumButton>
             </div>
