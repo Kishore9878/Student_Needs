@@ -9,6 +9,39 @@ import { toast } from "react-hot-toast";
 import { getExpenseStatus } from "../../utils/Expenses/helpers";
 import { getExpenseCategory } from "../../utils/Expenses/categories";
 import ExpenseFilters from "../../components/Expenses/shared/ExpenseFilters";
+import { RefreshCw, Repeat, Plus } from "lucide-react";
+
+/* ── Scoped styles ── */
+const S = {
+  card: {
+    background: "var(--card-bg)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "16px",
+    padding: "24px",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+    transition: "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
+  },
+};
+
+function StatusPill({ status }) {
+  const map = {
+    "Active":   { bg: "rgba(16,185,129,0.12)", color: "var(--success)", border: "rgba(16,185,129,0.25)" },
+    "Paused":   { bg: "rgba(245,158,11,0.12)", color: "var(--warning)", border: "rgba(245,158,11,0.25)" },
+    "Overdue":  { bg: "rgba(239,68,68,0.12)",  color: "var(--danger)",  border: "rgba(239,68,68,0.25)" },
+    "Inactive": { bg: "rgba(100,116,139,0.12)", color: "var(--text-muted)", border: "rgba(100,116,139,0.25)" },
+  };
+  const t = map[status] || map["Inactive"];
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: "5px",
+      padding: "2px 9px", borderRadius: "999px", fontSize: "11px", fontWeight: "600",
+      background: t.bg, color: t.color, border: `1px solid ${t.border}`,
+    }}>
+      <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+      {status}
+    </span>
+  );
+}
 
 const RecurringTransactions = () => {
   const user = JSON.parse(localStorage.getItem("User"));
@@ -18,8 +51,7 @@ const RecurringTransactions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  
-  // Filters state
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
 
@@ -31,15 +63,7 @@ const RecurringTransactions = () => {
     nextDate: new Date().toISOString().substring(0, 10),
   });
 
-  const categories = [
-    "Grocery",
-    "Vehicle",
-    "Shopping",
-    "Travel",
-    "Food",
-    "Fun",
-    "Other",
-  ];
+  const categories = ["Grocery", "Vehicle", "Shopping", "Travel", "Food", "Fun", "Other"];
 
   const fetchRules = async () => {
     setIsLoading(true);
@@ -78,7 +102,6 @@ const RecurringTransactions = () => {
           const dbRules = await expensesApi.getRecurringRules();
           const saved = localStorage.getItem(`recurring_tx_${userId}`);
           const localRules = saved ? JSON.parse(saved) : [];
-          
           if (localRules.length > 0 && dbRules.length === 0) {
             await migrateLocalRules(localRules);
             const updatedRules = await expensesApi.getRecurringRules();
@@ -140,13 +163,7 @@ const RecurringTransactions = () => {
       });
     } else {
       setEditingId(null);
-      setFormData({
-        title: "",
-        amount: "",
-        frequency: "Monthly",
-        category: "Other",
-        nextDate: new Date().toISOString().substring(0, 10),
-      });
+      setFormData({ title: "", amount: "", frequency: "Monthly", category: "Other", nextDate: new Date().toISOString().substring(0, 10) });
     }
     setIsModalOpen(true);
   };
@@ -190,7 +207,6 @@ const RecurringTransactions = () => {
     }
   };
 
-  // Filter processing
   const filteredData = useMemo(() => {
     return recurringData.filter(tx => {
       const matchesSearch = tx.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -204,104 +220,130 @@ const RecurringTransactions = () => {
     .sort((a, b) => new Date(a.nextDate) - new Date(b.nextDate))
     .slice(0, 3);
 
+  const gradients = [
+    ["#7c3aed", "#3b82f6"],
+    ["#059669", "#0891b2"],
+    ["#ea580c", "#e11d48"],
+  ];
+
   return (
-    <div className="w-full space-y-8 animate-fade-in-up px-6 py-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: "32px", padding: "32px 24px", maxWidth: "100%" }}>
+
+      {/* ── Header ── */}
+      <div style={{
+        display: "flex", flexDirection: "row", flexWrap: "wrap",
+        alignItems: "flex-start", justifyContent: "space-between", gap: "16px",
+        paddingBottom: "28px", borderBottom: "1px solid var(--border-color)",
+      }}>
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            <span className="text-[var(--primary)]">Automated</span> Payments
-          </h2>
-          <p className="text-muted-foreground text-sm mt-1">
+          <h1 style={{ fontSize: "34px", fontWeight: "800", letterSpacing: "-0.03em", lineHeight: "1.1", color: "var(--text-primary)", margin: 0 }}>
+            Expense Tracker
+          </h1>
+          <p style={{ fontSize: "14px", color: "var(--text-muted)", margin: "6px 0 0", lineHeight: "1.5" }}>
             Manage your subscriptions and recurring bills effortlessly.
           </p>
         </div>
         <button
           onClick={() => openForm()}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-[var(--radius-md)] bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white font-bold shadow-[var(--shadow-lg)] shadow-[var(--primary)]/30 hover:shadow-[var(--primary)]/50 transition-all hover:-translate-y-0.5"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: "8px",
+            padding: "0 20px", height: "38px", borderRadius: "10px", border: "none",
+            background: "var(--accent)", color: "#fff",
+            fontSize: "13px", fontWeight: "700", cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(59,130,246,0.3)",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(59,130,246,0.4)"; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(59,130,246,0.3)"; }}
         >
-          <AiOutlinePlus size={20} /> New Rule
+          <Plus size={16} /> New Rule
         </button>
       </div>
 
-      {/* Auto Debit Cards UI (Premium Standout) */}
-      <div
-        className="grid gap-5"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
-      >
-        {upcomingCards?.map((card, idx) => {
-          const isOverdue = new Date(card.nextDate) < new Date();
-          const gradients = [
-            "from-purple-600 to-[var(--primary)]",
-            "from-emerald-600 to-teal-500",
-            "from-orange-500 to-rose-500",
-          ];
-          const bgGradient = gradients[idx % gradients.length];
-          const catMeta = getExpenseCategory(card.category);
-
-          return (
-            <div
-              key={card._id}
-              className={`relative overflow-hidden rounded-[var(--radius-lg)] p-5 transition-transform hover:-translate-y-2 group bg-card min-w-0 ${isOverdue ? "shadow-[0_0_25px_rgba(244,63,94,0.4)] border border-rose-500/50" : "shadow-glass border border-border"}`}
-            >
+      {/* ── Upcoming Subscription Cards ── */}
+      <div>
+        <p style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "14px" }}>
+          Upcoming Payments
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+          {upcomingCards.length === 0 ? (
+            <div style={{
+              gridColumn: "1 / -1", padding: "40px", textAlign: "center",
+              border: "2px dashed var(--border-color)", borderRadius: "14px",
+              color: "var(--text-muted)", fontSize: "14px",
+            }}>
+              <Repeat size={32} style={{ margin: "0 auto 10px", display: "block", opacity: 0.4 }} />
+              No active subscriptions upcoming. Create a rule to get started.
+            </div>
+          ) : upcomingCards.map((card, idx) => {
+            const isOverdue = new Date(card.nextDate) < new Date();
+            const [from, to] = gradients[idx % gradients.length];
+            const catMeta = getExpenseCategory(card.category);
+            return (
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-20 group-hover:opacity-30 transition-opacity`}
-              ></div>
+                key={card._id}
+                style={{
+                  position: "relative", overflow: "hidden",
+                  borderRadius: "16px", padding: "22px",
+                  background: "var(--card-bg)",
+                  border: isOverdue ? "1px solid rgba(239,68,68,0.4)" : "1px solid var(--border-color)",
+                  boxShadow: isOverdue ? "0 0 20px rgba(239,68,68,0.15)" : "0 1px 3px rgba(0,0,0,0.05)",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  cursor: "default",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.1)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = isOverdue ? "0 0 20px rgba(239,68,68,0.15)" : "0 1px 3px rgba(0,0,0,0.05)"; }}
+              >
+                {/* Gradient accent */}
+                <div style={{
+                  position: "absolute", inset: 0,
+                  background: `linear-gradient(135deg, ${from}18, ${to}08)`,
+                  pointerEvents: "none",
+                }} />
+                <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "100px", height: "100px", borderRadius: "50%", background: `${from}12`, filter: "blur(20px)", pointerEvents: "none" }} />
 
-              {/* Glass reflection effect */}
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/10 blur-2xl rounded-full"></div>
-
-              <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="flex justify-between items-start mb-6 gap-2 min-w-0">
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-foreground font-bold text-base leading-tight truncate">
-                      {card.title}
-                    </h4>
-                    <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider mt-0.5 truncate">
-                      {catMeta.label}
-                    </p>
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px", gap: "8px" }}>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <h4 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-primary)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{card.title}</h4>
+                      <p style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginTop: "2px" }}>{catMeta.label}</p>
+                    </div>
+                    <span style={{ padding: "3px 9px", borderRadius: "999px", fontSize: "10px", fontWeight: "700", background: `${from}15`, color: from, border: `1px solid ${from}30`, flexShrink: 0 }}>
+                      {card.frequency}
+                    </span>
                   </div>
-                  <Badge variant="secondary" className="shrink-0 text-[10px]">
-                    {card.frequency}
-                  </Badge>
-                </div>
-
-                <div>
-                  <p className="text-muted-foreground text-xs mb-1">
-                    Auto Debit Amount
-                  </p>
-                  <div className="flex justify-between items-end gap-2 min-w-0">
-                    <p className="text-2xl font-sans font-bold text-foreground tracking-tight truncate min-w-0">
-                      ₹ {card.amount.toLocaleString()}
-                    </p>
-                    <p
-                      className={`text-xs font-bold shrink-0 ${isOverdue ? "text-rose-400 animate-pulse" : "text-foreground"}`}
-                    >
-                      {isOverdue
-                        ? "OVERDUE"
-                        : new Date(card.nextDate).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                    </p>
+                  <div>
+                    <p style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>Auto Debit Amount</p>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: "8px" }}>
+                      <p style={{ fontSize: "26px", fontWeight: "800", color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0 }}>
+                        ₹ {card.amount.toLocaleString()}
+                      </p>
+                      <p style={{ fontSize: "12px", fontWeight: "700", color: isOverdue ? "var(--danger)" : from, flexShrink: 0 }}>
+                        {isOverdue ? "OVERDUE" : new Date(card.nextDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-        {upcomingCards.length === 0 && (
-          <div className="col-span-full py-8 text-center text-muted-foreground border border-dashed border-border rounded-[var(--radius-lg)] bg-card">
-            No active subscriptions upcoming.
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
 
-      {/* Main Recurring List Table */}
-      <div className="table-responsive w-full bg-card border border-border rounded-[var(--radius-lg)] shadow-sm">
-        <div className="p-6 border-b border-border flex flex-col gap-4">
-          <h3 className="text-xl font-bold text-[var(--text-primary)]">Active Rules</h3>
-          
+      {/* ── Active Rules Table ── */}
+      <div style={{
+        background: "var(--card-bg)",
+        border: "1px solid var(--border-color)",
+        borderRadius: "16px",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        overflow: "hidden",
+      }}>
+        {/* Table header card */}
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-color)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "16px" }}>
+            <h3 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>All Recurring Rules</h3>
+            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{filteredData.length} rules</span>
+          </div>
           <ExpenseFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -312,98 +354,119 @@ const RecurringTransactions = () => {
           />
         </div>
 
-        <div className="overflow-x-auto">
-          <Table className="w-full text-left border-collapse whitespace-nowrap">
-            <TableHeader>
-              <TableRow className="bg-[var(--bg-secondary)] text-muted-foreground text-xs uppercase tracking-widest h-12">
-                <TableHead className="px-6 font-semibold h-12">Subscription / Bill</TableHead>
-                <TableHead className="px-6 font-semibold h-12">Amount</TableHead>
-                <TableHead className="px-6 font-semibold text-center h-12">Frequency</TableHead>
-                <TableHead className="px-6 font-semibold text-center h-12">Next Date</TableHead>
-                <TableHead className="px-6 font-semibold text-center h-12">Status</TableHead>
-                <TableHead className="px-6 font-semibold text-center h-12">Toggle</TableHead>
-                <TableHead className="px-6 font-semibold text-right h-12">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredData?.map((tx) => {
+        <div style={{ overflowX: "auto", maxHeight: "480px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "640px" }}>
+            <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-color)" }}>
+              <tr>
+                {["Subscription / Bill", "Amount", "Frequency", "Next Date", "Status", "Toggle", "Actions"].map((h, i) => (
+                  <th key={h} style={{
+                    padding: "12px 16px",
+                    textAlign: i >= 2 && i <= 5 ? "center" : i === 6 ? "right" : "left",
+                    fontSize: "11px", fontWeight: "700", letterSpacing: "0.07em",
+                    textTransform: "uppercase", color: "var(--text-muted)", whiteSpace: "nowrap",
+                  }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="7" style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)", fontSize: "14px" }}>
+                    Loading rules…
+                  </td>
+                </tr>
+              ) : filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ padding: "48px 24px", textAlign: "center" }}>
+                    <Repeat size={36} style={{ color: "var(--text-muted)", margin: "0 auto 10px", display: "block", opacity: 0.4 }} />
+                    <p style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: "500" }}>No recurring rules configured.</p>
+                    <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>Click "New Rule" to create your first automated payment.</p>
+                  </td>
+                </tr>
+              ) : filteredData.map((tx, idx) => {
                 const statusMeta = getExpenseStatus(null, tx.nextDate, tx.isActive);
                 const categoryMeta = getExpenseCategory(tx.category);
                 return (
-                  <TableRow
+                  <tr
                     key={tx._id}
-                    className="border-b border-border hover:bg-muted/10 transition-colors group h-14"
+                    style={{
+                      borderBottom: idx < filteredData.length - 1 ? "1px solid var(--border-color)" : "none",
+                      background: "var(--card-bg)",
+                      transition: "background 0.15s ease",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "var(--bg-secondary)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "var(--card-bg)"}
                   >
-                    <TableCell className="px-6">
-                      <p className="text-foreground font-medium">{tx.title}</p>
-                      <p className="text-muted-foreground text-xs">{categoryMeta.label}</p>
-                    </TableCell>
-                    <TableCell className="px-6 font-sans font-semibold text-foreground">
+                    <td style={{ padding: "14px 16px" }}>
+                      <p style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-primary)", margin: 0 }}>{tx.title}</p>
+                      <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "2px 0 0" }}>{categoryMeta.label}</p>
+                    </td>
+                    <td style={{ padding: "14px 16px", fontSize: "15px", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>
                       ₹ {tx.amount.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="px-6 text-center">
-                      <Badge variant="outline">
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "center" }}>
+                      <span style={{ padding: "3px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: "600", background: "rgba(59,130,246,0.1)", color: "var(--accent)", border: "1px solid rgba(59,130,246,0.2)" }}>
                         {tx.frequency}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-6 text-center text-muted-foreground text-sm">
-                      {new Date(tx.nextDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell className="px-6 text-center">
-                      <Badge variant={statusMeta.badgeVariant}>
-                        {statusMeta.label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-6 text-center">
-                      {/* Premium Toggle Switch */}
+                      </span>
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "center", fontSize: "13px", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
+                      {new Date(tx.nextDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "center" }}>
+                      <StatusPill status={statusMeta.label} />
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "center" }}>
                       <button
                         onClick={() => handleToggle(tx._id, tx.isActive)}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${tx.isActive ? "bg-[var(--primary)]" : "bg-[var(--border-color)]"}`}
+                        style={{
+                          position: "relative", display: "inline-flex", alignItems: "center",
+                          width: "44px", height: "24px", borderRadius: "999px", border: "none", cursor: "pointer",
+                          background: tx.isActive ? "var(--accent)" : "var(--bg-tertiary)",
+                          transition: "background 0.2s ease",
+                          padding: 0,
+                        }}
                       >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${tx.isActive ? "translate-x-6" : "translate-x-1"}`}
-                        />
+                        <span style={{
+                          position: "absolute",
+                          left: tx.isActive ? "22px" : "2px",
+                          width: "20px", height: "20px", borderRadius: "50%",
+                          background: "#fff",
+                          boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+                          transition: "left 0.2s ease",
+                        }} />
                       </button>
-                    </TableCell>
-                    <TableCell className="px-6 text-right">
-                      <div className="flex justify-end gap-2">
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "right" }}>
+                      <div style={{ display: "inline-flex", gap: "6px" }}>
                         <button
                           onClick={() => openForm(tx)}
-                          className="p-2 text-muted-foreground hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 rounded-[var(--radius-sm)] transition-colors"
+                          style={{ width: "30px", height: "30px", borderRadius: "8px", border: "1px solid var(--border-color)", background: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--text-muted)", transition: "all 0.15s ease" }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.background = "rgba(59,130,246,0.08)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-color)"; e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "none"; }}
                         >
-                          <AiOutlineEdit size={20} />
+                          <AiOutlineEdit size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(tx._id)}
-                          className="p-2 text-muted-foreground hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 rounded-[var(--radius-sm)] transition-colors"
+                          style={{ width: "30px", height: "30px", borderRadius: "8px", border: "1px solid var(--border-color)", background: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--text-muted)", transition: "all 0.15s ease" }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--danger)"; e.currentTarget.style.color = "var(--danger)"; e.currentTarget.style.background = "rgba(239,68,68,0.08)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-color)"; e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "none"; }}
                         >
-                          <AiOutlineDelete size={20} />
+                          <AiOutlineDelete size={15} />
                         </button>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 );
               })}
-              {filteredData.length === 0 && (
-                <TableRow className="h-14">
-                  <TableCell
-                    colSpan="7"
-                    className="px-6 py-8 text-center text-muted-foreground"
-                  >
-                    No recurring rules configured.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Editing / Creating Dialog */}
+      {/* ── Create / Edit Dialog ── */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -411,115 +474,39 @@ const RecurringTransactions = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 pt-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Rule Name / Title
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                className="premium-input w-full"
-                placeholder="Spotify Subs"
-              />
+              <label className="text-sm font-medium text-muted-foreground">Rule Name / Title</label>
+              <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="premium-input w-full" placeholder="Spotify Subs" />
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Amount (₹)
-                </label>
-                <input
-                  type="number"
-                  required
-                  value={formData.amount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, amount: e.target.value })
-                  }
-                  className="premium-input text-base w-full"
-                  placeholder="119"
-                />
+                <label className="text-sm font-medium text-muted-foreground">Amount (₹)</label>
+                <input type="number" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} className="premium-input text-base w-full" placeholder="119" />
               </div>
-
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Frequency
-                </label>
-                <select
-                  required
-                  value={formData.frequency}
-                  onChange={(e) =>
-                    setFormData({ ...formData, frequency: e.target.value })
-                  }
-                  className="premium-input text-muted-foreground w-full bg-secondary"
-                >
-                  <option className="bg-[var(--bg-nav-container)] text-[var(--text-primary)]" value="Daily">
-                    Daily
-                  </option>
-                  <option className="bg-[var(--bg-nav-container)] text-[var(--text-primary)]" value="Weekly">
-                    Weekly
-                  </option>
-                  <option className="bg-[var(--bg-nav-container)] text-[var(--text-primary)]" value="Monthly">
-                    Monthly
-                  </option>
-                  <option className="bg-[var(--bg-nav-container)] text-[var(--text-primary)]" value="Yearly">
-                    Yearly
-                  </option>
+                <label className="text-sm font-medium text-muted-foreground">Frequency</label>
+                <select required value={formData.frequency} onChange={(e) => setFormData({ ...formData, frequency: e.target.value })} className="premium-input text-muted-foreground w-full bg-secondary">
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
                 </select>
               </div>
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 z-50 relative">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Next Execution
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.nextDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nextDate: e.target.value })
-                  }
-                  className="premium-input w-full bg-secondary"
-                />
+                <label className="text-sm font-medium text-muted-foreground">Next Execution</label>
+                <input type="date" required value={formData.nextDate} onChange={(e) => setFormData({ ...formData, nextDate: e.target.value })} className="premium-input w-full bg-secondary" />
               </div>
-
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Category
-                </label>
-                <select
-                  required
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  className="premium-input text-muted-foreground w-full bg-secondary"
-                >
-                  {categories?.map((c) => (
-                    <option key={c} value={c} className="bg-[var(--bg-nav-container)] text-[var(--text-primary)]">
-                      {c}
-                    </option>
-                  ))}
+                <label className="text-sm font-medium text-muted-foreground">Category</label>
+                <select required value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="premium-input text-muted-foreground w-full bg-secondary">
+                  {categories.map((c) => (<option key={c} value={c}>{c}</option>))}
                 </select>
               </div>
             </div>
-
             <div className="flex gap-4 justify-end mt-8">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="px-6 py-2.5 rounded-[var(--radius-md)] border border-border text-foreground font-medium hover:bg-muted/10 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2.5 rounded-[var(--radius-md)] bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white font-bold shadow-[var(--shadow-lg)] shadow-[var(--primary)]/30 hover:shadow-[var(--primary)]/50 transition-all"
-              >
+              <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-[var(--radius-md)] border border-border text-foreground font-medium hover:bg-muted/10 transition-colors">Cancel</button>
+              <button type="submit" className="px-6 py-2.5 rounded-[var(--radius-md)] bg-[var(--accent)] text-white font-bold hover:opacity-90 transition-all">
                 {editingId ? "Save Changes" : "Create Rule"}
               </button>
             </div>

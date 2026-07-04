@@ -1,16 +1,59 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { expensesApi } from "../../services/api/expensesApi";
-import { Link } from "react-router-dom";
-import { MdOutlineFileDownload, MdArrowBack } from "react-icons/md";
+import { MdOutlineFileDownload } from "react-icons/md";
 import { toast } from "react-hot-toast";
-import { PageLayout, SectionContainer, PremiumCard, PremiumButton } from "../../components/dashboard/shared/Primitives";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table";
-import { Badge } from "../../components/ui/badge";
 import { Skeleton } from "../../components/ui/skeleton";
 import ExpenseFilters from "../../components/Expenses/shared/ExpenseFilters";
 import { getExpenseStatus } from "../../utils/Expenses/helpers";
 import { getCurrencySymbol } from "../../utils/formatters";
+import { Receipt, Download } from "lucide-react";
+import { PremiumButton } from "../../components/dashboard/shared/Primitives";
 
+/* ── Scoped styles ── */
+const S = {
+  card: {
+    background: "var(--card-bg)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "16px",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+    overflow: "hidden",
+  },
+};
+
+/* ── Paid status pill ── */
+function PaidPill() {
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: "5px",
+      padding: "2px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: "600",
+      background: "rgba(16,185,129,0.12)", color: "var(--success)",
+      border: "1px solid rgba(16,185,129,0.25)",
+    }}>
+      <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--success)", flexShrink: 0 }} />
+      Paid
+    </span>
+  );
+}
+
+/* ── Priority pill ── */
+function PriorityPill({ priority }) {
+  const map = {
+    "Low":      { bg: "rgba(100,116,139,0.1)", color: "var(--text-muted)",  border: "rgba(100,116,139,0.2)" },
+    "Medium":   { bg: "rgba(59,130,246,0.1)",  color: "var(--accent)",      border: "rgba(59,130,246,0.2)" },
+    "High":     { bg: "rgba(245,158,11,0.1)",  color: "var(--warning)",     border: "rgba(245,158,11,0.2)" },
+    "Critical": { bg: "rgba(239,68,68,0.1)",   color: "var(--danger)",      border: "rgba(239,68,68,0.2)" },
+  };
+  const t = map[priority] || map["Medium"];
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: "5px",
+      padding: "2px 9px", borderRadius: "999px", fontSize: "11px", fontWeight: "600",
+      background: t.bg, color: t.color, border: `1px solid ${t.border}`,
+    }}>
+      {priority}
+    </span>
+  );
+}
 
 const BillHistory = () => {
   const [history, setHistory] = useState([]);
@@ -36,14 +79,10 @@ const BillHistory = () => {
     }
   };
 
-  useEffect(() => {
-    loadHistory();
-  }, []);
+  useEffect(() => { loadHistory(); }, []);
 
-  // Currency symbol — always correct via Intl.NumberFormat
   const currencySymbol = getCurrencySymbol(settings?.currency || "INR");
 
-  // Extract list of unique months in paidDate to populate the month filter dropdown
   const uniqueMonths = useMemo(() => {
     const months = new Set();
     history.forEach(item => {
@@ -56,138 +95,183 @@ const BillHistory = () => {
     return Array.from(months);
   }, [history]);
 
-  // Filter history records
   const filteredHistory = useMemo(() => {
     return history.filter(item => {
       const matchesSearch = item.billName.toLowerCase().includes(search.toLowerCase());
-
       let matchesMonth = true;
       if (selectedMonth !== "" && item.paidDate) {
         const date = new Date(item.paidDate);
         const monthName = date.toLocaleString("en-US", { month: "long", year: "numeric" });
         matchesMonth = monthName === selectedMonth;
       }
-
       return matchesSearch && matchesMonth;
     });
   }, [history, search, selectedMonth]);
 
   return (
-    <PageLayout className="w-full animate-fade-in-up px-6 py-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: "32px", padding: "32px 24px", maxWidth: "100%" }}>
+
+      {/* ── Header ── */}
+      <div style={{
+        display: "flex", flexDirection: "row", flexWrap: "wrap",
+        alignItems: "flex-start", justifyContent: "space-between", gap: "16px",
+        paddingBottom: "28px", borderBottom: "1px solid var(--border-color)",
+      }}>
         <div>
-          <Link
-            to="/expenses-tracker"
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-2 transition-colors"
-          >
-            <MdArrowBack /> Back to Expense Dashboard
-          </Link>
-          <h1 className="font-sans text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-foreground">
-            Bill Payment History
+          <h1 style={{ fontSize: "34px", fontWeight: "800", letterSpacing: "-0.03em", lineHeight: "1.1", color: "var(--text-primary)", margin: 0 }}>
+            Expense Tracker
           </h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Browse through fully cleared bill payments, analyze month-by-month billing logs, and download reports.
+          <p style={{ fontSize: "14px", color: "var(--text-muted)", margin: "6px 0 0", lineHeight: "1.5" }}>
+            Browse cleared bill payments, analyze billing logs, and export reports.
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
-          <PremiumButton
-            variant="outline"
-            size="sm"
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignSelf: "flex-start" }}>
+          <button
             onClick={() => expensesApi.downloadReportCSV()}
-            leftIcon={MdOutlineFileDownload}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "6px",
+              padding: "0 14px", height: "36px", borderRadius: "8px",
+              border: "1px solid var(--border-color)", background: "var(--card-bg)",
+              color: "var(--text-primary)", fontSize: "13px", fontWeight: "600",
+              cursor: "pointer", transition: "all 0.15s ease",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-color)"; e.currentTarget.style.color = "var(--text-primary)"; }}
           >
-            Export CSV
-          </PremiumButton>
-          <PremiumButton
-            variant="primary"
-            size="sm"
+            <MdOutlineFileDownload size={15} /> Export CSV
+          </button>
+          <button
             onClick={() => expensesApi.downloadReportPDF()}
-            leftIcon={MdOutlineFileDownload}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "6px",
+              padding: "0 14px", height: "36px", borderRadius: "8px",
+              border: "none", background: "var(--accent)", color: "#fff",
+              fontSize: "13px", fontWeight: "600", cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
           >
-            Export PDF
-          </PremiumButton>
+            <MdOutlineFileDownload size={15} /> Export PDF
+          </button>
         </div>
       </div>
 
-      {/* Filter Toolbar using canonical filters */}
-      <SectionContainer className="mt-6">
-        <ExpenseFilters
-          searchQuery={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search by bill name..."
-          filterCategory={selectedMonth}
-          onCategoryChange={setSelectedMonth}
-          categories={uniqueMonths}
-          className="rounded-[var(--radius-lg)] border border-border bg-card shadow-sm p-6"
-        />
-      </SectionContainer>
+      {/* ── Section Title ── */}
+      <div>
+        <p style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "14px" }}>
+          Bill Payment History
+        </p>
 
-      {/* Data Table */}
-      <SectionContainer className="mt-6">
-        <PremiumCard hoverEffect={false} className="bg-card border border-border rounded-[var(--radius-lg)] shadow-sm">
-          <div className="table-responsive">
-            <Table className="w-full text-left border-collapse whitespace-nowrap">
-              <TableHeader>
-                <TableRow className="bg-[var(--bg-secondary)] text-[var(--text-muted)] text-sm">
-                  <TableHead className="px-6 h-12">Bill Name</TableHead>
-                  <TableHead className="px-6 h-12">Amount</TableHead>
-                  <TableHead className="px-6 h-12">Due Date</TableHead>
-                  <TableHead className="px-6 h-12">Paid Date</TableHead>
-                  <TableHead className="px-6 h-12">Priority</TableHead>
-                  <TableHead className="px-6 text-right h-12">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow className="h-14">
-                    <TableCell colSpan="6" className="text-center text-muted-foreground py-8">
-                      <Skeleton className="h-10 w-full mb-2" />
+        {/* Filter card */}
+        <div style={{
+          background: "var(--card-bg)",
+          border: "1px solid var(--border-color)",
+          borderRadius: "12px",
+          padding: "16px 20px",
+          marginBottom: "16px",
+        }}>
+          <ExpenseFilters
+            searchQuery={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search by bill name..."
+            filterCategory={selectedMonth}
+            onCategoryChange={setSelectedMonth}
+            categories={uniqueMonths}
+            className="p-0 border-b-0"
+          />
+        </div>
+
+        {/* Data table */}
+        <div style={S.card}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "600px" }}>
+            <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-color)" }}>
+              <tr>
+                {[
+                  { label: "Bill Name", align: "left" },
+                  { label: "Amount", align: "left" },
+                  { label: "Due Date", align: "left" },
+                  { label: "Paid Date", align: "left" },
+                  { label: "Priority", align: "left" },
+                  { label: "Status", align: "right" },
+                ].map(({ label, align }) => (
+                  <th key={label} style={{
+                    padding: "12px 18px", textAlign: align,
+                    fontSize: "11px", fontWeight: "700",
+                    letterSpacing: "0.07em", textTransform: "uppercase",
+                    color: "var(--text-muted)", whiteSpace: "nowrap",
+                  }}>
+                    {label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="6" style={{ padding: "32px 24px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                       <Skeleton className="h-10 w-full" />
-                    </TableCell>
-                  </TableRow>
-                ) : filteredHistory.length === 0 ? (
-                  <TableRow className="h-14">
-                    <TableCell colSpan="6" className="text-center text-muted-foreground italic py-8">
-                      No paid bill logs found matching your filters.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredHistory.map(item => {
-                    const priorityMeta = getExpenseStatus(item.priority);
-                    const statusMeta = getExpenseStatus("Paid");
-                    return (
-                      <TableRow key={item._id} className="h-14">
-                        <TableCell className="px-6 font-bold text-foreground">{item.billName}</TableCell>
-                        <TableCell className="px-6 font-extrabold text-foreground">
-                          {currencySymbol}{item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                        </TableCell>
-                        <TableCell className="px-6 text-muted-foreground text-xs">
-                          {new Date(item.dueDate).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </TableCell>
-                        <TableCell className="px-6 text-emerald-500 font-semibold text-xs">
-                          {item.paidDate ? new Date(item.paidDate).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : "N/A"}
-                        </TableCell>
-                        <TableCell className="px-6">
-                          <Badge variant={priorityMeta.badgeVariant}>
-                            {item.priority}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="px-6 text-right">
-                          <Badge variant={statusMeta.badgeVariant}>
-                            Paid
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-full" />
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredHistory.length === 0 ? (
+                <tr>
+                  <td colSpan="6" style={{ padding: "60px 24px", textAlign: "center" }}>
+                    <Receipt size={40} style={{ color: "var(--text-muted)", margin: "0 auto 12px", display: "block", opacity: 0.35 }} />
+                    <p style={{ fontSize: "15px", fontWeight: "600", color: "var(--text-muted)", margin: "0 0 4px" }}>No bill history found</p>
+                    <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+                      {search || selectedMonth ? "Try adjusting your filters." : "Paid bills will appear here once you clear them."}
+                    </p>
+                  </td>
+                </tr>
+              ) : filteredHistory.map((item, idx) => (
+                <tr
+                  key={item._id}
+                  style={{
+                    borderBottom: idx < filteredHistory.length - 1 ? "1px solid var(--border-color)" : "none",
+                    background: "var(--card-bg)",
+                    transition: "background 0.15s ease",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = "var(--bg-secondary)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "var(--card-bg)"}
+                >
+                  <td style={{ padding: "14px 18px", fontSize: "14px", fontWeight: "700", color: "var(--text-primary)" }}>
+                    {item.billName}
+                  </td>
+                  <td style={{ padding: "14px 18px", fontSize: "15px", fontWeight: "800", color: "var(--text-primary)", whiteSpace: "nowrap" }}>
+                    {currencySymbol}{item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                  <td style={{ padding: "14px 18px", fontSize: "12px", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
+                    {new Date(item.dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                  </td>
+                  <td style={{ padding: "14px 18px", fontSize: "12px", fontWeight: "600", color: "var(--success)", whiteSpace: "nowrap" }}>
+                    {item.paidDate
+                      ? new Date(item.paidDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                      : "N/A"}
+                  </td>
+                  <td style={{ padding: "14px 18px" }}>
+                    <PriorityPill priority={item.priority} />
+                  </td>
+                  <td style={{ padding: "14px 18px", textAlign: "right" }}>
+                    <PaidPill />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Summary footer */}
+        {filteredHistory.length > 0 && (
+          <div style={{ marginTop: "12px", fontSize: "13px", color: "var(--text-muted)", textAlign: "right" }}>
+            Showing <strong style={{ color: "var(--text-primary)" }}>{filteredHistory.length}</strong> of <strong style={{ color: "var(--text-primary)" }}>{history.length}</strong> bill records
           </div>
-        </PremiumCard>
-      </SectionContainer>
-    </PageLayout>
+        )}
+      </div>
+    </div>
   );
 };
 

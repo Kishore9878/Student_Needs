@@ -43,9 +43,9 @@ const Sidebar = () => {
       )}>
         <h1 className="text-base font-bold font-sans tracking-wider text-[var(--text-primary)]">
           {isCollapsed ? (
-            <span className="text-[var(--primary)] font-black">F<span className="text-[var(--text-primary)]">T</span></span>
+            <span className="text-[var(--primary)] font-black">E<span className="text-[var(--text-primary)]">T</span></span>
           ) : (
-            <><span className="text-[var(--primary)]">Fin</span>Track</>
+            <><span className="text-[var(--primary)]">Expense</span> Tracker</>
           )}
         </h1>
       </div>
