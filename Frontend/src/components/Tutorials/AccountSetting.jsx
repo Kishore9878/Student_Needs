@@ -5,6 +5,7 @@ import { ThemePreference } from "@/components/ThemePreference.jsx";
 import StudentProfileView from "@/components/profile/StudentProfileView.jsx";
 import TutorProfileView from "@/components/profile/TutorProfileView.jsx";
 import AlumniProfileView from "@/components/profile/AlumniProfileView.jsx";
+import { getCurrencySymbol } from "@/utils/formatters";
 import { 
   User, 
   Settings as SettingsIcon, 
@@ -18,6 +19,7 @@ import {
   HelpCircle,
   AlertCircle
 } from "lucide-react";
+
 import { toast } from "react-hot-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog.jsx";
 
@@ -262,15 +264,8 @@ function AccountSetting({ mode }) {
   // Roles visible for expenses
   const showExpenseTab = role === "student";
 
-  const getCurrencySymbol = (code) => {
-    switch (code) {
-      case "INR": return "₹";
-      case "USD": return "$";
-      case "EUR": return "€";
-      case "GBP": return "£";
-      default: return "₹";
-    }
-  };
+  // getCurrencySymbol is imported from @/utils/formatters
+  // It uses Intl.NumberFormat so the symbol is always correctly encoded.
 
   return (
     <main className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in-up">
