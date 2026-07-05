@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Archive, ArchiveRestore, Ban, CircleAlert, MoreVertical } from "lucide-react";
+import { Search, Archive, ArchiveRestore, Ban, CircleAlert, MoreVertical, MessageSquarePlus, MessagesSquare } from "lucide-react";
 import OnlineBadge from "./OnlineBadge.jsx";
 import { cn } from "@/lib/utils.js";
 
@@ -13,31 +13,21 @@ export const ChatSidebar = ({
   onReportChat,
 }) => {
   const [search, setSearch] = useState("");
-  const [filterTab, setFilterTab] = useState("active"); // "active" | "archived"
+  const [filterTab, setFilterTab] = useState("active");
   const [openMenuId, setOpenMenuId] = useState(null);
 
-  // Format timestamps nicely
   const formatTime = (dateStr) => {
     if (!dateStr) return "";
     try {
       const date = new Date(dateStr);
       const now = new Date();
-      
       const diffMs = now - date;
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      
-      if (diffDays === 0) {
-        return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      } else if (diffDays === 1) {
-        return "Yesterday";
-      } else if (diffDays < 7) {
-        return date.toLocaleDateString([], { weekday: "short" });
-      } else {
-        return date.toLocaleDateString([], { month: "short", day: "numeric" });
-      }
-    } catch (_) {
-      return "";
-    }
+      if (diffDays === 0) return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      if (diffDays === 1) return "Yesterday";
+      if (diffDays < 7) return date.toLocaleDateString([], { weekday: "short" });
+      return date.toLocaleDateString([], { month: "short", day: "numeric" });
+    } catch (_) { return ""; }
   };
 
   const handleToggleMenu = (e, chatId) => {
@@ -45,10 +35,9 @@ export const ChatSidebar = ({
     setOpenMenuId(openMenuId === chatId ? null : chatId);
   };
 
-  // Deduplicate conversations (merging legacy duplicates by partner)
+  // Deduplicate
   const deduplicatedChats = [];
   const seenPartners = new Set();
-
   chats.forEach((chat) => {
     const partnerId = chat.partner?._id?.toString();
     if (!partnerId) return;
@@ -56,30 +45,23 @@ export const ChatSidebar = ({
       seenPartners.add(partnerId);
       deduplicatedChats.push({ ...chat });
     } else {
-      // Merge unread counts from legacy duplicates
       const existing = deduplicatedChats.find(c => c.partner?._id?.toString() === partnerId);
-      if (existing) {
-        existing.unreadCount += (chat.unreadCount || 0);
-      }
+      if (existing) existing.unreadCount += (chat.unreadCount || 0);
     }
   });
 
-  // Filter conversations
   const filteredChats = deduplicatedChats.filter((chat) => {
     const isArchived = !!chat.isArchived;
     const matchesTab = filterTab === "archived" ? isArchived : !isArchived;
-    
     if (!matchesTab) return false;
-
-    const matchesSearch =
-      chat.partner?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      chat.partner?.email?.toLowerCase().includes(search.toLowerCase()) ||
-      chat.partner?.expertise?.toLowerCase().includes(search.toLowerCase());
-
-    return matchesSearch;
+    const q = search.toLowerCase();
+    return (
+      chat.partner?.name?.toLowerCase().includes(q) ||
+      chat.partner?.email?.toLowerCase().includes(q) ||
+      chat.partner?.expertise?.toLowerCase().includes(q)
+    );
   });
 
-  // Apply sorting priority: Unread -> recent message -> recent booking
   filteredChats.sort((a, b) => {
     if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
     if (b.unreadCount > 0 && a.unreadCount === 0) return 1;
@@ -88,200 +70,281 @@ export const ChatSidebar = ({
     return dateB - dateA;
   });
 
+  const totalUnread = deduplicatedChats.filter(c => !c.isArchived).reduce((acc, c) => acc + (c.unreadCount || 0), 0);
+
   return (
-    <div className="w-full h-full flex flex-col bg-card border-r border-border/45 select-none relative z-10">
-      {/* Search Header */}
-      <div className="p-4 flex flex-col gap-3 shrink-0">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">Messages</h2>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+    <div className="w-full h-full flex flex-col select-none relative z-10"
+      style={{ background: "var(--card-bg)" }}>
+
+      {/* ── Header ── */}
+      <div style={{ padding: "16px 16px 0", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{
+              width: "32px", height: "32px", borderRadius: "10px",
+              background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <MessagesSquare size={16} style={{ color: "#3b82f6" }} />
+            </div>
+            <div>
+              <h2 style={{ fontSize: "15px", fontWeight: "800", color: "var(--text-primary)", margin: 0, letterSpacing: "-0.01em" }}>
+                Messages
+              </h2>
+              {totalUnread > 0 && (
+                <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0 }}>
+                  {totalUnread} unread
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: "8px",
+          background: "var(--bg-secondary, rgba(0,0,0,0.04))",
+          border: "1px solid var(--border-color)",
+          borderRadius: "10px", padding: "0 10px",
+          marginBottom: "12px",
+        }}>
+          <Search size={14} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
           <input
             type="text"
-            placeholder="Search tutor or student name..."
+            placeholder="Search conversations..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 bg-[var(--input-bg)] border border-[var(--border-color)] rounded-[var(--radius-md)] text-sm outline-none focus:border-primary placeholder-muted-foreground/60 transition-colors"
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              flex: 1, border: "none", background: "transparent",
+              fontSize: "13px", color: "var(--text-primary)", outline: "none",
+              padding: "9px 0",
+            }}
           />
         </div>
       </div>
 
-      {/* Tabs Filter */}
-      <div className="flex px-4 border-b border-border/30 gap-4 shrink-0">
-        <button
-          onClick={() => {
-            setFilterTab("active");
-            setOpenMenuId(null);
-          }}
-          className={cn(
-            "pb-2.5 text-xs font-semibold tracking-wider uppercase border-b-2 transition-colors cursor-pointer",
-            filterTab === "active"
-              ? "border-primary text-primary"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          )}
-        >
-          Active
-        </button>
-        <button
-          onClick={() => {
-            setFilterTab("archived");
-            setOpenMenuId(null);
-          }}
-          className={cn(
-            "pb-2.5 text-xs font-semibold tracking-wider uppercase border-b-2 transition-colors cursor-pointer",
-            filterTab === "archived"
-              ? "border-primary text-primary"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          )}
-        >
-          Archived
-        </button>
+      {/* ── Tabs ── */}
+      <div style={{ display: "flex", padding: "0 12px", borderBottom: "1px solid var(--border-color)", flexShrink: 0, gap: "4px" }}>
+        {["active", "archived"].map(tab => (
+          <button
+            key={tab}
+            onClick={() => { setFilterTab(tab); setOpenMenuId(null); }}
+            style={{
+              padding: "8px 12px",
+              borderBottom: `2px solid ${filterTab === tab ? "var(--accent)" : "transparent"}`,
+              color: filterTab === tab ? "var(--accent)" : "var(--text-muted)",
+              background: "none", border: "none",
+              borderBottom: `2px solid ${filterTab === tab ? "#3b82f6" : "transparent"}`,
+              fontSize: "11px", fontWeight: "700", letterSpacing: "0.04em",
+              textTransform: "capitalize", cursor: "pointer",
+              transition: "all 0.15s ease",
+              color: filterTab === tab ? "#3b82f6" : "var(--text-muted)",
+            }}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
-      {/* Conversations List */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-hide">
+      {/* ── Conversation List ── */}
+      <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ padding: "8px" }}>
         {filteredChats.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground/60 px-4">
-            <span className="text-sm">No chats found</span>
-            <span className="text-[11px] mt-1">Select a tutor from search to start talking</span>
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-muted)" }}>
+            <MessageSquarePlus size={32} style={{ margin: "0 auto 12px", opacity: 0.4 }} />
+            <p style={{ fontSize: "13px", fontWeight: "600", margin: "0 0 4px" }}>No conversations</p>
+            <p style={{ fontSize: "11px", margin: 0, opacity: 0.7 }}>
+              {search ? "No results for your search" : "Book a session to start chatting"}
+            </p>
           </div>
         ) : (
           filteredChats.map((chat) => {
             const isActive = chat._id === activeChatId;
             const isOnline = onlineUsersList.has(chat.partner?._id?.toString());
             const hasUnread = chat.unreadCount > 0;
+            const partnerName = chat.partner?.name ||
+              (chat.partner?.role === "student" ? "Unknown Student" : "Unknown Tutor");
+            const initials = partnerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+            const lastMsgText = (() => {
+              if (chat.lastMessage?.deleted) return "This message was deleted";
+              if (chat.lastMessage?.type === "call" && chat.lastMessage?.metadata) {
+                const m = chat.lastMessage.metadata;
+                const icon = m.status === "missed" ? "🔴" : (m.callType === "video" ? "📹" : "📞");
+                return `${icon} ${chat.lastMessage.text || "Call"}`;
+              }
+              return chat.lastMessage?.text || chat.lastMessage?.message ||
+                (chat.lastMessage?.attachments?.length > 0 ? "📎 Attachment" : "") || "No messages yet";
+            })();
 
             return (
               <div
                 key={chat._id}
-                onClick={() => {
-                  onSelectChat(chat);
-                  setOpenMenuId(null);
+                onClick={() => { onSelectChat(chat); setOpenMenuId(null); }}
+                className="group"
+                style={{
+                  display: "flex", alignItems: "center", gap: "10px",
+                  padding: "10px 10px",
+                  borderRadius: "12px", cursor: "pointer",
+                  background: isActive ? "rgba(59,130,246,0.08)" : "transparent",
+                  border: `1px solid ${isActive ? "rgba(59,130,246,0.2)" : "transparent"}`,
+                  marginBottom: "2px",
+                  transition: "all 0.15s ease",
+                  position: "relative",
                 }}
-                className={cn(
-                  "relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] cursor-pointer group transition-all duration-200 border border-transparent",
-                  isActive
-                    ? "bg-primary/10 border-primary/20 text-foreground"
-                    : "hover:bg-secondary/40 text-foreground/80 hover:text-foreground"
-                )}
+                onMouseEnter={e => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = "var(--bg-secondary, rgba(0,0,0,0.04))";
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = "transparent";
+                  }
+                }}
               >
-                {/* Avatar with Online indicator */}
-                <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-[var(--radius-md)] bg-[var(--bg-nav-hover)] border border-[var(--border-subtle)] overflow-hidden flex items-center justify-center font-bold text-primary shadow-[var(--shadow-sm)]">
+                {/* Avatar */}
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <div style={{
+                    width: "44px", height: "44px", borderRadius: "12px",
+                    background: isActive
+                      ? "linear-gradient(135deg, rgba(59,130,246,0.25), rgba(99,102,241,0.2))"
+                      : "rgba(59,130,246,0.08)",
+                    border: `1.5px solid ${isActive ? "rgba(59,130,246,0.3)" : "var(--border-color)"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "14px", fontWeight: "800",
+                    color: isActive ? "#3b82f6" : "var(--text-secondary)",
+                    overflow: "hidden",
+                    transition: "all 0.15s ease",
+                  }}>
                     {chat.partner?.pic ? (
                       <img
                         src={chat.partner.pic.startsWith("http") ? chat.partner.pic : `http://localhost:8000/uploads/${chat.partner.pic}`}
-                        alt={chat.partner.name}
-                        className="w-full h-full object-cover"
+                        alt={partnerName}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                     ) : (
-                      <span className="text-sm uppercase">{(chat.partner?.name || "U")[0]}</span>
+                      <span>{initials}</span>
                     )}
                   </div>
                   {isOnline && (
-                    <OnlineBadge className="absolute -bottom-0.5 -right-0.5 border-2 border-[var(--bg-nav-container)] rounded-full w-3 h-3" />
+                    <div style={{
+                      position: "absolute", bottom: "-1px", right: "-1px",
+                      width: "12px", height: "12px", borderRadius: "50%",
+                      background: "#10b981", border: "2px solid var(--card-bg)",
+                    }} />
                   )}
                 </div>
 
-                {/* Details Section */}
-                <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[14px] font-semibold truncate text-foreground leading-tight">
-                      {chat.partner?.name || (chat.partner?.role === "student" ? "Unknown Student" : "Unknown Tutor")}
+                {/* Content */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "4px", marginBottom: "2px" }}>
+                    <span style={{
+                      fontSize: "13px", fontWeight: hasUnread ? "800" : "600",
+                      color: "var(--text-primary)", overflow: "hidden",
+                      textOverflow: "ellipsis", whiteSpace: "nowrap",
+                      maxWidth: "140px",
+                    }}>
+                      {partnerName}
                     </span>
-                    <span className="text-[10px] text-muted-foreground shrink-0 select-none">
+                    <span style={{ fontSize: "10px", color: "var(--text-muted)", flexShrink: 0 }}>
                       {formatTime(chat.lastMessageTime || chat.updatedAt)}
                     </span>
                   </div>
 
-                  <span className="text-[11px] text-primary/80 font-medium truncate select-none leading-none">
-                    {chat.partner?.role === "tutor" ? "Tutor" : "Student"} • {chat.booking?.subject || chat.partner?.expertise || "No Subjects"}
+                  <span style={{ fontSize: "10px", color: "#3b82f6", fontWeight: "600", display: "block", marginBottom: "2px", opacity: 0.8 }}>
+                    {chat.partner?.role === "tutor" ? "Tutor" : "Student"}{chat.booking?.subject ? ` · ${chat.booking.subject}` : chat.partner?.expertise ? ` · ${chat.partner.expertise}` : ""}
                   </span>
 
-                  <div className="flex items-center justify-between gap-2 mt-1">
-                    <p
-                      className={cn(
-                        "text-[12px] truncate leading-tight flex-1",
-                        hasUnread ? "text-foreground font-semibold" : "text-muted-foreground"
-                      )}
-                    >
-                      {(() => {
-                        if (chat.lastMessage?.deleted) return "This message was deleted";
-                        if (chat.lastMessage?.type === "call" && chat.lastMessage?.metadata) {
-                          const m = chat.lastMessage.metadata;
-                          const icon = m.status === "missed" ? "🔴" : (m.callType === "video" ? "📹" : "📞");
-                          let textStr = chat.lastMessage.text || chat.lastMessage.message || "Call";
-                          if (m.duration > 0) {
-                            const mins = Math.floor(m.duration / 60);
-                            const durationStr = mins > 0 ? `${mins}m` : `${m.duration}s`;
-                            return `${icon} ${textStr} • ${durationStr}`;
-                          }
-                          return `${icon} ${textStr}`;
-                        }
-                        return chat.lastMessage?.text || chat.lastMessage?.message || (chat.lastMessage?.attachments?.length > 0 ? "sent attachment" : "") || "No messages yet";
-                      })()}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "4px" }}>
+                    <p style={{
+                      fontSize: "11px", margin: 0,
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                      color: hasUnread ? "var(--text-primary)" : "var(--text-muted)",
+                      fontWeight: hasUnread ? "600" : "400",
+                      flex: 1,
+                    }}>
+                      {lastMsgText}
                     </p>
-
-                    {/* Unread Counter Badge */}
                     {hasUnread && (
-                      <span className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] font-bold text-white bg-primary rounded-full animate-pulse shrink-0">
+                      <span style={{
+                        minWidth: "18px", height: "18px", borderRadius: "999px",
+                        background: "#3b82f6", color: "#fff",
+                        fontSize: "10px", fontWeight: "800",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        padding: "0 4px", flexShrink: 0,
+                        animation: "pulse 2s ease-in-out infinite",
+                      }}>
                         {chat.unreadCount}
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Action dropdown button (visible on hover) */}
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0 ml-1">
+                {/* Context menu trigger */}
+                <div
+                  style={{ opacity: 0, transition: "opacity 0.15s", flexShrink: 0 }}
+                  className="group-hover:opacity-100"
+                  onClick={e => e.stopPropagation()}
+                >
                   <button
                     onClick={(e) => handleToggleMenu(e, chat._id)}
-                    className="p-1 hover:bg-[var(--bg-nav-hover)] rounded-[var(--radius-sm)] text-muted-foreground hover:text-foreground"
-                    title="Chat actions"
+                    style={{
+                      width: "26px", height: "26px", borderRadius: "7px",
+                      background: "var(--bg-secondary, rgba(0,0,0,0.06))",
+                      border: "1px solid var(--border-color)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      cursor: "pointer", color: "var(--text-muted)",
+                    }}
                   >
-                    <MoreVertical className="w-4 h-4" />
+                    <MoreVertical size={13} />
                   </button>
 
-                  {/* Context menu popup */}
                   {openMenuId === chat._id && (
-                    <div className="absolute right-3 top-12 bg-[var(--bg-nav-container)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-50 py-1.5 min-w-[150px] animate-in fade-in zoom-in-95 duration-100">
+                    <div style={{
+                      position: "absolute", right: "12px", top: "44px",
+                      background: "var(--card-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "10px",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                      zIndex: 50, padding: "4px", minWidth: "150px",
+                      animation: "fadeIn 0.1s ease",
+                    }}>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleArchive(chat._id, !chat.isArchived);
-                          setOpenMenuId(null);
+                        onClick={e => { e.stopPropagation(); onToggleArchive(chat._id, !chat.isArchived); setOpenMenuId(null); }}
+                        style={{
+                          width: "100%", display: "flex", alignItems: "center", gap: "8px",
+                          padding: "7px 10px", borderRadius: "7px", background: "none", border: "none",
+                          fontSize: "12px", color: "var(--text-secondary)", cursor: "pointer", textAlign: "left",
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-secondary/40 text-left transition-colors cursor-pointer"
+                        onMouseEnter={e => { e.currentTarget.style.background = "var(--bg-secondary, rgba(0,0,0,0.04))"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "none"; }}
                       >
-                        {chat.isArchived ? (
-                          <>
-                            <ArchiveRestore className="w-3.5 h-3.5" /> Unarchive Chat
-                          </>
-                        ) : (
-                          <>
-                            <Archive className="w-3.5 h-3.5" /> Archive Chat
-                          </>
-                        )}
+                        {chat.isArchived
+                          ? <><ArchiveRestore size={13} /> Unarchive</>
+                          : <><Archive size={13} /> Archive</>}
                       </button>
-
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleBlock(chat._id, !chat.isBlocked);
-                          setOpenMenuId(null);
+                        onClick={e => { e.stopPropagation(); onToggleBlock(chat._id, !chat.isBlocked); setOpenMenuId(null); }}
+                        style={{
+                          width: "100%", display: "flex", alignItems: "center", gap: "8px",
+                          padding: "7px 10px", borderRadius: "7px", background: "none", border: "none",
+                          fontSize: "12px", color: "#ef4444", cursor: "pointer", textAlign: "left",
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:bg-red-950/20 text-left transition-colors cursor-pointer"
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(239,68,68,0.06)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "none"; }}
                       >
-                        <Ban className="w-3.5 h-3.5" /> {chat.isBlocked ? "Unblock User" : "Block User"}
+                        <Ban size={13} /> {chat.isBlocked ? "Unblock" : "Block"}
                       </button>
-
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onReportChat(chat._id);
-                          setOpenMenuId(null);
+                        onClick={e => { e.stopPropagation(); onReportChat(chat._id); setOpenMenuId(null); }}
+                        style={{
+                          width: "100%", display: "flex", alignItems: "center", gap: "8px",
+                          padding: "7px 10px", borderRadius: "7px", background: "none", border: "none",
+                          fontSize: "12px", color: "#f59e0b", cursor: "pointer", textAlign: "left",
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-yellow-400 hover:bg-yellow-950/20 text-left transition-colors cursor-pointer"
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(245,158,11,0.06)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "none"; }}
                       >
-                        <CircleAlert className="w-3.5 h-3.5" /> Report User
+                        <CircleAlert size={13} /> Report
                       </button>
                     </div>
                   )}
@@ -291,6 +354,12 @@ export const ChatSidebar = ({
           })
         )}
       </div>
+
+      <style>{`
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .group:hover .group-hover\\:opacity-100 { opacity: 1 !important; }
+      `}</style>
     </div>
   );
 };

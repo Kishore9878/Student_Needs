@@ -88,11 +88,18 @@ export const MessageBubble = ({
   return (
     <div
       className={cn(
-        "flex w-full mb-3.5 group",
-        normalizedMessage.type === "system" || normalizedMessage.type === "meeting_link" ? "justify-center" : isSelf ? "justify-end" : "justify-start"
+        "flex w-full group",
+        normalizedMessage.type === "system" || normalizedMessage.type === "meeting_link"
+          ? "justify-center mb-2"
+          : isSelf ? "justify-end mb-3.5" : "justify-start mb-3.5"
       )}
     >
-      <div className={cn("flex flex-col", normalizedMessage.type === "system" || normalizedMessage.type === "meeting_link" ? "items-center w-full max-w-sm" : isSelf ? "items-end max-w-[75%] md:max-w-[65%]" : "items-start max-w-[75%] md:max-w-[65%]")}>
+      <div className={cn(
+        "flex flex-col",
+        normalizedMessage.type === "system" || normalizedMessage.type === "meeting_link"
+          ? "items-center w-full px-2"
+          : isSelf ? "items-end max-w-[75%] md:max-w-[65%]" : "items-start max-w-[75%] md:max-w-[65%]"
+      )}>
         {/* Sender Name tag for multi-party look or debug (optional) */}
         
         {/* Message body container */}
@@ -164,11 +171,41 @@ export const MessageBubble = ({
                   <div title={`Call started: ${formatTime(normalizedMessage.metadata?.startedAt)}\nCall ended: ${formatTime(normalizedMessage.metadata?.endedAt)}`}>
                     <CallHistoryCard message={normalizedMessage} currentUserId={currentUserId} />
                   </div>
-                ) : normalizedMessage.type === "system" || normalizedMessage.type === "meeting_link" ? (
-                  <div className="text-[12.5px] text-center italic opacity-80 break-words whitespace-pre-wrap px-4 py-1">
-                    {normalizedMessage.message || normalizedMessage.text}
-                  </div>
-                ) : (
+                ) : normalizedMessage.type === "system" || normalizedMessage.type === "meeting_link" ? (() => {
+                  const raw = normalizedMessage.message || normalizedMessage.text || "";
+                  // Smart emoji prefix based on message content
+                  const rLow = raw.toLowerCase();
+                  const emoji =
+                    rLow.includes("confirmed") || rLow.includes("accepted") ? "✅" :
+                    rLow.includes("meeting link") || rLow.includes("meeting published") ? "🎥" :
+                    rLow.includes("cancelled") || rLow.includes("canceled") ? "❌" :
+                    rLow.includes("completed") || rLow.includes("ended") ? "🏁" :
+                    rLow.includes("started") || rLow.includes("in progress") ? "▶️" :
+                    rLow.includes("request") || rLow.includes("submitted") ? "📌" :
+                    rLow.includes("scheduled") || rLow.includes("booked") ? "📅" :
+                    rLow.includes("reminder") ? "🔔" : "ℹ️";
+                  // Collapse message to single trimmed line
+                  const displayText = raw.replace(/\s*\n\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+                  return (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+                      <div style={{ flex: 1, height: "1px", background: "var(--border-color)" }} />
+                      <span style={{
+                        display: "inline-flex", alignItems: "center", gap: "5px",
+                        flexShrink: 0,
+                        fontSize: "11px", fontWeight: "600", color: "var(--text-muted)",
+                        whiteSpace: "nowrap",
+                        padding: "4px 12px", borderRadius: "999px",
+                        background: "var(--bg-secondary, rgba(0,0,0,0.04))",
+                        border: "1px solid var(--border-color)",
+                        maxWidth: "70%", overflow: "hidden", textOverflow: "ellipsis",
+                      }} title={displayText}>
+                        <span>{emoji}</span>
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{displayText}</span>
+                      </span>
+                      <div style={{ flex: 1, height: "1px", background: "var(--border-color)" }} />
+                    </div>
+                  );
+                })() : (
                   (normalizedMessage.message || normalizedMessage.text) && <p className="text-[14.5px] leading-relaxed break-words whitespace-pre-wrap">{normalizedMessage.message || normalizedMessage.text}</p>
                 )}
 

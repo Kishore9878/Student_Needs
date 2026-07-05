@@ -1,175 +1,214 @@
 import React, { useState } from "react";
-import { Search, Briefcase, FileText, ImageIcon } from "lucide-react";
-import { cn } from "@/lib/Referrals/utils.js";
+import { Search, MessagesSquare, Briefcase, FileText, ImageIcon, Users } from "lucide-react";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { cn } from "@/lib/Referrals/utils.js";
 
-export function ConversationList({ 
-  chats, 
-  activeChatId, 
-  onSelectChat, 
-  onlineUsersList 
+export function ConversationList({
+  chats,
+  activeChatId,
+  onSelectChat,
+  onlineUsersList
 }) {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
 
   const currentRole = (user?.role || user?.accountType || "student").toLowerCase();
 
-  // Filter conversations
   const filteredChats = chats.filter((chat) => {
     const participant = currentRole === "alumni" ? chat.student : chat.alumni;
     if (!participant) return false;
-
     const fullName = `${participant.firstName || ""} ${participant.lastName || ""}`.toLowerCase();
     const company = (participant.company || "").toLowerCase();
     const query = searchQuery.toLowerCase();
-
     return fullName.includes(query) || company.includes(query);
   });
 
-  // Format relative timestamp
   const formatTime = (isoString) => {
     if (!isoString) return "";
     const date = new Date(isoString);
     const now = new Date();
-    
-    // Check if today
-    if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    }
-    
-    // Check if yesterday
-    const yesterday = new Date(now);
-    yesterday.setDate(now.getDate() - 1);
-    if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday";
-    }
-
-    // Otherwise return date
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return date.toLocaleDateString([], { weekday: "short" });
     return date.toLocaleDateString([], { month: "short", day: "numeric" });
   };
 
-  // Render Last Message Snippet
-  const renderMessageSnippet = (msg) => {
-    if (!msg) return <span className="text-muted-foreground italic text-xs">No messages yet</span>;
-    if (msg.isDeleted) return <span className="text-muted-foreground italic text-xs">This message was deleted</span>;
-
+  const renderLastMessage = (msg) => {
+    if (!msg) return "No messages yet";
+    if (msg.isDeleted) return "This message was deleted";
     if (msg.file) {
-      const isImg = msg.file.type.startsWith("image/");
-      return (
-        <span className="flex items-center gap-1.5 text-xs text-primary font-medium">
-          {isImg ? <ImageIcon className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
-          {msg.file.name}
-        </span>
-      );
+      const isImg = msg.file.type?.startsWith("image/");
+      return isImg ? "📷 Image" : `📎 ${msg.file.name}`;
     }
-
-    return (
-      <span className="text-muted-foreground text-xs line-clamp-1 truncate block max-w-[180px]">
-        {msg.text}
-      </span>
-    );
+    return msg.text || "";
   };
 
+  const totalUnread = chats.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
+
   return (
-    <div className="w-full h-full flex flex-col bg-card/45 border-r border-border/40 overflow-hidden">
-      {/* Search Header */}
-      <div className="p-4 border-b border-border/40 space-y-3">
-        <h2 className="text-xl font-bold tracking-tight text-foreground hidden sm:block">Conversations</h2>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+    <div className="w-full h-full flex flex-col select-none" style={{ background: "var(--card-bg)" }}>
+
+      {/* ── Header ── */}
+      <div style={{ padding: "16px 16px 0", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{
+              width: "32px", height: "32px", borderRadius: "10px",
+              background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.22)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <MessagesSquare size={16} style={{ color: "#6366f1" }} />
+            </div>
+            <div>
+              <h2 style={{ fontSize: "15px", fontWeight: "800", color: "var(--text-primary)", margin: 0, letterSpacing: "-0.01em" }}>
+                Messages
+              </h2>
+              {totalUnread > 0 && (
+                <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0 }}>
+                  {totalUnread} unread
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: "8px",
+          background: "rgba(0,0,0,0.04)",
+          border: "1px solid var(--border-color)",
+          borderRadius: "10px", padding: "0 10px", marginBottom: "12px",
+        }}>
+          <Search size={14} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
           <input
             type="text"
+            placeholder="Search contacts..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search contacts or companies..."
-            className="w-full pl-9 pr-4 py-2 text-sm bg-secondary/60 border border-border/50 rounded-[var(--radius-sm)] text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-muted-foreground"
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{
+              flex: 1, border: "none", background: "transparent",
+              fontSize: "13px", color: "var(--text-primary)", outline: "none",
+              padding: "9px 0",
+            }}
           />
         </div>
       </div>
 
-      {/* Conversations List */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-thin scrollbar-thumb-muted">
+      {/* ── List ── */}
+      <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ padding: "4px 8px 8px" }}>
         {filteredChats.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-center px-4">
-            <p className="text-sm font-medium text-muted-foreground">No conversations found</p>
-            <p className="text-xs text-muted-foreground/60 mt-1">Chat connections require active referral requests.</p>
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-muted)" }}>
+            <Users size={32} style={{ margin: "0 auto 12px", opacity: 0.35 }} />
+            <p style={{ fontSize: "13px", fontWeight: "600", margin: "0 0 4px" }}>No conversations</p>
+            <p style={{ fontSize: "11px", margin: 0, opacity: 0.7 }}>
+              {searchQuery ? "No results for your search" : "Apply for a referral to start chatting"}
+            </p>
           </div>
         ) : (
           filteredChats.map((chat) => {
             const participant = currentRole === "alumni" ? chat.student : chat.alumni;
             if (!participant) return null;
 
-            const isChatActive = chat._id === activeChatId;
-            const initials = `${participant.firstName?.[0] || ""}${participant.lastName?.[0] || ""}`;
-            
-            // Live online presence check
-            const isOnline = onlineUsersList?.has?.(participant._id) || participant.isOnline;
+            const isActive = chat._id === activeChatId;
+            const hasUnread = chat.unreadCount > 0;
+            const isOnline = onlineUsersList?.has?.(participant._id?.toString()) || participant.isOnline;
+            const initials = `${participant.firstName?.[0] || ""}${participant.lastName?.[0] || ""}`.toUpperCase();
+            const lastMsgText = renderLastMessage(chat.lastMessage);
 
             return (
-              <button
+              <div
                 key={chat._id}
                 onClick={() => onSelectChat(chat)}
-                className={cn(
-                  "w-full flex items-center gap-3 p-3 rounded-[var(--radius-md)] transition-all border text-left",
-                  isChatActive
-                    ? "bg-primary/10 border-primary/25 text-foreground"
-                    : "bg-transparent border-transparent hover:bg-secondary/45 text-foreground hover:border-border/10"
-                )}
+                className="group"
+                style={{
+                  display: "flex", alignItems: "center", gap: "10px",
+                  padding: "10px 10px", borderRadius: "12px", cursor: "pointer",
+                  background: isActive ? "rgba(99,102,241,0.08)" : "transparent",
+                  border: `1px solid ${isActive ? "rgba(99,102,241,0.2)" : "transparent"}`,
+                  marginBottom: "2px", transition: "all 0.15s ease",
+                }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
               >
-                {/* Avatar with Online indicator */}
-                <div className="relative flex-shrink-0">
-                  {participant.image ? (
-                    <img
-                      src={participant.image}
-                      alt={`${participant.firstName} ${participant.lastName}`}
-                      className="w-11 h-11 rounded-full border border-border/20 object-cover"
-                    />
-                  ) : (
-                    <div className="w-11 h-11 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold border border-primary/30 uppercase">
-                      {initials}
-                    </div>
-                  )}
+                {/* Avatar */}
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <div style={{
+                    width: "44px", height: "44px", borderRadius: "12px",
+                    background: isActive
+                      ? "linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2))"
+                      : "rgba(99,102,241,0.08)",
+                    border: `1.5px solid ${isActive ? "rgba(99,102,241,0.3)" : "var(--border-color)"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "14px", fontWeight: "800", color: isActive ? "#6366f1" : "var(--text-secondary)",
+                    overflow: "hidden", transition: "all 0.15s ease",
+                  }}>
+                    {participant.image ? (
+                      <img src={participant.image} alt={`${participant.firstName}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <span>{initials}</span>
+                    )}
+                  </div>
                   {isOnline && (
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-card" />
+                    <div style={{
+                      position: "absolute", bottom: "-1px", right: "-1px",
+                      width: "12px", height: "12px", borderRadius: "50%",
+                      background: "#10b981", border: "2px solid var(--card-bg)",
+                    }} />
                   )}
                 </div>
 
-                {/* Details */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start gap-1">
-                    <span className="font-semibold text-sm truncate block">
+                {/* Content */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "4px", marginBottom: "2px" }}>
+                    <span style={{
+                      fontSize: "13px", fontWeight: hasUnread ? "800" : "600",
+                      color: "var(--text-primary)", overflow: "hidden",
+                      textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "140px",
+                    }}>
                       {participant.firstName} {participant.lastName}
                     </span>
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap flex-shrink-0">
+                    <span style={{ fontSize: "10px", color: "var(--text-muted)", flexShrink: 0 }}>
                       {formatTime(chat.lastMessage?.createdAt || chat.updatedAt)}
                     </span>
                   </div>
 
-                  {/* Company/Academic Role Info */}
-                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground truncate mb-1">
-                    {currentRole === "student" && participant.company ? (
-                      <span className="flex items-center gap-1 text-[10px] bg-primary/5 text-primary border border-primary/10 px-1.5 py-0.2 rounded-[var(--radius-sm)] font-medium">
-                        <Briefcase className="w-2.5 h-2.5" />
-                        {participant.company}
-                      </span>
-                    ) : (
-                      <span className="truncate text-muted-foreground/80">
-                        {participant.branch || "Student"} {participant.graduationYear ? `(${participant.graduationYear})` : ""}
-                      </span>
-                    )}
-                  </div>
+                  {/* Role/Company subtitle */}
+                  <span style={{
+                    fontSize: "10px", color: "#6366f1", fontWeight: "600",
+                    display: "block", marginBottom: "2px", opacity: 0.85,
+                  }}>
+                    {currentRole === "student"
+                      ? `Alumni${participant.company ? ` · ${participant.company}` : ""}`
+                      : `Student${participant.branch ? ` · ${participant.branch}` : ""}`
+                    }
+                  </span>
 
-                  {/* Message Snippet */}
-                  <div className="flex justify-between items-center gap-1 mt-0.5">
-                    {renderMessageSnippet(chat.lastMessage)}
-                    {chat.unreadCount > 0 && (
-                      <span className="px-1.5 py-0.5 min-w-[18px] text-[10px] font-bold bg-primary text-primary-foreground rounded-full text-center leading-none flex-shrink-0 animate-pulse">
+                  {/* Last message + unread */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "4px" }}>
+                    <p style={{
+                      fontSize: "11px", margin: 0,
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                      color: hasUnread ? "var(--text-primary)" : "var(--text-muted)",
+                      fontWeight: hasUnread ? "600" : "400", flex: 1,
+                    }}>
+                      {lastMsgText}
+                    </p>
+                    {hasUnread && (
+                      <span style={{
+                        minWidth: "18px", height: "18px", borderRadius: "999px",
+                        background: "#6366f1", color: "#fff",
+                        fontSize: "10px", fontWeight: "800",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        padding: "0 4px", flexShrink: 0,
+                      }}>
                         {chat.unreadCount}
                       </span>
                     )}
                   </div>
                 </div>
-              </button>
+              </div>
             );
           })
         )}

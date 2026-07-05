@@ -219,12 +219,27 @@ const BillHistory = () => {
                 </tr>
               ) : filteredHistory.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ padding: "60px 24px", textAlign: "center" }}>
-                    <Receipt size={40} style={{ color: "var(--text-muted)", margin: "0 auto 12px", display: "block", opacity: 0.35 }} />
-                    <p style={{ fontSize: "15px", fontWeight: "600", color: "var(--text-muted)", margin: "0 0 4px" }}>No bill history found</p>
-                    <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-                      {search || selectedMonth ? "Try adjusting your filters." : "Paid bills will appear here once you clear them."}
-                    </p>
+                  <td colSpan="6" style={{ padding: "72px 24px", textAlign: "center" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+                      <div style={{
+                        width: "60px", height: "60px", borderRadius: "18px",
+                        background: "var(--bg-secondary)", border: "1px solid var(--border-color)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                      }}>
+                        <Receipt size={26} style={{ color: "var(--text-muted)", opacity: 0.7 }} />
+                      </div>
+                      <div>
+                        <p style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", margin: "0 0 4px" }}>
+                          No bill history found
+                        </p>
+                        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: 0, lineHeight: "1.5" }}>
+                          {search || selectedMonth
+                            ? "Try adjusting your filters to see results."
+                            : "Paid bills will appear here once you clear them."}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ) : filteredHistory.map((item, idx) => (

@@ -482,64 +482,10 @@ const Home = () => {
         {/* Right: Bills Panel */}
         <div className="xl:col-span-1 flex flex-col gap-5">
 
-          {/* Budget Prediction */}
-          {!isLoading && (
-            <ExpCard noHover style={{
-              borderColor: budgetPercentage > 90 ? "rgba(239,68,68,0.3)" : "var(--border-color)",
-              boxShadow: budgetPercentage > 90 ? "0 0 0 1px rgba(239,68,68,0.15)" : S.card.boxShadow,
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <div>
-                  <p style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "2px" }}>
-                    Budget Prediction
-                  </p>
-                  <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>Based on month-to-date spending</p>
-                </div>
-                {budgetPercentage > 90 && <AlertTriangle size={18} style={{ color: "var(--danger)", flexShrink: 0 }} />}
-              </div>
-              <div style={{ margin: "14px 0" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", fontWeight: "600", color: "var(--text-primary)", marginBottom: "6px" }}>
-                  <span>Projected: {currencySymbol}{summary?.projectedSpend?.toLocaleString()}</span>
-                  <span style={{ color: progressColor }}>{budgetPercentage}% used</span>
-                </div>
-                <div style={S.progressTrack}>
-                  <div style={{ ...S.progressFill, width: `${Math.min(budgetPercentage, 100)}%`, background: progressColor }} />
-                </div>
-              </div>
-              <div style={{
-                padding: "10px 12px", borderRadius: "8px", fontSize: "12px",
-                background: "var(--bg-secondary)", color: "var(--text-muted)",
-                border: "1px solid var(--border-color)",
-              }}>
-                Expected savings: <strong style={{ color: "var(--text-primary)" }}>
-                  {currencySymbol}{Math.max(0, (summary?.savingsGoal || 0) - (summary?.projectedSpend || 0)).toLocaleString()}
-                </strong> · Target: <strong style={{ color: "var(--text-primary)" }}>{currencySymbol}{summary?.savingsGoal?.toLocaleString()}</strong>
-              </div>
-            </ExpCard>
-          )}
-
-          {/* Due Today + Overdue mini-cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            {[
-              { label: "Due Today", value: summary?.dueTodayCount || 0, color: "var(--warning)", bg: "rgba(245,158,11,0.08)", icon: CalendarClock },
-              { label: "Overdue Bills", value: summary?.overdueCount || 0, color: "var(--danger)", bg: "rgba(239,68,68,0.08)", icon: AlertTriangle },
-            ].map(({ label, value, color, bg, icon: Icon }) => (
-              <div key={label} style={{
-                ...S.card, padding: "16px", textAlign: "center",
-                background: value > 0 ? bg : "var(--card-bg)",
-                borderColor: value > 0 ? color.replace("var(--", "rgba(").replace(")", ", 0.25)") : "var(--border-color)",
-              }}>
-                <Icon size={18} style={{ color, margin: "0 auto 6px", display: "block" }} />
-                <p style={{ fontSize: "10px", fontWeight: "700", letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "4px" }}>{label}</p>
-                <p style={{ fontSize: "28px", fontWeight: "800", color, lineHeight: "1" }}>{isLoading ? "–" : value}</p>
-              </div>
-            ))}
-          </div>
-
           {/* Active Bills */}
           <ExpCard noHover style={{ padding: "0", flex: "1" }}>
             <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>Active Bills</h3>
+              <h3 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>Active Bills</h3>
               <span style={{
                 padding: "2px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: "700",
                 background: "rgba(59,130,246,0.1)", color: "var(--accent)",
@@ -554,15 +500,35 @@ const Home = () => {
                   <Skeleton className="h-16 w-full" />
                 </div>
               ) : bills.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "24px 0" }}>
-                  <Receipt size={32} style={{ color: "var(--text-muted)", margin: "0 auto 8px", display: "block" }} />
-                  <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No active bills. Add one to stay alerted.</p>
+                <div style={{ textAlign: "center", padding: "32px 16px" }}>
+                  <div style={{
+                    width: "52px", height: "52px", borderRadius: "14px",
+                    background: "var(--bg-secondary)", border: "1px solid var(--border-color)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    margin: "0 auto 12px",
+                  }}>
+                    <Receipt size={24} style={{ color: "var(--text-muted)" }} />
+                  </div>
+                  <p style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-primary)", margin: "0 0 4px" }}>No active bills.</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "0 0 16px" }}>Add one to stay alerted.</p>
+                  <button
+                    onClick={() => setIsAddBillOpen(true)}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: "6px",
+                      padding: "0 16px", height: "34px", borderRadius: "9px",
+                      border: "1px solid var(--border-color)", background: "var(--card-bg)",
+                      color: "var(--text-primary)", fontSize: "13px", fontWeight: "600",
+                      cursor: "pointer", transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-color)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                  >
+                    + Add Bill
+                  </button>
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {bills.map((bill) => {
-                    const billStatus = getExpenseStatus(bill.status);
-                    const billPriority = getExpenseStatus(bill.priority);
                     const isOverdue = bill.status === "Overdue";
                     const isDueToday = bill.status === "Due Today";
                     return (
@@ -633,6 +599,8 @@ const Home = () => {
               )}
             </div>
           </ExpCard>
+
+
 
           {/* Monthly Reports */}
           <ExpCard noHover style={{ padding: "16px 20px" }}>

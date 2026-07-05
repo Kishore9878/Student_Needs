@@ -1,99 +1,166 @@
 import React from "react";
-import { ArrowLeft, Download, Globe, Briefcase } from "lucide-react";
+import { ArrowLeft, Download, Globe, Briefcase, GraduationCap } from "lucide-react";
 
-export function ChatHeader({ 
-  participant, 
-  currentRole, 
-  isOnline, 
-  onBack, 
-  onDownloadResume 
+export function ChatHeader({
+  participant,
+  currentRole,
+  isOnline,
+  onBack,
+  onDownloadResume
 }) {
-  const initials = `${participant?.firstName?.[0] || ""}${participant?.lastName?.[0] || ""}`;
+  const initials = `${participant?.firstName?.[0] || ""}${participant?.lastName?.[0] || ""}`.toUpperCase();
 
   return (
-    <div className="p-4 border-b border-border/40 bg-card/45 flex flex-col md:flex-row md:items-center justify-between gap-3 flex-shrink-0">
-      <div className="flex items-center gap-3">
-        {/* Mobile Back Button */}
-        <button 
+    <div style={{
+      height: "64px", padding: "0 16px",
+      borderBottom: "1px solid var(--border-color)",
+      background: "var(--card-bg)",
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      flexShrink: 0, gap: "12px",
+    }}>
+      {/* Left: back + avatar + info */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+        {/* Mobile back */}
+        <button
           onClick={onBack}
-          className="md:hidden p-2 hover:bg-secondary rounded-[var(--radius-sm)] text-muted-foreground hover:text-foreground transition-all"
+          style={{
+            width: "32px", height: "32px", borderRadius: "8px",
+            background: "none", border: "1px solid var(--border-color)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", color: "var(--text-muted)",
+            flexShrink: 0,
+          }}
+          className="md:hidden"
+          title="Back"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft size={15} />
         </button>
 
-        {/* Participant Info */}
-        <div className="relative flex-shrink-0">
-          {participant?.image ? (
-            <img
-              src={participant.image}
-              alt={`${participant.firstName} ${participant.lastName}`}
-              className="w-10 h-10 rounded-full border border-border/20 object-cover"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold border border-primary/30 uppercase">
-              {initials}
-            </div>
-          )}
+        {/* Avatar */}
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          <div style={{
+            width: "40px", height: "40px", borderRadius: "11px",
+            background: "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.12))",
+            border: "1.5px solid rgba(99,102,241,0.25)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "14px", fontWeight: "800", color: "#6366f1", overflow: "hidden",
+          }}>
+            {participant?.image ? (
+              <img src={participant.image} alt={participant.firstName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <span>{initials}</span>
+            )}
+          </div>
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-card" />
+            <div style={{
+              position: "absolute", bottom: "-1px", right: "-1px",
+              width: "11px", height: "11px", borderRadius: "50%",
+              background: "#10b981", border: "2px solid var(--card-bg)",
+            }} />
           )}
         </div>
 
-        <div>
-          <h3 className="font-bold text-sm text-foreground">
+        {/* Info */}
+        <div style={{ minWidth: 0 }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", margin: "0 0 2px", letterSpacing: "-0.01em" }}>
             {participant?.firstName} {participant?.lastName}
           </h3>
-          <p className="text-[11px] text-muted-foreground">
-            {isOnline ? "Active Now" : "Offline"}
-          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: "3px",
+              fontSize: "10px", fontWeight: "600", color: "#6366f1", opacity: 0.85,
+            }}>
+              {currentRole === "student" ? (
+                <>
+                  <Briefcase size={9} />
+                  {participant?.company || "Alumni"}
+                </>
+              ) : (
+                <>
+                  <GraduationCap size={9} />
+                  {participant?.branch || "Student"}
+                </>
+              )}
+            </span>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: "3px",
+              fontSize: "10px", fontWeight: "600",
+              color: isOnline ? "#10b981" : "var(--text-muted)",
+            }}>
+              <span style={{
+                width: "5px", height: "5px", borderRadius: "50%",
+                background: isOnline ? "#10b981" : "#6b7280",
+                display: "inline-block",
+              }} />
+              {isOnline ? "Online" : "Offline"}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Quick Actions Header */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Right: actions */}
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
         {currentRole === "alumni" ? (
           <>
-            {/* Alumni Actions */}
-            <button 
+            <button
               onClick={onDownloadResume}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-[var(--radius-sm)] text-xs font-semibold bg-secondary/80 border border-border/50 text-foreground hover:bg-secondary transition-all"
+              style={{
+                display: "flex", alignItems: "center", gap: "5px",
+                padding: "0 10px", height: "30px", borderRadius: "8px",
+                background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.2)",
+                color: "#6366f1", fontSize: "11px", fontWeight: "700",
+                cursor: "pointer", transition: "all 0.15s ease",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.14)"}
+              onMouseLeave={e => e.currentTarget.style.background = "rgba(99,102,241,0.07)"}
             >
-              <Download className="w-3.5 h-3.5" />
-              Resume
+              <Download size={12} /> Resume
             </button>
             {participant?.githubUrl && (
-              <a 
+              <a
                 href={participant.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1.5 rounded-[var(--radius-sm)] text-xs font-semibold bg-secondary/80 border border-border/50 text-foreground hover:bg-secondary transition-all"
+                style={{
+                  display: "flex", alignItems: "center", gap: "5px",
+                  padding: "0 10px", height: "30px", borderRadius: "8px",
+                  background: "rgba(0,0,0,0.04)", border: "1px solid var(--border-color)",
+                  color: "var(--text-secondary)", fontSize: "11px", fontWeight: "600",
+                  textDecoration: "none", transition: "all 0.15s ease",
+                }}
               >
-                <Globe className="w-3.5 h-3.5" />
-                GitHub
+                <Globe size={12} /> GitHub
               </a>
             )}
             {participant?.linkedinUrl && (
-              <a 
+              <a
                 href={participant.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1.5 rounded-[var(--radius-sm)] text-xs font-semibold bg-secondary/80 border border-border/50 text-foreground hover:bg-secondary transition-all"
+                style={{
+                  display: "flex", alignItems: "center", gap: "5px",
+                  padding: "0 10px", height: "30px", borderRadius: "8px",
+                  background: "rgba(0,0,0,0.04)", border: "1px solid var(--border-color)",
+                  color: "var(--text-secondary)", fontSize: "11px", fontWeight: "600",
+                  textDecoration: "none", transition: "all 0.15s ease",
+                }}
               >
-                <Globe className="w-3.5 h-3.5" />
-                LinkedIn
+                <Globe size={12} /> LinkedIn
               </a>
             )}
           </>
         ) : (
-          <>
-            {/* Student Actions */}
-            {participant?.company && (
-              <span className="flex items-center gap-1 px-2.5 py-1 rounded-[var(--radius-sm)] text-[10px] bg-primary/10 border border-primary/20 text-primary font-bold">
-                <Briefcase className="w-3 h-3" />
-                {participant.company}
-              </span>
-            )}
-          </>
+          participant?.company && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: "4px",
+              padding: "0 10px", height: "28px", borderRadius: "8px",
+              background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)",
+              color: "#6366f1", fontSize: "11px", fontWeight: "700",
+            }}>
+              <Briefcase size={11} />
+              {participant.company}
+            </span>
+          )
         )}
       </div>
     </div>
