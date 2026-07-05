@@ -371,22 +371,32 @@ export default function ChatPage() {
   return (
     <div
       className={cn(
-        "flex bg-card border border-border/45 rounded-[var(--radius-lg)] overflow-hidden glass-panel relative",
-        currentRole === "student"
-          ? "h-[calc(100vh-200px)] md:h-[calc(100vh-220px)] mt-20 md:mt-0"
-          : "h-[calc(100vh-130px)] md:h-[calc(100vh-160px)]"
+        "flex gap-4",
+        "h-[calc(100vh-96px)]"
       )}
     >
-      {/* Sidebar - Collapsed on Mobile when chat is active */}
+      {/* ── Conversation Sidebar Card ── */}
       <div
         className={cn(
-          "w-full md:w-[320px] lg:w-[360px] h-full flex flex-col flex-shrink-0 transition-all",
+          "flex-shrink-0 flex flex-col rounded-[var(--radius-lg)] overflow-hidden",
+          "border border-border/45 shadow-sm",
+          "w-full md:w-[310px] lg:w-[340px] h-full",
           activeChat ? "hidden md:flex" : "flex"
         )}
+        style={{ background: "var(--card-bg)" }}
       >
         {loadingChats ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="spinner spinner-lg" />
+            <div style={{ textAlign: "center" }}>
+              <div style={{
+                width: "36px", height: "36px", borderRadius: "50%",
+                border: "3px solid var(--border-color)",
+                borderTopColor: "#3b82f6",
+                animation: "spin 0.8s linear infinite",
+                margin: "0 auto 8px",
+              }} />
+              <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: 0 }}>Loading chats...</p>
+            </div>
           </div>
         ) : (
           <ChatSidebar
@@ -401,12 +411,14 @@ export default function ChatPage() {
         )}
       </div>
 
-      {/* Main Chat window - Collapsed on Mobile when no chat is active */}
+      {/* ── Chat Window Card ── */}
       <div
         className={cn(
-          "flex-1 h-full flex flex-col transition-all",
+          "flex-1 flex flex-col rounded-[var(--radius-lg)] overflow-hidden",
+          "border border-border/45 shadow-sm h-full",
           activeChat ? "flex" : "hidden md:flex"
         )}
+        style={{ background: "var(--card-bg)", minWidth: 0 }}
       >
         <ChatWindow
           chat={activeChat}
@@ -436,6 +448,7 @@ export default function ChatPage() {
           socket={socket}
         />
       </div>
+
 
       {/* Image Lightbox Preview Overlay */}
       {lightbox && (

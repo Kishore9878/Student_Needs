@@ -265,24 +265,6 @@ function TutorialsHome() {
         </div>
       </div>
 
-      {/* Footer links */}
-      <div style={{ display: "flex", gap: "20px", alignItems: "center", paddingTop: "12px", borderTop: "1px solid var(--border-color)" }}>
-        <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: 0 }}>
-          New to Tutor Match?
-        </p>
-        <Link
-          to={TUTORIAL_PATHS.landing}
-          style={{ fontSize: "12px", color: "var(--accent)", textDecoration: "none", fontWeight: "600" }}
-        >
-          View module info →
-        </Link>
-        <Link
-          to={TUTORIAL_PATHS.studentLogin}
-          style={{ fontSize: "12px", color: "var(--accent)", textDecoration: "none", fontWeight: "600" }}
-        >
-          Tutorials login →
-        </Link>
-      </div>
     </div>
   );
 }

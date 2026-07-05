@@ -4,6 +4,7 @@ import TutorialSidebar from "@/components/Tutorials/TutorialSidebar";
 import TutorialTopbar from "@/components/Tutorials/TutorialTopbar";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 import GlobalCallListener from "../components/Tutorials/calls/GlobalCallListener";
+import { LayoutContext } from "@/components/layouts/DashboardLayout";
 
 const WorkspaceContent = () => {
   const { isCollapsed, isMobileMenuOpen, closeMobileMenu } = useSidebar();
@@ -50,9 +51,16 @@ const WorkspaceContent = () => {
 
 const TutorialWorkspaceLayout = () => {
   return (
-    <SidebarProvider>
-      <WorkspaceContent />
-    </SidebarProvider>
+    // LayoutContext.Provider value={true} signals to all child pages that they
+    // are running inside a unified layout shell. This causes:
+    //   1. components/Tutorials/Navbar.jsx → returns null (isNested = true)
+    //   2. Every Tutorial page → renders content directly (isUnifiedLayout = true)
+    // This matches exactly how DashboardLayout / Expense Tracker AppLayout work.
+    <LayoutContext.Provider value={true}>
+      <SidebarProvider>
+        <WorkspaceContent />
+      </SidebarProvider>
+    </LayoutContext.Provider>
   );
 };
 

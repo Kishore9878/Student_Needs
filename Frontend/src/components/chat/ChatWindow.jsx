@@ -138,14 +138,34 @@ export const ChatWindow = ({
 
   if (!chat) {
     return (
-      <div className="flex-1 h-full flex flex-col items-center justify-center text-center p-6 bg-card/40 select-none">
-        <div className="w-16 h-16 rounded-[var(--radius-lg)] bg-primary/10 flex items-center justify-center text-primary mb-4 animate-pulse">
-          <Bot className="w-8 h-8" />
+      <div className="flex-1 h-full flex flex-col items-center justify-center text-center p-8 select-none" style={{ background: "var(--bg-secondary, rgba(0,0,0,0.02))" }}>
+        {/* Icon */}
+        <div style={{
+          width: "80px", height: "80px", borderRadius: "24px",
+          background: "linear-gradient(135deg, rgba(59,130,246,0.12), rgba(99,102,241,0.1))",
+          border: "1.5px solid rgba(59,130,246,0.2)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          marginBottom: "20px",
+          boxShadow: "0 8px 24px rgba(59,130,246,0.1)",
+        }}>
+          <Bot className="w-10 h-10 text-primary" style={{ opacity: 0.8 }} />
         </div>
-        <h3 className="text-lg font-bold text-foreground">Start Learning & Solving Needs</h3>
-        <p className="text-sm text-muted-foreground/75 mt-1.5 max-w-sm">
-          Select an active tutor chat from the sidebar or book a session to open real-time consultation.
+        <h3 style={{ fontSize: "18px", fontWeight: "800", color: "var(--text-primary)", margin: "0 0 8px", letterSpacing: "-0.02em" }}>
+          Select a conversation
+        </h3>
+        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 24px", maxWidth: "280px", lineHeight: "1.6" }}>
+          Choose a tutor from the left panel to view your conversation history and send messages.
         </p>
+        {/* Feature pills */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
+          {["💬 Real-time chat", "📞 Audio calls", "📹 Video sessions", "🤖 AI Study Assistant"].map(f => (
+            <span key={f} style={{
+              padding: "5px 12px", borderRadius: "999px",
+              background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.15)",
+              fontSize: "11px", fontWeight: "600", color: "#3b82f6",
+            }}>{f}</span>
+          ))}
+        </div>
       </div>
     );
   }
@@ -347,17 +367,33 @@ export const ChatWindow = ({
       {/* Messages Scroll Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-1 relative z-10 scrollbar-hide"
+        className="flex-1 overflow-y-auto relative z-10 scrollbar-hide"
+        style={{ padding: "16px 16px", display: "flex", flexDirection: "column", gap: "2px" }}
         data-lenis-prevent="true"
       >
         {/* Lazy loading check anchor */}
         {hasMore && (
           <div ref={topObserverRef} className="flex justify-center py-2 shrink-0">
             {loadingMessages ? (
-              <span className="spinner spinner-sm" />
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
             ) : (
               <span className="text-[10px] text-muted-foreground/50">Scroll up to load older messages</span>
             )}
+          </div>
+        )}
+
+        {/* Loading state */}
+        {loadingMessages && messages.length === 0 && (
+          <div className="flex flex-col gap-3 py-4">
+            {[1,2,3].map(i => (
+              <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}>
+                <div style={{
+                  height: "44px", width: i % 2 === 0 ? "220px" : "160px",
+                  borderRadius: "12px", background: "var(--border-color)",
+                  opacity: 0.5, animation: "pulse 1.5s ease-in-out infinite",
+                }} />
+              </div>
+            ))}
           </div>
         )}
 
@@ -375,11 +411,12 @@ export const ChatWindow = ({
 
         {/* Typing indicator */}
         {isTyping && (
-          <div className="pl-2.5 py-1.5 animate-in fade-in duration-200">
+          <div className="pl-2 py-1 animate-in fade-in duration-200">
             <TypingIndicator name={chat.partner?.name} />
           </div>
         )}
       </div>
+      <style>{`@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.3; } }`}</style>
 
       {/* Message Input bar or Read-only mode */}
       {chat.booking?.isReadOnly ? (

@@ -14,18 +14,28 @@ export const searchAllTutors = async (req, res) => {
     // ✅ Search in users collection
     const [usersData, usersCount] = await myDB.findTutors(keyword, page);
 
-    // ✅ Search in Tutor collection
-    const tutorsData = await Tutor.find({
-      expertise: { $regex: keyword, $options: "i" },
-    })
+    // ✅ Search in Tutor collection — broad $or across all searchable fields
+    const searchFilter = {
+      $or: [
+        { name:      { $regex: keyword, $options: "i" } },
+        { fName:     { $regex: keyword, $options: "i" } },
+        { lName:     { $regex: keyword, $options: "i" } },
+        { expertise: { $regex: keyword, $options: "i" } },
+        { subjects:  { $regex: keyword, $options: "i" } },
+        { skills:    { $regex: keyword, $options: "i" } },
+        { bio:       { $regex: keyword, $options: "i" } },
+        { education: { $regex: keyword, $options: "i" } },
+      ],
+    };
+
+    const tutorsData = await Tutor.find(searchFilter)
       .select("-password")
       .skip(page * 18)
       .limit(18)
       .lean();
 
-    const tutorsCount = await Tutor.countDocuments({
-      expertise: { $regex: keyword, $options: "i" },
-    });
+    const tutorsCount = await Tutor.countDocuments(searchFilter);
+
 
     // ✅ Merge both arrays
     const data = [...usersData, ...tutorsData];
