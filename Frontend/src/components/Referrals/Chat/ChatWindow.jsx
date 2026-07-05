@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { CornerDownRight } from "lucide-react";
+import { MessageSquareDashed } from "lucide-react";
 import { MessageBubble } from "./MessageBubble.jsx";
 import { MessageSkeleton } from "./ChatSkeleton.jsx";
 import { ChatHeader } from "./ChatHeader.jsx";
@@ -8,11 +8,11 @@ import { TypingIndicator } from "./TypingIndicator.jsx";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import { applicationsApi } from "@/services/Referrals/application.js";
 
-export function ChatWindow({ 
-  chat, 
-  messages, 
-  loadingMessages, 
-  onSendMessage, 
+export function ChatWindow({
+  chat,
+  messages,
+  loadingMessages,
+  onSendMessage,
   onUploadAttachment,
   onEditMessage,
   onDeleteMessage,
@@ -33,19 +33,15 @@ export function ChatWindow({
   const participant = currentRole === "alumni" ? chat?.student : chat?.alumni;
   const isOnline = chat?.student?.isOnline || chat?.alumni?.isOnline;
 
-  // Auto scroll to bottom when new message arrives or chat changes
   useEffect(() => {
     scrollToBottom();
-    if (chat?._id) {
-      onMarkRead(chat._id);
-    }
+    if (chat?._id) onMarkRead(chat._id);
   }, [messages?.length, chat?._id]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Quick Action: Download Resume (Alumni Only)
   const handleDownloadResume = () => {
     if (currentRole === "alumni" && chat?.student?._id) {
       applicationsApi.downloadStudentResume(chat.student._id);
@@ -54,21 +50,46 @@ export function ChatWindow({
 
   if (!chat) {
     return (
-      <div className="flex-1 h-full flex flex-col items-center justify-center bg-card/10 text-center p-8 border border-border/10 rounded-[var(--radius-lg)] m-2">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
-          <CornerDownRight className="w-8 h-8" />
+      <div style={{
+        flex: 1, height: "100%", display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", textAlign: "center",
+        padding: "40px 32px",
+        background: "rgba(99,102,241,0.02)",
+      }}>
+        {/* Icon */}
+        <div style={{
+          width: "80px", height: "80px", borderRadius: "24px",
+          background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.1))",
+          border: "1.5px solid rgba(99,102,241,0.2)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          marginBottom: "20px",
+          boxShadow: "0 8px 24px rgba(99,102,241,0.12)",
+        }}>
+          <MessageSquareDashed size={36} style={{ color: "#6366f1", opacity: 0.8 }} />
         </div>
-        <h3 className="text-lg font-bold text-foreground">Select a conversation</h3>
-        <p className="text-sm text-muted-foreground max-w-sm mt-1">
-          Pick a contact from the sidebar list to start exchanging messages.
+        <h3 style={{ fontSize: "18px", fontWeight: "800", color: "var(--text-primary)", margin: "0 0 8px", letterSpacing: "-0.02em" }}>
+          Select a conversation
+        </h3>
+        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 24px", maxWidth: "260px", lineHeight: "1.6" }}>
+          Choose a contact from the left panel to view your referral conversation.
         </p>
+        {/* Feature pills */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
+          {["💬 Direct messaging", "📎 File sharing", "✏️ Edit messages", "🔔 Real-time updates"].map(f => (
+            <span key={f} style={{
+              padding: "5px 12px", borderRadius: "999px",
+              background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)",
+              fontSize: "11px", fontWeight: "600", color: "#6366f1",
+            }}>{f}</span>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 h-full flex flex-col bg-card/25 overflow-hidden">
-      {/* Chat Window Header */}
+    <div style={{ flex: 1, height: "100%", display: "flex", flexDirection: "column", background: "var(--card-bg)" }}>
+      {/* Chat Header */}
       <ChatHeader
         participant={participant}
         currentRole={currentRole}
@@ -77,21 +98,26 @@ export function ChatWindow({
         onDownloadResume={handleDownloadResume}
       />
 
-      {/* Message Feed Container */}
-      <div 
+      {/* Message Feed */}
+      <div
         ref={feedContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-3 bg-secondary/10 scrollbar-thin scrollbar-thumb-muted"
+        className="flex-1 overflow-y-auto scrollbar-hide"
+        style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "2px" }}
       >
         {loadingMessages && messages.length === 0 ? (
           <MessageSkeleton />
         ) : messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 opacity-60">
-            <CornerDownRight className="w-8 h-8 mb-2 text-muted-foreground" />
-            <p className="text-sm font-medium">No messages yet</p>
-            <p className="text-xs">Exchanging messages regarding the referral request.</p>
+          <div style={{
+            flex: 1, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            textAlign: "center", padding: "40px 20px", opacity: 0.65,
+          }}>
+            <MessageSquareDashed size={36} style={{ marginBottom: "12px", color: "var(--text-muted)" }} />
+            <p style={{ fontSize: "14px", fontWeight: "600", margin: "0 0 4px", color: "var(--text-primary)" }}>No messages yet</p>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: 0 }}>Start the conversation about your referral request.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             {[...messages].reverse().map((msg) => (
               <MessageBubble
                 key={msg._id}
@@ -107,13 +133,10 @@ export function ChatWindow({
         )}
       </div>
 
-      {/* Typing Indicator Panel */}
-      <TypingIndicator
-        otherUserTyping={otherUserTyping}
-        participantName={participant?.firstName}
-      />
+      {/* Typing Indicator */}
+      <TypingIndicator otherUserTyping={otherUserTyping} participantName={participant?.firstName} />
 
-      {/* Message Input Composer */}
+      {/* Message Input */}
       <MessageInput
         chatId={chat._id}
         onSendMessage={onSendMessage}

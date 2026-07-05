@@ -480,6 +480,7 @@ export default function ChatPage() {
           <p className="text-white/60 text-xs mt-3 select-none">{lightbox.name}</p>
         </div>
       )}
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

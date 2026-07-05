@@ -214,9 +214,9 @@ export const ChatWindow = ({
   };
 
   return (
-    <div className="flex-1 h-full flex flex-col bg-card/25 backdrop-blur-md relative select-none">
+    <div className="flex-1 h-full flex flex-col relative select-none" style={{ background: "var(--card-bg)" }}>
       {/* Chat Window Header */}
-      <div className="h-16 border-b border-border/45 bg-card/75 backdrop-blur-md px-4 flex items-center justify-between shrink-0 relative z-20">
+      <div className="h-16 border-b border-border/45 px-4 flex items-center justify-between shrink-0 relative z-20" style={{ background: "var(--card-bg)" }}>
         <div className="flex items-center gap-3 min-w-0">
           {/* Back button on mobile */}
           <button

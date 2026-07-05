@@ -482,18 +482,32 @@ export default function ChatPage() {
       )}
 
       <div className={cn(
-        "flex bg-card border border-border/45 rounded-[var(--radius-lg)] overflow-hidden glass-panel relative",
+        "flex gap-4",
         currentRole === "student" && !isReferralRoute
           ? "h-[calc(100vh-270px)] md:h-[calc(100vh-320px)]"
           : "h-[calc(100vh-130px)] md:h-[calc(100vh-160px)]"
       )}>
-        {/* Sidebar List (Visible on desktop, hidden on mobile if chat is active) */}
-        <div className={cn(
-          "w-full md:w-[320px] lg:w-[360px] h-full flex flex-col flex-shrink-0 transition-all",
-          activeChat ? "hidden md:flex" : "flex"
-        )}>
+        {/* ── Conversation Sidebar Card ── */}
+        <div
+          className={cn(
+            "flex-shrink-0 flex flex-col rounded-[var(--radius-lg)] overflow-hidden",
+            "border border-border/45 shadow-sm",
+            "w-full md:w-[310px] lg:w-[340px] h-full",
+            activeChat ? "hidden md:flex" : "flex"
+          )}
+          style={{ background: "var(--card-bg)" }}
+        >
           {loadingChats ? (
-            <ChatSkeleton />
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{
+                  width: "36px", height: "36px", borderRadius: "50%",
+                  border: "3px solid var(--border-color)", borderTopColor: "#6366f1",
+                  animation: "spin 0.8s linear infinite", margin: "0 auto 8px",
+                }} />
+                <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: 0 }}>Loading chats...</p>
+              </div>
+            </div>
           ) : (
             <ConversationList
               chats={chats}
@@ -504,11 +518,15 @@ export default function ChatPage() {
           )}
         </div>
 
-        {/* Main Chat Panel (Visible on desktop, hidden on mobile if no chat is active) */}
-        <div className={cn(
-          "flex-1 h-full flex flex-col transition-all",
-          activeChat ? "flex" : "hidden md:flex"
-        )}>
+        {/* ── Chat Window Card ── */}
+        <div
+          className={cn(
+            "flex-1 flex flex-col rounded-[var(--radius-lg)] overflow-hidden",
+            "border border-border/45 shadow-sm h-full",
+            activeChat ? "flex" : "hidden md:flex"
+          )}
+          style={{ background: "var(--card-bg)", minWidth: 0 }}
+        >
           <ChatWindow
             chat={activeChat}
             messages={messages}
@@ -525,6 +543,7 @@ export default function ChatPage() {
             onOpenAttachment={(url, name) => setLightbox({ url, name })}
           />
         </div>
+
 
         {/* Lightbox attachment preview overlay */}
         {lightbox && (
@@ -558,6 +577,7 @@ export default function ChatPage() {
           </div>
         )}
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </PageLayout>
   );
 }

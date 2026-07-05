@@ -74,7 +74,7 @@ export const ChatSidebar = ({
 
   return (
     <div className="w-full h-full flex flex-col select-none relative z-10"
-      style={{ background: "var(--card-bg)", borderRight: "1px solid var(--border-color)" }}>
+      style={{ background: "var(--card-bg)" }}>
 
       {/* ── Header ── */}
       <div style={{ padding: "16px 16px 0", flexShrink: 0 }}>
