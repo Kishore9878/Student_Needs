@@ -1,9 +1,9 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { 
   Search, CalendarClock, History, ClipboardList, 
   MessageSquare, User, Settings, LogOut, ArrowLeft,
-  ChevronLeft, ChevronRight, Home, GraduationCap
+  ChevronRight, Home
 } from "lucide-react";
 import { useAuth } from "@/contexts/GlobalAuthContext";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -22,114 +22,175 @@ const NAV_ITEMS = [
 
 const TutorialSidebar = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const { isCollapsed, setIsCollapsed, closeMobileMenu } = useSidebar();
+  const { user, logout } = useAuth();
+  const { isCollapsed, setIsCollapsed, toggleSidebar, closeMobileMenu } = useSidebar();
+
+  const displayName = user?.name || user?.fullName || user?.username || "User";
+  const currentRole = (user?.role || user?.accountType || "student").toLowerCase();
+
+  const handleToggle = () => {
+    if (toggleSidebar) {
+      toggleSidebar();
+    } else if (setIsCollapsed) {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
 
   return (
     <div
       className={cn(
-        "flex flex-col h-full bg-card overflow-y-auto overflow-x-hidden select-none sidebar-transition gemini-sidebar",
-        isCollapsed ? "px-2 py-6" : "p-4"
+        "flex flex-col h-full bg-[var(--card-bg)] select-none sidebar-transition border-r border-[var(--border-color)]",
+        isCollapsed ? "px-2.5" : ""
       )}
     >
-      {/* Brand / Logo */}
-      <div className={cn("flex items-center gap-3 mb-8 px-2 shrink-0", isCollapsed ? "justify-center" : "")}>
-        <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-[var(--shadow-sm)]">
-          <GraduationCap className="w-5 h-5" />
-        </div>
-        {!isCollapsed && (
-          <span className="text-xl font-bold tracking-tight text-foreground whitespace-nowrap">
-            UniConnect <span className="text-primary font-black">Tutorials</span>
-          </span>
-        )}
+      {/* Branding Logo & Header */}
+      <div className={cn(
+        "flex items-center gap-3 h-[72px] border-b border-[var(--border-color)] px-6 shrink-0 mb-4",
+        isCollapsed ? "justify-center px-4" : ""
+      )}>
+        <h1 className="text-base font-bold font-sans tracking-wider text-[var(--text-primary)]">
+          {isCollapsed ? (
+            <span className="text-[var(--primary)] font-black">T<span className="text-[var(--text-primary)]">u</span></span>
+          ) : (
+            <span className="text-[var(--primary)]">Tutorials</span>
+          )}
+        </h1>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation Links */}
       <nav className={cn(
-        "flex flex-col flex-1",
-        isCollapsed ? "items-center gap-3" : "space-y-1.5"
+        "flex flex-col flex-1 overflow-y-auto overflow-x-hidden px-3 space-y-1.5",
+        isCollapsed ? "items-center py-4 gap-3" : ""
       )}>
+        {/* Back to Dashboard */}
+        <Link
+          to="/student/dashboard"
+          onClick={closeMobileMenu}
+          className={cn(
+            "group relative flex items-center transition-all duration-200 cursor-pointer w-full mb-4",
+            isCollapsed 
+              ? "w-10 h-10 justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]" 
+              : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+          )}
+        >
+          <div className="flex-shrink-0 transition-transform group-hover:-translate-x-0.5 duration-200">
+            <ArrowLeft className="w-5 h-5" />
+          </div>
+          {!isCollapsed && <span>Back to Dashboard</span>}
+          {isCollapsed && (
+            <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--text-primary)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+              Back to Dashboard
+            </div>
+          )}
+        </Link>
+
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             onClick={closeMobileMenu}
-            className={({ isActive }) => cn(
-              "group relative flex items-center transition-all duration-200 sidebar-link-btn",
-              isCollapsed 
-                ? "w-12 h-12 justify-center p-0 rounded-[var(--radius-lg)]" 
-                : "gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
-              isActive ? "active-link" : ""
-            )}
+            className={({ isActive }) =>
+              cn(
+                "group relative flex items-center transition-all duration-200 cursor-pointer w-full",
+                isCollapsed 
+                  ? "w-10 h-10 justify-center rounded-lg" 
+                  : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold",
+                isActive 
+                  ? "bg-[var(--accent)]/[0.08] text-[var(--accent)]" 
+                  : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+              )
+            }
           >
-            <item.icon className="w-5 h-5 shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
-            {isCollapsed && (
-              <div className="absolute left-16 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-popover text-popover-foreground border border-border text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
-                {item.label}
-              </div>
+            {({ isActive }) => (
+              <>
+                {isActive && (
+                  <div className="absolute left-0 top-2 bottom-2 w-[3px] bg-[var(--accent)] rounded-r" />
+                )}
+                <div className={cn("flex-shrink-0 transition-transform group-hover:scale-105 duration-200", isActive ? "text-[var(--accent)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]")}>
+                  <item.icon className="w-5 h-5" />
+                </div>
+                {!isCollapsed && <span>{item.label}</span>}
+                {isCollapsed && (
+                  <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--text-primary)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+                    {item.label}
+                  </div>
+                )}
+              </>
             )}
           </NavLink>
         ))}
 
-        <div className={cn(
-          "pt-4 border-t border-border/50 flex flex-col",
-          isCollapsed ? "items-center gap-3" : "space-y-1.5"
-        )}>
-          <button
-            onClick={() => {
-              navigate("/student/dashboard");
-              closeMobileMenu();
-            }}
-            className={cn(
-              "group relative flex items-center transition-colors sidebar-link-btn text-muted-foreground hover:text-foreground cursor-pointer",
-              isCollapsed 
-                ? "w-12 h-12 justify-center p-0 rounded-[var(--radius-lg)]" 
-                : "gap-3 px-3 py-2.5 rounded-[var(--radius-md)] w-full"
-            )}
-          >
-            <ArrowLeft className="w-5 h-5 shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap">Back to Dashboard</span>}
-            {isCollapsed && (
-              <div className="absolute left-16 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-popover text-popover-foreground border border-border text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
-                Back to Dashboard
-              </div>
-            )}
-          </button>
-          
-          <button
-            onClick={() => {
-              if (logout) {
-                logout();
-              } else {
-                navigate("/login");
-              }
-            }}
-            className={cn(
-              "group relative flex items-center transition-colors text-destructive hover:bg-destructive/10 cursor-pointer",
-              isCollapsed 
-                ? "w-12 h-12 justify-center p-0 rounded-[var(--radius-lg)]" 
-                : "gap-3 px-3 py-2.5 rounded-[var(--radius-md)] w-full"
-            )}
-          >
-            <LogOut className="w-5 h-5 shrink-0 text-destructive" />
-            {!isCollapsed && <span className="whitespace-nowrap font-medium text-destructive">Logout</span>}
-            {isCollapsed && (
-              <div className="absolute left-16 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-popover text-popover-foreground border border-border text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
-                Logout
-              </div>
-            )}
-          </button>
-        </div>
+        {/* Logout */}
+        <button
+          onClick={() => {
+            if (logout) {
+              logout();
+            } else {
+              navigate("/login");
+            }
+          }}
+          className={cn(
+            "group relative flex items-center transition-all duration-200 cursor-pointer w-full text-[var(--danger)] hover:bg-[var(--danger)]/10",
+            isCollapsed 
+              ? "w-10 h-10 justify-center rounded-lg" 
+              : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold"
+          )}
+        >
+          <div className="flex-shrink-0 transition-transform group-hover:scale-105 duration-200 text-[var(--danger)]">
+            <LogOut className="w-5 h-5" />
+          </div>
+          {!isCollapsed && <span>Logout</span>}
+          {isCollapsed && (
+            <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--danger)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+              Logout
+            </div>
+          )}
+        </button>
       </nav>
 
-      {/* Collapse Toggle (Desktop only) */}
-      <div className={cn("hidden md:flex shrink-0 border-t border-border/50 pt-4", isCollapsed ? "justify-center" : "")}>
+      {/* Bottom Actions */}
+      <div className={cn(
+        "mt-auto border-t border-[var(--border-color)] shrink-0 flex flex-col p-3 bg-[var(--bg-primary)]/40",
+        isCollapsed ? "items-center" : ""
+      )}>
+        {/* User Card */}
+        <div className={cn(
+          "flex items-center rounded-lg border border-[var(--border-color)] transition-all duration-200 overflow-hidden bg-[var(--card-bg)] shadow-sm",
+          isCollapsed ? "w-10 h-10 justify-center p-0 border-none" : "gap-3 p-2.5 w-full"
+        )}>
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[var(--primary)] to-[var(--accent)] border border-[var(--border-color)] overflow-hidden flex items-center justify-center shrink-0 font-bold text-white shadow-sm">
+            {user?.profilePic ? (
+              <img
+                src={user.profilePic}
+                alt="User avatar"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-xs uppercase font-bold">{(displayName)[0].toUpperCase()}</span>
+            )}
+          </div>
+          
+          {/* Name & Role */}
+          {!isCollapsed && (
+            <div className="flex-1 flex items-center justify-between min-w-0 text-left">
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold text-[var(--text-primary)] truncate">{displayName}</span>
+                <span className="text-[10px] text-[var(--text-muted)] capitalize truncate">{currentRole}</span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0 ml-2" />
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar Collapse Toggle Button */}
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={handleToggle}
           className={cn(
-            "group relative flex items-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-all duration-200 cursor-pointer",
-            isCollapsed ? "w-12 h-12 justify-center p-0 rounded-[var(--radius-lg)]" : "w-full gap-3 px-3 py-2.5 rounded-[var(--radius-md)]"
+            "group relative flex items-center text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-all duration-200 w-full cursor-pointer mt-2",
+            isCollapsed 
+              ? "w-10 h-10 justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]" 
+              : "gap-3 px-3 py-2.5 rounded-lg text-xs font-bold"
           )}
           aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
@@ -141,9 +202,9 @@ const TutorialSidebar = () => {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
           </svg>
-          {!isCollapsed && <span className="sidebar-label">Collapse</span>}
+          {!isCollapsed && <span className="truncate">Collapse Sidebar</span>}
           {isCollapsed && (
-            <div className="absolute left-16 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-popover text-popover-foreground border border-border text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+            <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--text-primary)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
               Expand
             </div>
           )}

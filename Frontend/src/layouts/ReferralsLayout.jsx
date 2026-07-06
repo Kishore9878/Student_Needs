@@ -12,11 +12,11 @@ const ReferralsLayoutContent = () => {
 
   const getDynamicTitle = () => {
     const path = location.pathname;
-    if (path.includes("/applied-jobs")) return "Applied Jobs";
+    if (path.includes("/applied-jobs")) return "My Applications";
     if (path.includes("/browse-jobs")) return "Browse Jobs";
     if (path.includes("/browse-referrals")) return "Browse Referrals";
     if (path.includes("/profile")) return "My Profile";
-    if (path.includes("/chat")) return "Referrals Chat";
+    if (path.includes("/chat")) return "Chats";
     return "Referrals";
   };
 

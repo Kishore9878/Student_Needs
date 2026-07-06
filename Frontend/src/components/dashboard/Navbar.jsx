@@ -24,7 +24,7 @@ const STUDENT_MODULE_PATHS = [
   "/referrals",
 ];
 
-const Navbar = ({ pageTitle = "Dashboard", showBackToDashboard }) => {
+const Navbar = ({ pageTitle = "Dashboard", showBackToDashboard, showSearch = false }) => {
   const { user, isStudent } = useAuth();
   const { toggleSidebar, toggleMobileMenu } = useSidebar();
   const location = useLocation();
@@ -81,7 +81,7 @@ const Navbar = ({ pageTitle = "Dashboard", showBackToDashboard }) => {
       </div>
 
       <div className="flex items-center gap-4">
-        {location.pathname !== "/tutorials/home" && (
+        {showSearch && location.pathname !== "/tutorials/home" && (
           <form onSubmit={handleSearchSubmit} className="relative hidden md:block w-[320px] transition-all duration-300">
             <style>{`
               .nav-search-input::placeholder {
