@@ -57,183 +57,742 @@ export default function About() {
   };
 
   return (
-    <div className="w-full uc-modern-container" style={{ paddingTop: "52px", paddingBottom: "72px" }}>
+    <div className="w-full bg-background py-0">
+      <style>{`
+        /* Scoped styles for the About page to enforce clean layout and prevent conflicts */
+        .about-page-container {
+          width: 100%;
+          max-width: 1440px;
+          margin-left: auto;
+          margin-right: auto;
+          padding-left: 20px;
+          padding-right: 20px;
+          box-sizing: border-box;
+        }
+        @media (min-width: 768px) {
+          .about-page-container {
+            padding-left: 32px;
+            padding-right: 32px;
+          }
+        }
+        @media (min-width: 1200px) {
+          .about-page-container {
+            padding-left: 48px;
+            padding-right: 48px;
+          }
+        }
+        @media (min-width: 1440px) {
+          .about-page-container {
+            padding-left: 56px;
+            padding-right: 56px;
+          }
+        }
 
-      {/* PAGE HEADER */}
-      <div className="text-center mb-12" style={{ maxWidth: "760px", margin: "0 auto 48px" }}>
-        <span className="text-primary font-extrabold text-xs uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-          Project Presentation
-        </span>
-        <h1
-          className="mt-4 mb-4 font-black text-foreground tracking-tight"
-          style={{ fontSize: "clamp(28px, 4.5vw, 52px)", lineHeight: 1.08 }}
-        >
-          Unifying Student Operations
-        </h1>
-      </div>
+        .about-hero-section,
+        .mission-vision-grid,
+        .why-uniconnect-section,
+        .stack-section,
+        .security-section,
+        .roadmap-section {
+          height: auto !important;
+          min-height: 0 !important;
+        }
 
-      {/* MISSION & VISION */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
-        <div className="glass-card-modern p-8 bg-gradient-to-tr from-primary/5 via-transparent to-transparent flex flex-col justify-between">
-          <div>
-            <span className="text-xs font-black text-primary uppercase tracking-wider bg-primary/10 px-2.5 py-0.5 rounded">Our Mission</span>
-            <h3 className="text-xl font-extrabold text-foreground mt-4 mb-3">Empower Academic Term Success</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+        /* 1. Hero Section */
+        .about-hero-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+        .about-hero-label {
+          display: block;
+          font-size: 14px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #3b82f6;
+          margin-top: 48px;
+          margin-bottom: 0;
+        }
+        .about-hero-heading {
+          font-size: clamp(32px, 5vw, 60px);
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          line-height: 1.15;
+          margin-top: 14px !important;
+          margin-bottom: 48px !important;
+        }
+
+        /* 2. Mission & Vision Section */
+        .mission-vision-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+          padding-top: 0;
+          padding-bottom: 0;
+          margin-bottom: 56px !important;
+        }
+        @media (min-width: 768px) {
+          .mission-vision-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-bottom: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .mission-vision-grid {
+            margin-bottom: 88px !important;
+          }
+        }
+
+        .mission-vision-card {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          box-sizing: border-box;
+          padding: 24px !important;
+        }
+        @media (min-width: 768px) {
+          .mission-vision-card {
+            padding: 28px 30px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .mission-vision-card {
+            padding: 36px 40px !important;
+          }
+        }
+
+        .mission-vision-card .card-label {
+          display: block;
+          font-size: 14px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 8px !important;
+        }
+        .mission-vision-card .card-heading {
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 12px !important;
+          line-height: 1.25;
+        }
+        .mission-vision-card .card-desc {
+          font-size: 16px;
+          line-height: 1.75;
+          margin-bottom: 14px !important;
+        }
+        .mission-vision-card .card-link {
+          margin-top: auto;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 700;
+          color: #3b82f6;
+          user-select: none;
+        }
+
+        /* 3. Why UniConnect Section */
+        .why-uniconnect-section {
+          padding-top: 0 !important;
+          padding-bottom: 56px !important;
+        }
+        @media (min-width: 768px) {
+          .why-uniconnect-section {
+            padding-bottom: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .why-uniconnect-section {
+            padding-bottom: 96px !important;
+          }
+        }
+
+        .about-story-section {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+          align-items: center;
+        }
+        @media (min-width: 1200px) {
+          .about-story-section {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            column-gap: 64px;
+          }
+        }
+
+        .about-story-content {
+          padding: 0 !important;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          box-sizing: border-box;
+        }
+
+        .about-story-content h2 {
+          font-size: clamp(32px, 3vw, 44px) !important;
+          font-weight: 700;
+          line-height: 1.15 !important;
+          letter-spacing: -0.02em !important;
+          margin-bottom: 28px !important;
+          margin-top: 0 !important;
+        }
+
+        .about-story-text {
+          display: flex;
+          flex-direction: column;
+          gap: 0 !important;
+        }
+        .about-story-text p {
+          font-size: 16px !important;
+          line-height: 1.75 !important;
+        }
+        .about-story-text p:first-of-type {
+          margin-bottom: 24px !important;
+          margin-top: 0 !important;
+        }
+        .about-story-text p:last-of-type {
+          margin-bottom: 32px !important;
+          margin-top: 0 !important;
+        }
+
+        .about-story-actions {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+          margin-top: 36px !important;
+        }
+
+        .why-features-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        @media (min-width: 640px) {
+          .why-features-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        .why-feature-card {
+          padding: 28px 30px !important;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+        }
+        .why-feature-card .feature-icon-wrap {
+          margin-bottom: 14px !important;
+        }
+        .why-feature-card h4 {
+          font-size: 18px;
+          font-weight: 700;
+          margin-top: 0 !important;
+          margin-bottom: 8px !important;
+          line-height: 1.25;
+        }
+        .why-feature-card p {
+          font-size: 15px;
+          line-height: 1.625;
+          margin: 0 !important;
+        }
+
+        /* 4. Interactive Platform Stack */
+        .stack-section {
+          padding-top: 0 !important;
+          padding-bottom: 56px !important;
+        }
+        @media (min-width: 768px) {
+          .stack-section {
+            padding-bottom: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .stack-section {
+            padding-bottom: 104px !important;
+          }
+        }
+
+        .stack-title {
+          font-size: clamp(32px, 3vw, 44px) !important;
+          font-weight: 700;
+          line-height: 1.15 !important;
+          letter-spacing: -0.02em !important;
+          margin-bottom: 14px !important;
+          margin-top: 48px !important;
+        }
+        @media (min-width: 768px) {
+          .stack-title {
+            margin-top: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .stack-title {
+            margin-top: 96px !important;
+          }
+        }
+
+        .stack-desc {
+          font-size: 16px !important;
+          line-height: 1.625 !important;
+          margin-bottom: 48px !important;
+          margin-top: 0 !important;
+        }
+
+        .tech-stack-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        @media (min-width: 1200px) {
+          .tech-stack-grid {
+            grid-template-columns: 380px minmax(0, 1fr);
+            gap: 40px;
+          }
+        }
+
+        .stack-nav {
+          display: flex;
+          flex-direction: column;
+          gap: 14px !important;
+        }
+
+        .stack-detail-card {
+          padding: 32px !important;
+          box-sizing: border-box;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          text-align: left;
+        }
+        @media (min-width: 1200px) {
+          .stack-detail-card {
+            padding: 48px 52px !important;
+          }
+        }
+
+        .stack-detail-role {
+          font-size: 14px;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          margin-bottom: 12px !important;
+          display: block;
+        }
+        .stack-detail-title {
+          font-size: clamp(24px, 2.5vw, 32px);
+          font-weight: 700;
+          margin-bottom: 16px !important;
+          margin-top: 0 !important;
+        }
+        .stack-detail-desc {
+          font-size: 16px;
+          line-height: 1.75;
+          margin-bottom: 24px !important;
+          margin-top: 0 !important;
+        }
+
+        /* 5. Security & Data Pipelines */
+        .security-section {
+          padding-top: 0 !important;
+          padding-bottom: 56px !important;
+        }
+        @media (min-width: 768px) {
+          .security-section {
+            padding-bottom: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .security-section {
+            padding-bottom: 96px !important;
+          }
+        }
+
+        .security-title {
+          font-size: clamp(32px, 3vw, 44px) !important;
+          font-weight: 700;
+          line-height: 1.15 !important;
+          letter-spacing: -0.02em !important;
+          text-align: center;
+          margin-bottom: 40px !important;
+          margin-top: 48px !important;
+        }
+        @media (min-width: 768px) {
+          .security-title {
+            margin-top: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .security-title {
+            margin-top: 96px !important;
+            margin-bottom: 56px !important;
+          }
+        }
+
+        .security-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 28px !important;
+        }
+        @media (min-width: 768px) {
+          .security-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        @media (min-width: 1200px) {
+          .security-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+
+        .security-card {
+          padding: 24px !important;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+          height: auto;
+        }
+        @media (min-width: 1200px) {
+          .security-card {
+            padding: 32px 34px !important;
+          }
+        }
+
+        .security-card .security-card-icon-wrap {
+          margin-bottom: 20px !important;
+        }
+        .security-card .security-card-title {
+          font-size: 18px;
+          font-weight: 700;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+          line-height: 1.25;
+        }
+        .security-card .security-card-desc {
+          font-size: 15px;
+          line-height: 1.625;
+          margin-top: 14px !important;
+          margin-bottom: 0 !important;
+        }
+
+        /* 6. Development Roadmap */
+        .roadmap-section {
+          padding-top: 0 !important;
+          padding-bottom: 56px !important;
+        }
+        @media (min-width: 768px) {
+          .roadmap-section {
+            padding-bottom: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .roadmap-section {
+            padding-bottom: 96px !important;
+          }
+        }
+
+        .roadmap-title {
+          font-size: clamp(32px, 3vw, 44px) !important;
+          font-weight: 700;
+          line-height: 1.15 !important;
+          letter-spacing: -0.02em !important;
+          text-align: center;
+          margin-bottom: 40px !important;
+          margin-top: 48px !important;
+        }
+        @media (min-width: 768px) {
+          .roadmap-title {
+            margin-top: 72px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .roadmap-title {
+            margin-top: 96px !important;
+            margin-bottom: 56px !important;
+          }
+        }
+
+        .roadmap-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 28px !important;
+        }
+        @media (min-width: 768px) {
+          .roadmap-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        @media (min-width: 1200px) {
+          .roadmap-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+
+        .roadmap-card {
+          padding: 24px !important;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+          height: auto;
+        }
+        @media (min-width: 1200px) {
+          .roadmap-card {
+            padding: 36px 34px !important;
+          }
+        }
+
+        .roadmap-card .roadmap-card-date {
+          font-size: 14px;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          color: #3b82f6;
+          margin-bottom: 0 !important;
+        }
+        .roadmap-card .roadmap-card-title {
+          font-size: 20px;
+          font-weight: 700;
+          margin-top: 18px !important;
+          margin-bottom: 0 !important;
+          line-height: 1.25;
+        }
+        .roadmap-card .roadmap-card-desc {
+          font-size: 15px;
+          line-height: 1.625;
+          margin-top: 18px !important;
+          margin-bottom: 0 !important;
+        }
+      `}</style>
+
+      <div className="about-page-container flex flex-col gap-0">
+
+        {/* HERO SECTION */}
+        <section className="about-hero-section">
+          <span className="about-hero-label">
+            PROJECT PRESENTATION
+          </span>
+          <h1 className="about-hero-heading text-slate-900 dark:text-white">
+            Unifying Student Operations
+          </h1>
+        </section>
+
+        {/* MISSION & VISION */}
+        <section className="mission-vision-grid">
+          {/* Mission Card */}
+          <div className="mission-vision-card rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-background/50 shadow-sm">
+            <span className="card-label text-slate-700 dark:text-slate-300">
+              Our Mission
+            </span>
+            <h3 className="card-heading text-slate-900 dark:text-white">
+              Empower Academic Term Success
+            </h3>
+            <p className="card-desc text-slate-600 dark:text-slate-400">
               To consolidate all critical student resources—tutoring rosters, budget calculators, class checklists, and corporate job referral pipelines—into a single high-contrast desktop and mobile environment.
             </p>
+            <div className="card-link">
+              Verified Success Framework <ArrowRight className="w-4 h-4" />
+            </div>
           </div>
-          <div className="flex gap-2 items-center text-xs font-bold text-primary pt-4 select-none">
-            Verified Success Framework <ArrowRight className="w-3.5 h-3.5" />
-          </div>
-        </div>
-        
-        <div className="glass-card-modern p-8 bg-gradient-to-tr from-indigo-500/5 via-transparent to-transparent flex flex-col justify-between">
-          <div>
-            <span className="text-xs font-black text-[var(--primary)] uppercase tracking-wider bg-[var(--primary)]/10 px-2.5 py-0.5 rounded">Our Vision</span>
-            <h3 className="text-xl font-extrabold text-foreground mt-4 mb-3">Bridge the Career Placement Divide</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+          
+          {/* Vision Card */}
+          <div className="mission-vision-card rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-background/50 shadow-sm">
+            <span className="card-label text-slate-700 dark:text-slate-300">
+              Our Vision
+            </span>
+            <h3 className="card-heading text-slate-900 dark:text-white">
+              Bridge the Career Placement Divide
+            </h3>
+            <p className="card-desc text-slate-600 dark:text-slate-400">
               To build a seamless, community-driven channel where students collaborate with verified alumni mentors to refine resumes, conduct interview pre-screenings, and secure corporate placement.
             </p>
+            <div className="card-link">
+              Alumni Endorsement Pipelines <ArrowRight className="w-4 h-4" />
+            </div>
           </div>
-          <div className="flex gap-2 items-center text-xs font-bold text-[var(--primary)] pt-4 select-none">
-            Alumni Endorsement Pipelines <ArrowRight className="w-3.5 h-3.5" />
-          </div>
-        </div>
-      </div>
+        </section>
 
-      {/* WHY UNICONNECT */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-14">
-        <div className="flex flex-col gap-5">
-          <h2 className="font-black text-foreground tracking-tight leading-tight" style={{ fontSize: "clamp(24px, 3.5vw, 42px)" }}>
-            Why UniConnect Was Built
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            University academics can be highly overwhelming. Students navigate separate portals for logging attendances, searching tutors, organizing meal plans, and requesting job postings.
-          </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            UniConnect integrates these operations under a single account. Protected by secure JWT keys, students log financial transactions, match with peer mentors, and check attendance curves on one responsive dashboard.
-          </p>
-          <div className="flex gap-4 select-none flex-wrap">
-            <Link to="/role-selection" className="uc-btn-primary">Get Started Now</Link>
-            <Link to="/features" className="uc-btn-secondary">Explore All Modules</Link>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[
-            { icon: Smile, title: "Student-First Design", desc: "No generic templates. Built with a dark-theme adaptive glassmorphic framework." },
-            { icon: Heart, title: "Verification Checked", desc: "Tutors verify transcripts; alumni mentors verify email credentials." },
-            { icon: Lightbulb, title: "Intelligent Warnings", desc: "Auto triggers alerts when budget drops or attendance curves warning states." },
-            { icon: Users, title: "Unified Community", desc: "Fosters long-term networks spanning student juniors, peer tutors, and corporate seniors." }
-          ].map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <div key={idx} className="p-5 bg-card border border-border rounded-[var(--radius-md)] space-y-3 hover:border-primary/45 transition-colors">
-                <Icon className="w-6 h-6 text-primary" />
-                <h4 className="font-bold text-xs text-foreground uppercase tracking-wider">{item.title}</h4>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">{item.desc}</p>
+        {/* WHY UNICONNECT */}
+        <section className="why-uniconnect-section">
+          <div className="about-story-section">
+            <div className="about-story-content">
+              <h2 className="text-slate-900 dark:text-white">
+                Why UniConnect Was Built
+              </h2>
+              <div className="about-story-text">
+                <p className="text-slate-700 dark:text-slate-300">
+                  University academics can be highly overwhelming. Students navigate separate portals for logging attendances, searching tutors, organizing meal plans, and requesting job postings.
+                </p>
+                <p className="text-slate-700 dark:text-slate-300">
+                  UniConnect integrates these operations under a single account. Protected by secure JWT keys, students log financial transactions, match with peer mentors, and check attendance curves on one responsive dashboard.
+                </p>
               </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* INTERACTIVE TECH STACK — full-width two-column */}
-      <section className="mb-14 bg-secondary/10 border border-border/60 rounded-[var(--radius-xl)] p-8 shadow-[var(--shadow-sm)]">
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tight mb-1">Interactive Platform Stack</h2>
-          <p className="text-xs text-muted-foreground">Click a layer to inspect how the technology powers our operations.</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Tech selector buttons — 4 cols */}
-          <div className="lg:col-span-4 flex flex-col gap-2 select-none">
-            {Object.keys(techStack).map((key) => (
-              <button
-                key={key}
-                onClick={() => setSelectedTech(key)}
-                className={`w-full text-left px-4 py-3 rounded-[var(--radius-sm)] border text-xs font-bold transition-all flex items-center justify-between ${selectedTech === key ? "bg-primary text-white border-primary shadow" : "bg-card border-border/50 text-foreground hover:border-primary/50"}`}
-              >
-                <span>{techStack[key].name}</span>
-                <ArrowRight className="w-3.5 h-3.5 opacity-80" />
-              </button>
-            ))}
-          </div>
-
-          {/* Detail panel — 8 cols */}
-          <div className="lg:col-span-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedTech}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-                className="p-8 bg-card border border-border rounded-[var(--radius-lg)] min-h-[200px] flex flex-col justify-between text-left"
-              >
-                <div>
-                  <span className="text-[10px] font-black uppercase text-primary tracking-widest">{techStack[selectedTech].role}</span>
-                  <h3 className="text-2xl font-extrabold text-foreground mt-2 mb-3">{techStack[selectedTech].name}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{techStack[selectedTech].desc}</p>
-                </div>
-                <div className="flex gap-1.5 items-center text-[10px] font-bold text-emerald-500 pt-5">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" /> Architecture Verified &amp; Deployed
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-      </section>
-
-      {/* PLATFORM ARCHITECTURE PIPELINE */}
-      <section className="mb-14">
-        <h2 className="font-extrabold text-center text-foreground tracking-tight mb-10" style={{ fontSize: "clamp(20px, 3vw, 36px)" }}>
-          Security &amp; Data Pipelines
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[
-            { icon: Layout, title: "1. Client UI Layout", desc: "Responsive React layouts rendering dynamic CSS previews and sandboxes." },
-            { icon: Shield, title: "2. JWT Authentication", desc: "Auth middleware intercepting API calls and verifying user roles." },
-            { icon: Cpu, title: "3. Service Routers", desc: "API handlers query database models and processes calculations." },
-            { icon: Database, title: "4. MongoDB Cluster", desc: "Secure schema collection sets validating user documents." }
-          ].map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <div key={idx} className="p-6 bg-card border border-border/75 rounded-[var(--radius-lg)] text-left space-y-3">
-                <div className="w-10 h-10 rounded-[var(--radius-sm)] bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-                  <Icon className="w-5 h-5" />
-                </div>
-                <h4 className="font-extrabold text-xs text-foreground uppercase tracking-wider">{item.title}</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* DEVELOPMENT ROADMAP */}
-      <section>
-        <h2 className="font-extrabold text-center text-foreground tracking-tight mb-10" style={{ fontSize: "clamp(20px, 3vw, 36px)" }}>
-          Development Roadmap
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[
-            { year: "2025 Q1", title: "Project Core Planning", desc: "Created initial system flow charts to replace campus worksheets." },
-            { year: "2025 Q3", title: "Private Alpha Launch", desc: "Onboarded initial student cohorts to test calendar slot bookings." },
-            { year: "2026 Q1", title: "Version 1.0 Release", desc: "Deployed restful routers, JWT auth, and active alumni directories." },
-            { year: "2026 Q2", title: "UX Refactoring v1.2", desc: "Completed premium dashboard previews, mobile navigation slides, and footer forms." }
-          ].map((item, idx) => (
-            <div key={idx} className="p-6 glass-card-modern border-l-4 border-l-primary flex flex-col justify-between min-h-[150px]">
-              <span className="text-xs font-black text-primary uppercase tracking-widest">{item.year}</span>
-              <div className="mt-4">
-                <h4 className="font-bold text-sm text-foreground mb-2">{item.title}</h4>
-                <p className="text-xs text-muted-foreground leading-normal">{item.desc}</p>
+              <div className="about-story-actions">
+                <Link to="/role-selection" className="uc-btn-primary px-8 h-14 rounded-xl" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                  Get Started Now
+                </Link>
+                <Link to="/features" className="uc-btn-secondary px-8 h-14 rounded-xl" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                  Explore All Modules
+                </Link>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
+            
+            <div className="why-features-grid">
+              {[
+                { icon: Smile, title: "Student-First Design", desc: "No generic templates. Built with a dark-theme adaptive glassmorphic framework." },
+                { icon: Heart, title: "Verification Checked", desc: "Tutors verify transcripts; alumni mentors verify email credentials." },
+                { icon: Lightbulb, title: "Intelligent Warnings", desc: "Auto triggers alerts when budget drops or attendance curves warning states." },
+                { icon: Users, title: "Unified Community", desc: "Fosters long-term networks spanning student juniors, peer tutors, and corporate seniors." }
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div key={idx} className="why-feature-card rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-background/50 shadow-sm">
+                    <div className="feature-icon-wrap w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-slate-900 dark:text-white">
+                      {item.title}
+                    </h4>
+                    <p className="text-slate-600 dark:text-slate-400">
+                      {item.desc}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
+        {/* INTERACTIVE TECH STACK */}
+        <section className="stack-section border-t border-slate-200 dark:border-border">
+          <div>
+            <h2 className="stack-title text-slate-900 dark:text-white">
+              Interactive Platform Stack
+            </h2>
+            <p className="stack-desc text-slate-600 dark:text-slate-400">
+              Click a layer to inspect how the technology powers our operations.
+            </p>
+          </div>
+
+          <div className="tech-stack-grid">
+            {/* Tech selector buttons */}
+            <div className="stack-nav select-none">
+              {Object.keys(techStack).map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setSelectedTech(key)}
+                  className={`stack-item ${
+                    selectedTech === key
+                      ? "stack-item-active"
+                      : "stack-item-inactive"
+                  }`}
+                  type="button"
+                >
+                  <span className="text-base font-semibold">{techStack[key].name}</span>
+                  <ArrowRight className="w-5 h-5 shrink-0" />
+                </button>
+              ))}
+            </div>
+
+            {/* Detail panel */}
+            <div className="flex flex-col">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedTech}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="stack-detail-card rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-background/50 shadow-sm"
+                >
+                  <div>
+                    <span className="stack-detail-role text-blue-500">
+                      {techStack[selectedTech].role}
+                    </span>
+                    <h3 className="stack-detail-title text-slate-900 dark:text-white">
+                      {techStack[selectedTech].name}
+                    </h3>
+                    <p className="stack-detail-desc text-slate-600 dark:text-slate-400">
+                      {techStack[selectedTech].desc}
+                    </p>
+                  </div>
+                  <div className="stack-detail-verified text-emerald-600 dark:text-emerald-400 font-bold text-sm flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 shrink-0" /> Architecture Verified &amp; Deployed
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </section>
+
+        {/* SECURITY & DATA PIPELINES */}
+        <section className="security-section border-t border-slate-200 dark:border-border">
+          <h2 className="security-title text-slate-900 dark:text-white">
+            Security &amp; Data Pipelines
+          </h2>
+          <div className="security-grid">
+            {[
+              { icon: Layout, title: "1. Client UI Layout", desc: "Responsive React layouts rendering dynamic CSS previews and sandboxes." },
+              { icon: Shield, title: "2. JWT Authentication", desc: "Auth middleware intercepting API calls and verifying user roles." },
+              { icon: Cpu, title: "3. Service Routers", desc: "API handlers query database models and processes calculations." },
+              { icon: Database, title: "4. MongoDB Cluster", desc: "Secure schema collection sets validating user documents." }
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div key={idx} className="security-card rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-background/50 shadow-sm">
+                  <div className="security-card-icon-wrap">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h4 className="security-card-title text-slate-900 dark:text-white">
+                    {item.title}
+                  </h4>
+                  <p className="security-card-desc text-slate-600 dark:text-slate-400">
+                    {item.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+ 
+        {/* DEVELOPMENT ROADMAP */}
+        <section className="roadmap-section border-t border-slate-200 dark:border-border">
+          <h2 className="roadmap-title text-slate-900 dark:text-white">
+            Development Roadmap
+          </h2>
+          <div className="roadmap-grid">
+            {[
+              { year: "2025 Q1", title: "Project Core Planning", desc: "Created initial system flow charts to replace campus worksheets." },
+              { year: "2025 Q3", title: "Private Alpha Launch", desc: "Onboarded initial student cohorts to test calendar slot bookings." },
+              { year: "2026 Q1", title: "Version 1.0 Release", desc: "Deployed restful routers, JWT auth, and active alumni directories." },
+              { year: "2026 Q2", title: "UX Refactoring v1.2", desc: "Completed premium dashboard previews, mobile navigation slides, and footer forms." }
+            ].map((item, idx) => (
+              <div key={idx} className="roadmap-card rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-background/50 shadow-sm">
+                <span className="roadmap-card-date text-blue-500">
+                  {item.year}
+                </span>
+                <h4 className="roadmap-card-title text-slate-900 dark:text-white">
+                  {item.title}
+                </h4>
+                <p className="roadmap-card-desc text-slate-600 dark:text-slate-400">
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
     </div>
   );
 }
