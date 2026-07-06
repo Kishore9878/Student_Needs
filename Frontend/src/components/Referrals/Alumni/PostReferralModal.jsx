@@ -1,8 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from "@/components/ui/button.jsx";
-import { Input } from "@/components/ui/input.jsx";
-import { Label } from "@/components/ui/label.jsx";
-import { Textarea } from "@/components/ui/textarea.jsx";
 import { X, Plus, Loader2 } from 'lucide-react';
 
 /**
@@ -26,146 +22,350 @@ export function PostReferralModal({
   return (
     <AnimatePresence>
       {showModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-          onClick={onClose}
-        >
+        <>
+          <style>{`
+            .post-job-modal-card {
+              width: 100% !important;
+              max-width: 760px !important;
+              max-height: calc(100vh - 48px) !important;
+              background-color: var(--bg-surface-1) !important;
+              border-radius: 16px !important;
+              border: 1px solid var(--border-subtle, var(--border-color)) !important;
+              box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14) !important;
+              box-sizing: border-box !important;
+              display: flex !important;
+              flex-direction: column !important;
+              overflow-y: auto !important;
+              margin: auto !important;
+            }
+
+            /* Responsive padding */
+            @media (min-width: 1024px) {
+              .post-job-modal-card {
+                padding: 28px 32px 32px 32px !important;
+              }
+            }
+            @media (min-width: 640px) and (max-width: 1023px) {
+              .post-job-modal-card {
+                padding: 24px !important;
+              }
+            }
+            @media (max-width: 639px) {
+              .post-job-modal-card {
+                padding: 20px 16px !important;
+              }
+            }
+
+            .post-job-modal-header {
+              display: flex !important;
+              align-items: center !important;
+              justify-content: space-between !important;
+              margin-bottom: 28px !important;
+              width: 100% !important;
+            }
+            .post-job-modal-header h2 {
+              margin: 0 !important;
+              font-size: 24px !important;
+              font-weight: 700 !important;
+              line-height: 1.25 !important;
+              color: var(--text-primary) !important;
+            }
+            .post-job-modal-close-btn {
+              width: 36px !important;
+              height: 36px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              border-radius: 8px !important;
+              border: 1px solid var(--border-subtle, var(--border-color)) !important;
+              background-color: transparent !important;
+              color: var(--text-secondary) !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease !important;
+            }
+            .post-job-modal-close-btn:hover {
+              background-color: var(--bg-surface-3) !important;
+              color: var(--text-primary) !important;
+            }
+
+            .post-job-form {
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 22px !important;
+              width: 100% !important;
+            }
+            .post-job-form-group {
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 8px !important;
+              width: 100% !important;
+            }
+            .post-job-form-group label {
+              font-size: 14px !important;
+              font-weight: 600 !important;
+              line-height: 1.4 !important;
+              color: var(--text-primary) !important;
+              margin-bottom: 0 !important;
+            }
+
+            .post-job-row {
+              display: grid !important;
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+              gap: 20px !important;
+              width: 100% !important;
+            }
+            @media (max-width: 639px) {
+              .post-job-row {
+                grid-template-columns: 1fr !important;
+                gap: 22px !important;
+              }
+            }
+
+            .post-job-input,
+            .post-job-select {
+              height: 48px !important;
+              padding-left: 16px !important;
+              padding-right: 16px !important;
+              border-radius: 10px !important;
+              font-size: 15px !important;
+              border: 1px solid var(--border-subtle, var(--border-color)) !important;
+              background-color: var(--input-bg, var(--bg-surface-1)) !important;
+              color: var(--text-primary) !important;
+              width: 100% !important;
+              box-sizing: border-box !important;
+              outline: none !important;
+              transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            }
+            .post-job-input:focus,
+            .post-job-select:focus {
+              border-color: var(--accent) !important;
+              box-shadow: 0 0 0 3px var(--focus-ring) !important;
+            }
+
+            .post-job-textarea {
+              min-height: 110px !important;
+              max-height: 160px !important;
+              padding: 14px 16px !important;
+              border-radius: 10px !important;
+              font-size: 15px !important;
+              border: 1px solid var(--border-subtle, var(--border-color)) !important;
+              background-color: var(--input-bg, var(--bg-surface-1)) !important;
+              color: var(--text-primary) !important;
+              width: 100% !important;
+              box-sizing: border-box !important;
+              resize: vertical !important;
+              outline: none !important;
+              transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            }
+            .post-job-textarea:focus {
+              border-color: var(--accent) !important;
+              box-shadow: 0 0 0 3px var(--focus-ring) !important;
+            }
+
+            .post-job-info-msg {
+              padding: 14px 16px !important;
+              margin-top: 2px !important;
+              border-radius: 10px !important;
+              background-color: rgba(59, 130, 246, 0.05) !important;
+              border: 1px solid rgba(59, 130, 246, 0.2) !important;
+              color: var(--text-secondary) !important;
+              font-size: 13.5px !important;
+              line-height: 1.5 !important;
+              width: 100% !important;
+              box-sizing: border-box !important;
+            }
+            .post-job-info-msg strong {
+              color: var(--text-primary) !important;
+            }
+
+            .post-job-btn {
+              width: 100% !important;
+              height: 50px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              gap: 10px !important;
+              border-radius: 10px !important;
+              font-size: 16px !important;
+              font-weight: 600 !important;
+              margin-top: 2px !important;
+              background-color: var(--accent) !important;
+              color: white !important;
+              border: none !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease !important;
+            }
+            .post-job-btn:hover {
+              background-color: var(--accent-hover) !important;
+            }
+            .post-job-btn:disabled {
+              opacity: 0.6 !important;
+              cursor: not-allowed !important;
+            }
+          `}</style>
+
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-card rounded-[var(--radius-sm)] px-6 py-4 w-full max-w-lg modal-core-container shadow-[var(--shadow-lg)] border border-border/50 flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            onClick={onClose}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.3)',
+              backdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+              zIndex: 9999,
+            }}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-foreground">Post Referral Opportunity</h3>
-              <Button variant="ghost" size="icon" onClick={onClose} className='border p-1 rounded-[var(--radius-sm)]'>
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <form onSubmit={(e) => e.preventDefault()} className="modal-body flex flex-col gap-4 w-full flex-grow flex-1">
-              {/* Position Title */}
-              <div>
-                <Label htmlFor="ref-title">Position Title</Label>
-                <Input
-                  id="ref-title"
-                  value={referralForm.title}
-                  onChange={(e) => setReferralForm({ ...referralForm, title: e.target.value })}
-                  placeholder="Senior Software Engineer"
-                />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="post-job-modal-card"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="post-job-modal-header">
+                <h2>Post Referral Opportunity</h2>
+                <button type="button" onClick={onClose} className="post-job-modal-close-btn">
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              {/* Company & Location Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="ref-company">Company</Label>
-                  <Input
-                    id="ref-company"
-                    value={referralForm.company}
-                    onChange={(e) => setReferralForm({ ...referralForm, company: e.target.value })}
-                    placeholder="Tech Corp"
+              {/* Form Container */}
+              <form onSubmit={(e) => e.preventDefault()} className="post-job-form">
+                
+                {/* Position Title */}
+                <div className="post-job-form-group">
+                  <label htmlFor="ref-title">Position Title</label>
+                  <input
+                    id="ref-title"
+                    type="text"
+                    value={referralForm.title}
+                    onChange={(e) => setReferralForm({ ...referralForm, title: e.target.value })}
+                    placeholder="Senior Software Engineer"
+                    className="post-job-input"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="ref-location">Location</Label>
-                  <Input
-                    id="ref-location"
-                    value={referralForm.location}
-                    onChange={(e) => setReferralForm({ ...referralForm, location: e.target.value })}
-                    placeholder="San Francisco, CA"
-                  />
-                </div>
-              </div>
 
-              {/* Employment Type */}
-              <div>
-                <Label htmlFor="ref-type">Employment Type</Label>
-                <select
-                  id="ref-type"
-                  value={referralForm.type}
-                  onChange={(e) =>
-                    setReferralForm({ ...referralForm, type: e.target.value })
-                  }
-                  className="w-full h-10 px-3 rounded-[var(--radius-sm)] border border-input bg-background text-foreground"
+                {/* Company & Location Row */}
+                <div className="post-job-row">
+                  <div className="post-job-form-group">
+                    <label htmlFor="ref-company">Company</label>
+                    <input
+                      id="ref-company"
+                      type="text"
+                      value={referralForm.company}
+                      onChange={(e) => setReferralForm({ ...referralForm, company: e.target.value })}
+                      placeholder="Tech Corp"
+                      className="post-job-input"
+                    />
+                  </div>
+                  <div className="post-job-form-group">
+                    <label htmlFor="ref-location">Location</label>
+                    <input
+                      id="ref-location"
+                      type="text"
+                      value={referralForm.location}
+                      onChange={(e) => setReferralForm({ ...referralForm, location: e.target.value })}
+                      placeholder="San Francisco, CA"
+                      className="post-job-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Employment Type */}
+                <div className="post-job-form-group">
+                  <label htmlFor="ref-type">Employment Type</label>
+                  <select
+                    id="ref-type"
+                    value={referralForm.type}
+                    onChange={(e) =>
+                      setReferralForm({ ...referralForm, type: e.target.value })
+                    }
+                    className="post-job-select"
+                  >
+                    <option value="full-time">Full-time</option>
+                    <option value="part-time">Part-time</option>
+                    <option value="internship">Internship</option>
+                    <option value="contract">Contract</option>
+                  </select>
+                </div>
+
+                {/* Number of Positions */}
+                <div className="post-job-form-group">
+                  <label htmlFor="ref-vacancy">Number of Positions</label>
+                  <input
+                    id="ref-vacancy"
+                    type="number"
+                    min="1"
+                    value={referralForm.vacancy}
+                    onChange={(e) => setReferralForm({ ...referralForm, vacancy: e.target.value })}
+                    placeholder="e.g., 3"
+                    className="post-job-input"
+                  />
+                </div>
+
+                {/* Description */}
+                <div className="post-job-form-group">
+                  <label htmlFor="ref-description">Description</label>
+                  <textarea
+                    id="ref-description"
+                    value={referralForm.description}
+                    onChange={(e) => setReferralForm({ ...referralForm, description: e.target.value })}
+                    placeholder="Describe the opportunity and your connection..."
+                    className="post-job-textarea"
+                  />
+                </div>
+
+                {/* Requirements */}
+                <div className="post-job-form-group">
+                  <label htmlFor="ref-requirements">Requirements (one per line)</label>
+                  <textarea
+                    id="ref-requirements"
+                    value={referralForm.requirements}
+                    onChange={(e) => setReferralForm({ ...referralForm, requirements: e.target.value })}
+                    placeholder="5+ years experience&#10;Master's degree preferred&#10;Strong leadership skills"
+                    className="post-job-textarea"
+                  />
+                </div>
+
+                {/* Informational Message */}
+                <div className="post-job-info-msg">
+                  <strong>Referral Posting:</strong> Your referral will be saved to the database. If wallet is connected, it will also be recorded on Aptos blockchain.
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="button"
+                  className="post-job-btn"
+                  onClick={onSubmit}
+                  disabled={!referralForm.title || !referralForm.company || isCreating}
                 >
-                  <option value="full-time">Full-time</option>
-                  <option value="part-time">Part-time</option>
-                  <option value="internship">Internship</option>
-                  <option value="contract">Contract</option>
-                </select>
-              </div>
-
-              {/* Vacancy count */}
-              <div>
-                <Label htmlFor="ref-vacancy">Number of Positions</Label>
-                <Input
-                  id="ref-vacancy"
-                  type="number"
-                  min="1"
-                  value={referralForm.vacancy}
-                  onChange={(e) => setReferralForm({ ...referralForm, vacancy: e.target.value })}
-                  placeholder="e.g., 3"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <Label htmlFor="ref-description">Description</Label>
-                <Textarea
-                  id="ref-description"
-                  value={referralForm.description}
-                  onChange={(e) => setReferralForm({ ...referralForm, description: e.target.value })}
-                  placeholder="Describe the opportunity and your connection..."
-                  rows={3}
-                />
-              </div>
-
-              {/* Requirements */}
-              <div>
-                <Label htmlFor="ref-requirements">Requirements (one per line)</Label>
-                <Textarea
-                  id="ref-requirements"
-                  value={referralForm.requirements}
-                  onChange={(e) => setReferralForm({ ...referralForm, requirements: e.target.value })}
-                  placeholder="5+ years experience&#10;Master's degree preferred&#10;Strong leadership skills"
-                  rows={3}
-                />
-              </div>
-
-              {/* Blockchain Info Note */}
-              <div className="p-3 rounded-[var(--radius-sm)] bg-success/5 border border-success/20">
-                <p className="text-xs text-muted-foreground">
-                  <strong className="text-foreground">Referral Posting:</strong> Your referral will be saved to the database.
-                  If wallet is connected, it will also be recorded on Aptos blockchain.
-                </p>
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                variant="alumni"
-                className="w-full"
-                onClick={onSubmit}
-                disabled={!referralForm.title || !referralForm.company || isCreating}
-              >
-                {isCreating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Posting Referral...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Post Referral
-                  </>
-                )}
-              </Button>
-            </form>
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Posting Referral...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Post Referral
+                    </>
+                  )}
+                </button>
+              </form>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
