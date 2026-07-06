@@ -94,7 +94,7 @@ export default function MarketingLayout() {
     if (location.pathname === "/" || location.pathname === "") return null;
     
     return (
-      <nav aria-label="breadcrumb" className="container mx-auto px-6 py-3 text-xs text-muted-foreground select-none">
+      <nav aria-label="breadcrumb" className="w-full max-w-[1440px] mx-auto px-5 md:px-8 lg:px-12 xl:px-[56px] mt-8 pt-0 pb-0 text-xs text-muted-foreground select-none">
         <ol className="flex items-center gap-1.5 flex-wrap">
           <li>
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
@@ -266,10 +266,16 @@ export default function MarketingLayout() {
       </AnimatePresence>
 
       {/* 🚀 CONSOLIDATED COMPACT PREMIUM FOOTER */}
-      <footer className="uc-footer w-full bg-[var(--card-bg)] border-t border-[var(--border-color)] mt-16 pb-12 lg:pb-14 text-xs text-[var(--text-secondary)]" style={{ paddingTop: 0 }}>
+      <footer className="uc-footer w-full bg-[var(--card-bg)] border-t border-[var(--border-color)] mt-16 text-xs text-[var(--text-secondary)]">
         <style>{`
+          .uc-footer {
+            padding-top: 48px !important;
+            padding-bottom: 48px !important;
+            box-sizing: border-box !important;
+          }
+
           .footer-content {
-            padding-top: 44px !important;
+            padding-top: 0 !important;
           }
 
           .uc-marketing-footer-grid {
@@ -552,20 +558,24 @@ export default function MarketingLayout() {
       <div className="sticky-cta-bar select-none">
         <style>{`
           .sticky-cta-bar {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
+            position: relative !important;
             background: #ffffff !important;
             border-top: 1px solid #e2e8f0 !important;
-            padding: 16px 40px !important;
-            min-height: 72px !important;
-            z-index: 100 !important;
+            padding: 20px 40px !important;
+            min-height: 80px !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            display: block !important;
+          }
+
+          .sticky-cta-container {
+            width: 100% !important;
+            max-width: 1600px !important;
+            margin: 0 auto !important;
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
-            box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.05) !important;
-            box-sizing: border-box !important;
+            gap: 24px !important;
           }
 
           /* Green dot */
@@ -644,11 +654,12 @@ export default function MarketingLayout() {
 
           @media (max-width: 768px) {
             .sticky-cta-bar {
+              padding: 20px !important;
+            }
+            .sticky-cta-container {
               display: flex !important;
               flex-direction: column !important;
               gap: 14px !important;
-              padding: 16px 20px !important;
-              min-height: auto !important;
               align-items: center !important;
             }
             .sticky-cta-text {
@@ -670,17 +681,19 @@ export default function MarketingLayout() {
             }
           }
         `}</style>
-        <div className="sticky-cta-left">
-          <span className="sticky-cta-status-dot animate-pulse" />
-          <span className="sticky-cta-text">UniConnect Operating System - Start boosting academic performance today.</span>
-        </div>
-        <div className="sticky-cta-right">
-          <Link to="/features" className="sticky-cta-btn-secondary">
-            Explore Features
-          </Link>
-          <Link to="/role-selection" className="sticky-cta-btn-primary">
-            Join UniConnect <ArrowRight className="w-4 h-4" />
-          </Link>
+        <div className="sticky-cta-container">
+          <div className="sticky-cta-left">
+            <span className="sticky-cta-status-dot animate-pulse" />
+            <span className="sticky-cta-text">UniConnect Operating System - Start boosting academic performance today.</span>
+          </div>
+          <div className="sticky-cta-right">
+            <Link to="/features" className="sticky-cta-btn-secondary">
+              Explore Features
+            </Link>
+            <Link to="/role-selection" className="sticky-cta-btn-primary">
+              Join UniConnect <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>

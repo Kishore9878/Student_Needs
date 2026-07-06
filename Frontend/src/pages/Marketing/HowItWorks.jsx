@@ -52,268 +52,677 @@ export default function HowItWorks() {
   const activeSteps = journeyMode === "student" ? studentJourneySteps : tutorJourneySteps;
 
   return (
-    <div className="w-full" style={{ paddingTop: "52px", paddingBottom: "72px" }}>
+    <div className="w-full bg-background" style={{ paddingTop: "56px", paddingBottom: "72px" }}>
+      <div className="hiw-page-wrapper px-5 md:px-8 lg:px-10">
+        <style>{`
+          .hiw-page-wrapper {
+            width: 100% !important;
+            max-width: 1500px !important;
+            margin: 0 auto !important;
+            box-sizing: border-box !important;
+          }
 
-      {/* PAGE HEADER */}
-      <div className="text-center mb-10" style={{ maxWidth: "760px", margin: "0 auto 40px" }}>
-        <span className="text-primary font-bold text-xs uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-          How It Works
-        </span>
-        <h1
-          className="mt-4 mb-4 text-foreground font-extrabold tracking-tight"
-          style={{ fontSize: "clamp(26px, 4vw, 46px)", lineHeight: 1.1 }}
-        >
-          Choose Your Visual Journey
-        </h1>
-        <p className="text-muted-foreground text-sm leading-relaxed" style={{ maxWidth: "600px", margin: "0 auto" }}>
-          UniConnect supports both students aiming for academic success and tutors looking to verify and teach classes.
-          Toggle between paths to see step details.
-        </p>
-      </div>
+          .hiw-header-container {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            margin-bottom: 40px !important;
+            gap: 12px !important;
+            box-sizing: border-box !important;
+          }
 
-      {/* Mode Toggle */}
-      <div className="flex justify-center mb-10 select-none">
-        <div className="flex bg-secondary p-1 rounded-[var(--radius-md)] border border-border/60">
-          <button
-            onClick={() => setJourneyMode("student")}
-            className={`px-8 py-2.5 rounded-[var(--radius-sm)] text-xs font-bold transition-all cursor-pointer ${journeyMode === "student" ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"}`}
+          .hiw-toggle-container {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 4px !important;
+            border-radius: 12px !important;
+            border: 1px solid var(--border-color, #e2e8f0) !important;
+            background-color: var(--secondary, #f1f5f9) !important;
+            margin-bottom: 40px !important;
+            box-sizing: border-box !important;
+          }
+
+          .hiw-toggle-btn {
+            padding: 10px 24px !important;
+            border-radius: 8px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
+            box-sizing: border-box !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+          }
+
+          .hiw-toggle-btn.active {
+            background-color: var(--primary, #3b82f6) !important;
+            color: #ffffff !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+          }
+
+          .hiw-toggle-btn.inactive {
+            background-color: transparent !important;
+            color: var(--text-secondary, #64748b) !important;
+          }
+
+          .hiw-toggle-btn.inactive:hover {
+            color: var(--text-primary, #0f172a) !important;
+          }
+
+          .hiw-grid-layout {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 48px !important;
+            align-items: start !important;
+            margin-bottom: 64px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+
+          @media (min-width: 1024px) {
+            .hiw-grid-layout {
+              grid-template-columns: 360px minmax(0, 1fr) !important;
+            }
+          }
+
+          .hiw-timeline-wrapper {
+            position: relative !important;
+            padding: 12px 16px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+          }
+
+          .hiw-timeline-line {
+            position: absolute !important;
+            left: 32px !important;
+            top: 28px !important;
+            bottom: 28px !important;
+            width: 2px !important;
+            background-color: var(--border-color, #e2e8f0) !important;
+            z-index: 1 !important;
+          }
+
+          .hiw-timeline-item {
+            position: relative !important;
+            display: flex !important;
+            align-items: start !important;
+            gap: 20px !important;
+            min-height: 88px !important;
+            cursor: pointer !important;
+            box-sizing: border-box !important;
+            z-index: 2 !important;
+            transition: opacity 0.2s ease !important;
+          }
+
+          .hiw-timeline-badge {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 9999px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            border: 2px solid var(--border-color, #e2e8f0) !important;
+            background-color: var(--card-bg, #ffffff) !important;
+            color: var(--text-secondary, #64748b) !important;
+            flex-shrink: 0 !important;
+            z-index: 3 !important;
+            transition: all 0.2s ease !important;
+          }
+
+          .hiw-timeline-item.active .hiw-timeline-badge {
+            background-color: var(--primary, #3b82f6) !important;
+            color: #ffffff !important;
+            border-color: var(--primary, #3b82f6) !important;
+          }
+
+          .hiw-timeline-title {
+            margin: 0 !important;
+            padding-top: 4px !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            line-height: 1.3 !important;
+            color: var(--text-primary, #0f172a) !important;
+            transition: color 0.2s ease !important;
+          }
+
+          .hiw-timeline-item.active .hiw-timeline-title {
+            color: var(--primary, #3b82f6) !important;
+          }
+
+          .hiw-detail-card {
+            padding: 32px !important;
+            border-radius: 16px !important;
+            border: 1px solid var(--border-color, #e2e8f0) !important;
+            background-color: var(--card-bg, #ffffff) !important;
+            box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05)) !important;
+            min-height: 320px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            box-sizing: border-box !important;
+          }
+
+          .hiw-detail-label {
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+            color: var(--primary, #3b82f6) !important;
+            margin-bottom: 12px !important;
+            display: inline-block !important;
+          }
+
+          .hiw-detail-title {
+            font-size: 30px !important;
+            font-weight: 800 !important;
+            line-height: 1.25 !important;
+            color: var(--text-primary, #0f172a) !important;
+            margin: 0 0 12px !important;
+          }
+
+          .hiw-detail-desc {
+            font-size: 16px !important;
+            line-height: 1.625 !important;
+            color: var(--text-secondary, #475569) !important;
+            max-width: 850px !important;
+            margin: 0 !important;
+          }
+
+          .hiw-detail-footer {
+            margin-top: auto !important;
+            padding-top: 20px !important;
+            border-top: 1px solid var(--border-color, #f1f5f9) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            font-size: 14px !important;
+            color: var(--text-secondary, #64748b) !important;
+            box-sizing: border-box !important;
+          }
+
+          .hiw-detail-status {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            font-weight: 600 !important;
+          }
+
+          .hiw-secondary-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+            align-items: start !important;
+            margin-top: 64px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+
+          @media (min-width: 768px) {
+            .hiw-secondary-grid {
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+              gap: 24px !important;
+            }
+          }
+
+          @media (min-width: 1200px) {
+            .hiw-secondary-grid {
+              grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+              gap: 32px !important;
+            }
+          }
+
+          .hiw-footer-card {
+            padding: 28px 30px !important;
+            border-radius: 16px !important;
+            border: 1px solid var(--border-color, #e2e8f0) !important;
+            background-color: var(--card-bg, #ffffff) !important;
+            box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05)) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+          }
+
+          /* Accordion FAQs styles */
+          .hiw-faq-row {
+            border: 1px solid var(--border-color, #e2e8f0) !important;
+            border-radius: 12px !important;
+            overflow: hidden !important;
+            background-color: var(--card-bg, #ffffff) !important;
+            margin-bottom: 12px !important;
+            width: 100% !important;
+          }
+          [data-theme="dark"] .hiw-faq-row {
+            background-color: rgba(30, 41, 59, 0.4) !important;
+            border-color: #334155 !important;
+          }
+          .hiw-faq-row:last-child {
+            margin-bottom: 0 !important;
+          }
+          
+          .hiw-faq-btn {
+            width: 100% !important;
+            min-height: 52px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 16px !important;
+            padding: 12px 20px !important;
+            text-align: left !important;
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            cursor: pointer !important;
+            overflow: visible !important;
+            box-sizing: border-box !important;
+            transition: background-color 0.2s ease !important;
+          }
+          .hiw-faq-btn:hover {
+            background-color: rgba(148, 163, 184, 0.08) !important;
+          }
+          [data-theme="dark"] .hiw-faq-btn:hover {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+          }
+          
+          .hiw-faq-question {
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            line-height: 24px !important;
+            color: #0f172a !important;
+            text-align: left !important;
+            flex: 1 !important;
+            min-width: 0 !important;
+            overflow: visible !important;
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: none !important;
+          }
+          [data-theme="dark"] .hiw-faq-question {
+            color: #f8fafc !important;
+          }
+          
+          .hiw-faq-chevron {
+            width: 20px !important;
+            height: 20px !important;
+            flex-shrink: 0 !important;
+            color: #64748b !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: none !important;
+          }
+
+          /* Testimonial styles */
+          .hiw-testimonial-card {
+            padding: 24px !important;
+            background-color: rgba(248, 250, 252, 0.4) !important;
+            border: 1px solid var(--border-color, #e2e8f0) !important;
+            border-radius: 12px !important;
+            min-height: 260px !important;
+            max-height: 320px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: start !important;
+            box-sizing: border-box !important;
+          }
+          [data-theme="dark"] .hiw-testimonial-card {
+            background-color: rgba(30, 41, 59, 0.4) !important;
+            border-color: #334155 !important;
+          }
+          
+          .hiw-testimonial-quote {
+            font-size: 16px !important;
+            font-weight: 400 !important;
+            line-height: 28px !important;
+            color: #475569 !important;
+            font-style: italic !important;
+            margin-bottom: 24px !important;
+            margin-top: 0 !important;
+            padding: 0 !important;
+          }
+          [data-theme="dark"] .hiw-testimonial-quote {
+            color: #cbd5e1 !important;
+          }
+          
+          .hiw-testimonial-author {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            margin-top: auto !important; /* using margin-top auto within flex-col keep it pushed cleanly below quote but strictly inside flex flow */
+          }
+          
+          .hiw-testimonial-avatar {
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 50% !important;
+            background-color: rgba(37, 99, 235, 0.15) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #2563eb !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            flex-shrink: 0 !important;
+          }
+          
+          .hiw-testimonial-info {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+          }
+          
+          .hiw-testimonial-name {
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            color: #0f172a !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+          }
+          [data-theme="dark"] .hiw-testimonial-name {
+            color: #f8fafc !important;
+          }
+          
+          .hiw-testimonial-company {
+            font-size: 14px !important;
+            color: #475569 !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+          }
+          [data-theme="dark"] .hiw-testimonial-company {
+            color: #94a3b8 !important;
+          }
+          
+          .hiw-testimonial-dots {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin-top: 16px !important;
+          }
+          
+          .hiw-testimonial-dot {
+            width: 10px !important;
+            height: 10px !important;
+            border-radius: 50% !important;
+            transition: all 0.2s ease !important;
+            border: none !important;
+            padding: 0 !important;
+            cursor: pointer !important;
+          }
+        `}</style>
+
+        {/* PAGE HEADER */}
+        <div className="hiw-header-container">
+          <span className="text-primary font-bold text-xs uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+            How It Works
+          </span>
+          <h1
+            className="text-foreground font-extrabold tracking-tight"
+            style={{ fontSize: "clamp(28px, 4vw, 46px)", lineHeight: 1.1 }}
           >
-            STUDENT PATHWAY
-          </button>
-          <button
-            onClick={() => setJourneyMode("tutor")}
-            className={`px-8 py-2.5 rounded-[var(--radius-sm)] text-xs font-bold transition-all cursor-pointer ${journeyMode === "tutor" ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"}`}
-          >
-            TUTOR PATHWAY
-          </button>
-        </div>
-      </div>
-
-      {/* Two-column layout: timeline list + detail panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16 uc-modern-container">
-
-        {/* LEFT: step index */}
-        <div className="lg:col-span-4 timeline-items relative pl-8 border-l border-border/80 flex flex-col gap-5">
-          {activeSteps.map((item, index) => {
-            const isActive = index === activeStep;
-            return (
-              <div
-                key={index}
-                onClick={() => setActiveStep(index)}
-                className={`timeline-item relative cursor-pointer group select-none transition-all ${isActive ? "opacity-100" : "opacity-55 hover:opacity-80"}`}
-              >
-                <div className={`timeline-badge border-2 ${isActive ? "bg-primary text-white border-primary" : "bg-card text-muted-foreground border-border group-hover:border-primary/50"}`}>
-                  {item.step}
-                </div>
-                <h4 className={`text-sm font-bold leading-snug ${isActive ? "text-primary" : "text-foreground group-hover:text-primary"}`}>
-                  {item.title}
-                </h4>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* RIGHT: detail panel */}
-        <div className="lg:col-span-8 p-7 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] min-h-[220px] flex flex-col justify-between">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeStep + journeyMode}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
-              <span className="text-[10px] text-primary font-bold uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded">
-                Stage {activeSteps[activeStep]?.step} Detail
-              </span>
-              <h3 className="text-2xl font-bold text-foreground">{activeSteps[activeStep]?.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {activeSteps[activeStep]?.desc}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="border-t border-border/60 pt-4 mt-6 flex justify-between items-center text-[10px] text-muted-foreground select-none">
-            <span>Click stages on the left to explore the journey</span>
-            <span className="flex items-center gap-1"><Check className="w-3.5 h-3.5 text-emerald-500" /> Fully Vetted</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── SECONDARY GRID: 4 balanced columns ── */}
-      <div
-        className="grid gap-8"
-        style={{
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          maxWidth: "1400px",
-          margin: "0 auto",
-          padding: "0 24px",
-        }}
-      >
-
-        {/* Column 1: About UniConnect */}
-        <div className="p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] flex flex-col gap-4">
-          <h2 className="text-base font-extrabold text-foreground tracking-tight flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary rounded-full inline-block" />
-            About UniConnect
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            UniConnect is a unified academic platform built for modern university students and educators. It consolidates attendance management, tutor booking, expense tracking, and alumni networking into a single, cohesive experience.
+            Choose Your Visual Journey
+          </h1>
+          <p className="text-muted-foreground text-sm leading-relaxed max-w-[760px] mx-auto">
+            UniConnect supports both students aiming for academic success and tutors looking to verify and teach classes.
+            Toggle between paths to see step details.
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Whether you are tracking attendance for 12 subjects, managing a monthly budget, or seeking industry referrals from verified alumni at top companies — UniConnect handles it all in one place.
-          </p>
-          <ul className="space-y-2 mt-2">
-            {["Real-time attendance alerts", "Verified tutor profiles", "AI-powered expense prediction", "Alumni referral pipeline"].map((point) => (
-              <li key={point} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                {point}
-              </li>
-            ))}
-          </ul>
         </div>
 
-        {/* Column 2: FAQs */}
-        <div className="p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] flex flex-col gap-3">
-          <h2 className="text-base font-extrabold text-foreground tracking-tight flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary rounded-full inline-block" />
-            FAQs
-          </h2>
-          <div className="flex flex-col gap-2">
-            {faqs.map((faq, i) => (
-              <div key={i} className="border border-border/60 rounded-[var(--radius-md)] overflow-hidden">
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex justify-between items-start gap-3 px-4 py-3 text-left text-sm font-semibold text-foreground hover:bg-secondary/50 transition-colors"
-                >
-                  <span className="leading-snug">{faq.q}</span>
-                  {openFaq === i
-                    ? <ChevronUp className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                  }
-                </button>
-                <AnimatePresence>
-                  {openFaq === i && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="px-4 pb-4 text-xs text-muted-foreground leading-relaxed border-t border-border/40 pt-3">
-                        {faq.a}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Column 3: Success Stories */}
-        <div className="p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] flex flex-col gap-4">
-          <h2 className="text-base font-extrabold text-foreground tracking-tight flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary rounded-full inline-block" />
-            Success Stories
-          </h2>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={storyIndex}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="flex flex-col gap-3 flex-1"
-            >
-              <div className="flex-1 p-4 bg-secondary/40 rounded-[var(--radius-md)] border border-border/50">
-                <p className="text-sm text-muted-foreground leading-relaxed italic">
-                  "{successStories[storyIndex].text}"
-                </p>
-                <div className="mt-4 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs shrink-0">
-                    {successStories[storyIndex].name[0]}
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">{successStories[storyIndex].name}</p>
-                    <p className="text-[10px] text-muted-foreground">{successStories[storyIndex].company}</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-          <div className="flex gap-2 items-center justify-center mt-2">
-            {successStories.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setStoryIndex(i)}
-                className={`w-2 h-2 rounded-full transition-all ${i === storyIndex ? "bg-primary scale-125" : "bg-border hover:bg-primary/40"}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Column 4: Quick Contact */}
-        <div className="p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] flex flex-col gap-4">
-          <h2 className="text-base font-extrabold text-foreground tracking-tight flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary rounded-full inline-block" />
-            Quick Contact
-          </h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Have a question about UniConnect? Send us a message and our team will get back to you within 24 hours.
-          </p>
-          <form
-            className="flex flex-col gap-3 flex-1"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setContactForm({ name: "", email: "", message: "" });
-            }}
-          >
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Your Name</label>
-              <input
-                type="text"
-                value={contactForm.name}
-                onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                placeholder="e.g. Arjun Mehta"
-                className="premium-input h-9 text-sm text-foreground w-full"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Email Address</label>
-              <input
-                type="email"
-                value={contactForm.email}
-                onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                placeholder="you@university.edu"
-                className="premium-input h-9 text-sm text-foreground w-full"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-1 flex-1">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Message</label>
-              <textarea
-                value={contactForm.message}
-                onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                placeholder="Describe your question or feedback..."
-                rows={4}
-                className="premium-input text-sm text-foreground w-full resize-none py-2"
-                required
-              />
-            </div>
+        {/* Mode Toggle */}
+        <div className="flex justify-center select-none">
+          <div className="hiw-toggle-container">
             <button
-              type="submit"
-              className="btn btn-primary bg-primary text-white px-4 py-2.5 rounded-[var(--radius-sm)] hover:bg-primary-hover text-sm font-bold mt-1 transition-all"
+              onClick={() => setJourneyMode("student")}
+              className={`hiw-toggle-btn ${journeyMode === "student" ? "active" : "inactive"}`}
             >
-              Send Message
+              Student Pathway
             </button>
-          </form>
+            <button
+              onClick={() => setJourneyMode("tutor")}
+              className={`hiw-toggle-btn ${journeyMode === "tutor" ? "active" : "inactive"}`}
+            >
+              Tutor Pathway
+            </button>
+          </div>
         </div>
 
-      </div>
+        {/* Two-column layout: timeline list + detail panel */}
+        <div className="hiw-grid-layout">
+
+          {/* LEFT: step index */}
+          <div className="hiw-timeline-wrapper">
+            <div className="hiw-timeline-line" />
+            {activeSteps.map((item, index) => {
+              const isActive = index === activeStep;
+              return (
+                <div
+                  key={index}
+                  onClick={() => setActiveStep(index)}
+                  className={`hiw-timeline-item ${isActive ? "active" : "opacity-60 hover:opacity-90"}`}
+                >
+                  <div className="hiw-timeline-badge">
+                    {item.step}
+                  </div>
+                  <h4 className="hiw-timeline-title">
+                    {item.title}
+                  </h4>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* RIGHT: detail panel */}
+          <div className="hiw-detail-card">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeStep + journeyMode}
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <span className="hiw-detail-label">
+                  Stage {activeSteps[activeStep]?.step} Detail
+                </span>
+                <h3 className="hiw-detail-title">{activeSteps[activeStep]?.title}</h3>
+                <p className="hiw-detail-desc">
+                  {activeSteps[activeStep]?.desc}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="hiw-detail-footer select-none">
+              <span>Click stages on the left to explore the journey</span>
+              <span className="hiw-detail-status">
+                <Check className="w-3.5 h-3.5 text-emerald-500" /> Fully Vetted
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── SECONDARY GRID: 4 balanced columns ── */}
+        <div className="hiw-secondary-grid">
+
+          {/* Column 1: About UniConnect */}
+          <div className="hiw-footer-card">
+            <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-3 mb-6">
+              <span className="w-1 h-5 bg-primary rounded-full inline-block" />
+              About UniConnect
+            </h2>
+            <div className="flex flex-col gap-5">
+              <p className="text-base text-muted-foreground leading-relaxed">
+                UniConnect is a unified academic platform built for modern university students and educators. It consolidates attendance management, tutor booking, expense tracking, and alumni networking into a single, cohesive experience.
+              </p>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Whether you are tracking attendance for 12 subjects, managing a monthly budget, or seeking industry referrals from verified alumni at top companies — UniConnect handles it all in one place.
+              </p>
+            </div>
+            <ul className="space-y-3 mt-6">
+              {["Real-time attendance alerts", "Verified tutor profiles", "AI-powered expense prediction", "Alumni referral pipeline"].map((point) => (
+                <li key={point} className="flex items-center gap-3 text-base text-muted-foreground">
+                  <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 2: FAQs */}
+          <div className="hiw-footer-card">
+            <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-3 mb-6">
+              <span className="w-1 h-5 bg-primary rounded-full inline-block" />
+              FAQs
+            </h2>
+            <div className="flex flex-col">
+              {faqs.map((faq, i) => (
+                <div key={i} className="hiw-faq-row">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="hiw-faq-btn"
+                    data-open={openFaq === i ? "true" : "false"}
+                    type="button"
+                  >
+                    <span className="hiw-faq-question">
+                      {faq.q}
+                    </span>
+                    {openFaq === i
+                      ? <ChevronUp className="hiw-faq-chevron" />
+                      : <ChevronDown className="hiw-faq-chevron" />
+                    }
+                  </button>
+                  <AnimatePresence>
+                    {openFaq === i && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-5 pb-4 text-xs text-muted-foreground leading-relaxed border-t border-border/20 pt-3 bg-secondary/10 font-normal">
+                          {faq.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Column 3: Success Stories */}
+          <div className="hiw-footer-card">
+            <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-3 mb-6">
+              <span className="w-1 h-5 bg-primary rounded-full inline-block" />
+              Success Stories
+            </h2>
+            <div className="flex flex-col">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={storyIndex}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  className="flex flex-col"
+                >
+                  <div className="hiw-testimonial-card">
+                    <p className="hiw-testimonial-quote">
+                      "{successStories[storyIndex].text}"
+                    </p>
+                    <div className="hiw-testimonial-author">
+                      <div className="hiw-testimonial-avatar">
+                        {successStories[storyIndex].name[0]}
+                      </div>
+                      <div className="hiw-testimonial-info">
+                        <p className="hiw-testimonial-name">{successStories[storyIndex].name}</p>
+                        <p className="hiw-testimonial-company">{successStories[storyIndex].company}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+              <div className="hiw-testimonial-dots">
+                {successStories.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setStoryIndex(i)}
+                    className={`hiw-testimonial-dot ${
+                      i === storyIndex ? "bg-primary" : "bg-border hover:bg-primary/40"
+                    }`}
+                    type="button"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Column 4: Quick Contact */}
+          <div className="hiw-footer-card">
+            <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-3 mb-6">
+              <span className="w-1 h-5 bg-primary rounded-full inline-block" />
+              Quick Contact
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+              Have a question about UniConnect? Send us a message and our team will get back to you within 24 hours.
+            </p>
+            <form
+              className="flex flex-col gap-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setContactForm({ name: "", email: "", message: "" });
+              }}
+            >
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-foreground">Your Name</label>
+                <input
+                  type="text"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                  placeholder="e.g. Arjun Mehta"
+                  className="premium-input text-base text-foreground w-full px-4 py-3 rounded-xl border border-border"
+                  style={{ height: "52px" }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-foreground">Email Address</label>
+                <input
+                  type="email"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                  placeholder="you@university.edu"
+                  className="premium-input text-base text-foreground w-full px-4 py-3 rounded-xl border border-border"
+                  style={{ height: "52px" }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-foreground">Message</label>
+                <textarea
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                  placeholder="Describe your question or feedback..."
+                  className="premium-input text-base text-foreground w-full resize-none p-4 rounded-xl border border-border min-h-[110px]"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="btn btn-primary bg-primary text-white px-4 h-12 rounded-xl hover:bg-primary-hover text-sm font-bold mt-2 transition-all"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
+
+        </div>
     </div>
+  </div>
   );
 }
