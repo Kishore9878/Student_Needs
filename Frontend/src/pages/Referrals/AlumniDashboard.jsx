@@ -807,24 +807,24 @@ export function AlumniDashboard() {
         .alumni-dashboard-action-btn {
           min-width: 170px !important;
           height: 52px !important;
-          padding-left: 22px !important;
-          padding-right: 22px !important;
-          display: flex !important;
+          padding-left: 24px !important;
+          padding-right: 24px !important;
+          display: inline-flex !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: 12px !important;
+          gap: 10px !important;
           white-space: nowrap !important;
           box-sizing: border-box !important;
           border-radius: 12px !important;
           background-color: var(--card-bg) !important;
           border: 1px solid var(--border-color) !important;
-          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important;
           color: var(--text-primary) !important;
           font-size: 14px !important;
           font-weight: 600 !important;
           transition: all 0.2s ease-in-out !important;
           cursor: pointer !important;
-          width: 100% !important;
+          width: auto !important;
         }
 
         .alumni-dashboard-action-btn:hover {
@@ -834,7 +834,7 @@ export function AlumniDashboard() {
         }
       `}</style>
       <div 
-        className="flex flex-col md:flex-row items-start justify-between gap-8"
+        className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8"
         style={{
           width: '100%',
           boxSizing: 'border-box',
@@ -848,7 +848,7 @@ export function AlumniDashboard() {
             {user ? `Welcome back, ${alumniName}!` : 'Create jobs and provide signed referrals to verified students'}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row md:flex-col gap-4 w-full md:w-auto flex-shrink-0 items-stretch md:items-end justify-start">
+        <div className="flex flex-row items-center justify-end gap-4 flex-nowrap w-full md:w-auto flex-shrink-0">
           <PremiumButton
             onClick={() => setShowCreateJob(true)}
             className="alumni-dashboard-action-btn animate-fade-in"
