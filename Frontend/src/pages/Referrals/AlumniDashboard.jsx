@@ -857,35 +857,55 @@ export function AlumniDashboard() {
                   }}
                   onActionClick={handleEditOpportunityClick}
                   actionLabel="Edit"
+                  emptyTitle={activeTab === 'jobs' ? 'No Jobs Found' : 'No Referrals Found'}
+                  emptyDescription={activeTab === 'jobs' ? 'There are currently no job postings to display.' : 'There are currently no referral postings to display.'}
+                  emptyIcon={activeTab === 'jobs' ? Briefcase : Star}
                 />
               </div>
-              <div className="bg-card rounded-[var(--radius-md)] border border-border/50">
+              <div className="bg-card rounded-[var(--radius-md)] border border-border/50 flex flex-col justify-center">
                 {selectedBackendOpportunity ? (
-                  <div className="p-4 sm:p-6">
+                  <div className="p-4 sm:p-6 h-full flex flex-col">
                     <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 truncate">
                       Applications for "{selectedBackendOpportunity.jobTitle}"
                     </h3>
                     {!Array.isArray(selectedOpportunityApplications) || selectedOpportunityApplications.length === 0 ? (
-                      <div className="text-center py-6 sm:py-8 text-muted-foreground">
-                        <Briefcase className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 opacity-50" />
-                        <p className="text-sm sm:text-base">No applications yet</p>
+                      <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 min-h-[300px] rounded-xl border border-dashed border-border/60 bg-transparent">
+                        <div className="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm shrink-0">
+                          <Users className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-foreground mt-4 mb-2 tracking-tight whitespace-nowrap">
+                          No Applications Yet
+                        </h3>
+                        <p className="w-full text-sm text-muted-foreground max-w-sm leading-relaxed mx-auto">
+                          Candidates who apply for this opportunity will show up here.
+                        </p>
                       </div>
                     ) : (
                       <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
-                    <CandidateTable
-                      candidates={selectedOpportunityApplications}
-                      onActionClick={(app) => {
-                        loadStudentProfile(app.student?._id || app._id, app);
-                      }}
-                      actionLabel="Review"
-                      emptyMessage="No applications yet"
-                    />
+                        <CandidateTable
+                          candidates={selectedOpportunityApplications}
+                          onActionClick={(app) => {
+                            loadStudentProfile(app.student?._id || app._id, app);
+                          }}
+                          actionLabel="Review"
+                          emptyMessage="No applications yet"
+                        />
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-full min-h-[200px] sm:min-h-[300px] text-sm sm:text-base text-muted-foreground px-4">
-                    <p className="text-center">Select an opportunity to view applications</p>
+                  <div className="p-4 sm:p-6 h-full w-full flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center text-center p-6 w-full min-h-[300px] rounded-xl border border-dashed border-border/60 bg-transparent">
+                      <div className="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm shrink-0">
+                        <FileText className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground mt-4 mb-2 tracking-tight whitespace-nowrap">
+                        Select an Opportunity
+                      </h3>
+                      <p className="w-full text-sm text-muted-foreground max-w-sm leading-relaxed mx-auto">
+                        Select a job or referral opportunity from the list to view its pending applications and candidate reviews.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
