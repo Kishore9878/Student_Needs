@@ -307,13 +307,15 @@ export default function AlumniProfileView() {
     ? null
     : (imagePreviewUrl || getAlumniImageUrl(alumniProfile?.image));
 
+  console.log("ALUMNI PROFILE VIEW ACTIVE");
+
   return (
-    <div className="space-y-6">
+    <div className="px-8 pt-7 pb-8 flex flex-col gap-6" data-profile-layout-debug="active">
       {/* Header and Toggle Edit Mode */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/20 pb-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Alumni Profile</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
+      <div className="flex justify-between items-start border-b border-border/20 pb-4">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-bold text-foreground mb-1.5">Alumni Profile</h1>
+          <p className="text-xs text-muted-foreground">
             Last Updated: {formatLastUpdated(alumniProfile?.updatedAt)}
           </p>
         </div>
@@ -355,44 +357,42 @@ export default function AlumniProfileView() {
       </div>
 
       {/* Live Completeness bar */}
-      <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)]">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+      <Card className="bg-card border border-border/50 shadow-sm overflow-hidden" style={{ padding: '24px 28px' }}>
+        <div className="flex flex-col gap-4 w-full min-w-0 box-border">
+          <div className="flex items-center gap-4">
+            <div className="p-2 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
               <TrendingUp className="w-5 h-5 text-primary" />
-              <div>
-                <CardTitle className="text-base font-bold">Profile Completeness</CardTitle>
-                <CardDescription className="text-xs">
-                  {liveCompleteness}% Complete
-                </CardDescription>
-              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-base font-bold">Profile Completeness</CardTitle>
+              <span className="text-xs font-semibold text-primary">
+                {liveCompleteness}% Complete
+              </span>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="w-full bg-muted rounded-full h-2.5">
+          <div className="w-full bg-muted rounded-full h-3">
             <div
-              className="bg-primary h-2.5 rounded-full transition-all duration-300"
+              className="bg-primary h-3 rounded-full transition-all duration-300"
               style={{ width: `${liveCompleteness}%` }}
             />
           </div>
           {liveMissingFields.length > 0 && (
-            <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-[var(--radius-sm)] border border-border/20">
-              <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+            <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
+              <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
               <div>
                 <span className="font-semibold text-foreground">Missing items:</span>{" "}
                 {liveMissingFields.join(", ")}
               </div>
             </div>
           )}
-        </CardContent>
+        </div>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,0.9fr)_minmax(0,2.1fr)] gap-6 items-stretch">
         {/* Left column: Profile Photo & Social Links */}
-        <div className="space-y-6 lg:col-span-1">
-          <div className="glass-panel p-6 flex flex-col items-center text-center">
-            <div className="relative group w-32 h-32 rounded-[var(--radius-lg)] overflow-hidden border-4 border-background bg-muted flex items-center justify-center shrink-0 shadow-[var(--shadow-md)]">
+        <div className="flex flex-col gap-4">
+          <Card className="bg-card border border-border/50 shadow-sm flex flex-col items-center gap-4 justify-center" style={{ padding: '24px 28px' }}>
+            <div className="relative group w-32 h-32 rounded-[var(--radius-lg)] overflow-hidden border-4 border-background bg-muted flex items-center justify-center shrink-0 shadow-md">
               {displayImageSrc ? (
                 <img
                   src={displayImageSrc}
@@ -419,52 +419,59 @@ export default function AlumniProfileView() {
               )}
             </div>
 
-            <h3 className="text-xl font-bold text-foreground mt-4">{profileForm.firstName} {profileForm.lastName}</h3>
-            <p className="text-muted-foreground text-sm flex items-center gap-1.5 justify-center mt-1">
-              <Briefcase className="w-4 h-4 text-primary" />
-              {profileForm.jobTitle || 'No Title'} at {profileForm.company || 'No Company'}
-            </p>
+            <div className="flex flex-col items-center gap-2">
+              <h3 className="text-xl font-bold text-foreground">{profileForm.firstName} {profileForm.lastName}</h3>
+              <p className="text-muted-foreground text-sm flex items-center gap-2 justify-center">
+                <Briefcase className="w-4 h-4 text-primary shrink-0" />
+                <span>{profileForm.jobTitle || 'No Title'} at {profileForm.company || 'No Company'}</span>
+              </p>
+            </div>
 
             {isEditing && displayImageSrc && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleRemovePendingImage}
-                className="text-rose-400 border-rose-500/20 hover:bg-rose-950/20 w-fit mt-3"
+                className="text-rose-400 border-rose-500/20 hover:bg-rose-950/20 w-fit"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Remove Photo
               </Button>
             )}
-          </div>
+          </Card>
 
           {/* Social Links card */}
-          <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)]">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-bold">Social Connections</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <Card className="bg-card border border-border/50 shadow-sm flex flex-col" style={{ padding: '24px 28px' }}>
+            <h3 className="text-base font-bold text-foreground" style={{ marginBottom: '20px' }}>Social Connections</h3>
+            <div className="flex flex-col" style={{ gap: '14px' }}>
               {/* LinkedIn */}
               {!isEditing ? (
                 alumniProfile?.linkedinUrl ? (
-                  <a href={alumniProfile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors py-2 px-3 rounded-[var(--radius-sm)] hover:bg-muted/30">
-                    <Linkedin className="w-5 h-5 text-[var(--primary)]" />
+                  <a href={alumniProfile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center text-muted-foreground hover:text-primary transition-colors py-1.5" style={{ gap: '14px' }}>
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                      <Linkedin className="w-5 h-5 text-primary" />
+                    </div>
                     <span className="text-sm truncate">{alumniProfile.linkedinUrl}</span>
                   </a>
                 ) : (
-                  <div className="flex items-center gap-3 text-muted-foreground/50 py-2 px-3">
-                    <Linkedin className="w-5 h-5" />
-                    <span className="text-sm italic">No LinkedIn linked</span>
+                  <div className="flex items-center text-muted-foreground/50 py-1.5" style={{ gap: '14px' }}>
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                      <Linkedin className="w-5 h-5 text-muted-foreground/40" />
+                    </div>
+                    <span className="text-sm">No LinkedIn linked</span>
                   </div>
                 )
               ) : (
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-muted-foreground">LinkedIn URL</Label>
+                <div className="flex items-center py-1" style={{ gap: '14px' }}>
+                  <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                    <Linkedin className="w-5 h-5 text-muted-foreground" />
+                  </div>
                   <Input
+                    type="url"
+                    placeholder="LinkedIn Profile URL"
                     value={profileForm.linkedinUrl}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, linkedinUrl: e.target.value }))}
-                    placeholder="https://linkedin.com/in/username"
-                    className="bg-muted/50 border-border/50 text-foreground text-xs h-9"
+                    onChange={(e) => setProfileForm({ ...profileForm, linkedinUrl: e.target.value })}
+                    className="h-9 text-sm"
                   />
                 </div>
               )}
@@ -472,82 +479,96 @@ export default function AlumniProfileView() {
               {/* GitHub */}
               {!isEditing ? (
                 alumniProfile?.githubUrl ? (
-                  <a href={alumniProfile.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors py-2 px-3 rounded-[var(--radius-sm)] hover:bg-muted/30">
-                    <Github className="w-5 h-5 text-foreground" />
+                  <a href={alumniProfile.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center text-muted-foreground hover:text-primary transition-colors py-1.5" style={{ gap: '14px' }}>
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                      <Github className="w-5 h-5 text-foreground" />
+                    </div>
                     <span className="text-sm truncate">{alumniProfile.githubUrl}</span>
                   </a>
                 ) : (
-                  <div className="flex items-center gap-3 text-muted-foreground/50 py-2 px-3">
-                    <Github className="w-5 h-5" />
-                    <span className="text-sm italic">No GitHub linked</span>
+                  <div className="flex items-center text-muted-foreground/50 py-1.5" style={{ gap: '14px' }}>
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                      <Github className="w-5 h-5 text-muted-foreground/40" />
+                    </div>
+                    <span className="text-sm">No GitHub linked</span>
                   </div>
                 )
               ) : (
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-muted-foreground">GitHub URL</Label>
+                <div className="flex items-center py-1" style={{ gap: '14px' }}>
+                  <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                    <Github className="w-5 h-5 text-muted-foreground" />
+                  </div>
                   <Input
+                    type="url"
+                    placeholder="GitHub Profile URL"
                     value={profileForm.githubUrl}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, githubUrl: e.target.value }))}
-                    placeholder="https://github.com/username"
-                    className="bg-muted/50 border-border/50 text-foreground text-xs h-9"
+                    onChange={(e) => setProfileForm({ ...profileForm, githubUrl: e.target.value })}
+                    className="h-9 text-sm"
                   />
                 </div>
               )}
 
-              {/* Portfolio */}
+              {/* Portfolio / Globe */}
               {!isEditing ? (
                 alumniProfile?.portfolioUrl ? (
-                  <a href={alumniProfile.portfolioUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors py-2 px-3 rounded-[var(--radius-sm)] hover:bg-muted/30">
-                    <Globe className="w-5 h-5 text-emerald-400" />
+                  <a href={alumniProfile.portfolioUrl} target="_blank" rel="noopener noreferrer" className="flex items-center text-muted-foreground hover:text-primary transition-colors py-1.5" style={{ gap: '14px' }}>
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                      <Globe className="w-5 h-5 text-emerald-400" />
+                    </div>
                     <span className="text-sm truncate">{alumniProfile.portfolioUrl}</span>
                   </a>
                 ) : (
-                  <div className="flex items-center gap-3 text-muted-foreground/50 py-2 px-3">
-                    <Globe className="w-5 h-5" />
-                    <span className="text-sm italic">No Portfolio linked</span>
+                  <div className="flex items-center text-muted-foreground/50 py-1.5" style={{ gap: '14px' }}>
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                      <Globe className="w-5 h-5 text-muted-foreground/40" />
+                    </div>
+                    <span className="text-sm">No Portfolio linked</span>
                   </div>
                 )
               ) : (
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-muted-foreground">Portfolio URL</Label>
+                <div className="flex items-center py-1" style={{ gap: '14px' }}>
+                  <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                    <Globe className="w-5 h-5 text-muted-foreground" />
+                  </div>
                   <Input
+                    type="url"
+                    placeholder="Portfolio URL"
                     value={profileForm.portfolioUrl}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, portfolioUrl: e.target.value }))}
-                    placeholder="https://portfolio.com"
-                    className="bg-muted/50 border-border/50 text-foreground text-xs h-9"
+                    onChange={(e) => setProfileForm({ ...profileForm, portfolioUrl: e.target.value })}
+                    className="h-9 text-sm"
                   />
                 </div>
               )}
-            </CardContent>
+            </div>
           </Card>
         </div>
 
         {/* Right column: Form Fields details */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)] p-6 space-y-6">
-            <h3 className="text-lg font-bold text-foreground border-b border-border/20 pb-2">Professional Details</h3>
+        <div className="h-full flex flex-col">
+          <Card className="bg-card border border-border/50 shadow-sm h-full flex flex-col justify-start" style={{ padding: '28px 32px' }}>
+            <h3 className="text-lg font-bold text-foreground" style={{ marginBottom: '28px' }}>Professional Details</h3>
 
             {!isEditing ? (
               /* View mode profile fields */
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2" style={{ columnGap: '64px', rowGap: '40px' }}>
                 <div>
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-0.5">Company</h4>
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Company</h4>
                   <p className="text-foreground font-medium">{alumniProfile?.company || 'Not Specified'}</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-0.5">Job Title</h4>
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Job Title</h4>
                   <p className="text-foreground font-medium">{alumniProfile?.jobTitle || 'Not Specified'}</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-0.5">Experience</h4>
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Experience</h4>
                   <p className="text-foreground font-medium">{alumniProfile?.yearsOfExperience || 0} Years</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-0.5">Referral Preferences</h4>
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Referral Preferences</h4>
                   <p className="text-foreground font-medium">{alumniProfile?.referralPreferences || 'None set'}</p>
                 </div>
 
-                <div className="md:col-span-2">
+                <div className="col-span-2">
                   <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Skills / Expertise</h4>
                   <div className="flex flex-wrap gap-2">
                     {alumniProfile?.skills && alumniProfile.skills.length > 0 ? (
@@ -563,22 +584,22 @@ export default function AlumniProfileView() {
                 </div>
 
                 {alumniProfile?.hiringInterests && (
-                  <div className="md:col-span-2">
-                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Hiring Interests</h4>
+                  <div className="col-span-2">
+                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Hiring Interests</h4>
                     <p className="text-foreground leading-relaxed text-sm whitespace-pre-line bg-muted/10 p-3 rounded-[var(--radius-md)] border border-border/30">{alumniProfile.hiringInterests}</p>
                   </div>
                 )}
 
                 {alumniProfile?.bio && (
-                  <div className="md:col-span-2">
-                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Bio</h4>
+                  <div className="col-span-2">
+                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Bio</h4>
                     <p className="text-foreground leading-relaxed text-sm whitespace-pre-line bg-muted/10 p-3 rounded-[var(--radius-md)] border border-border/30">{alumniProfile.bio}</p>
                   </div>
                 )}
 
                 {alumniProfile?.careerJourney && (
-                  <div className="md:col-span-2">
-                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Career Journey</h4>
+                  <div className="col-span-2">
+                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Career Journey</h4>
                     <p className="text-foreground leading-relaxed text-sm whitespace-pre-line bg-muted/10 p-3 rounded-[var(--radius-md)] border border-border/30">{alumniProfile.careerJourney}</p>
                   </div>
                 )}

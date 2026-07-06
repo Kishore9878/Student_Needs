@@ -1,6 +1,5 @@
 import React from 'react';
 import { cn } from '@/lib/Referrals/utils.js';
-import { ChevronRight } from 'lucide-react';
 
 /**
  * Tab navigation for the Alumni Dashboard.
@@ -18,7 +17,10 @@ export function AlumniTabNavigation({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl mt-5 mb-6 px-6 shadow-sm flex items-center justify-between relative overflow-hidden">
+    <div 
+      className="w-full border rounded-lg mt-5 mb-6 shadow-sm flex items-center justify-between relative overflow-hidden"
+      style={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0' }}
+    >
       <div className="flex items-center flex-1 overflow-x-auto no-scrollbar">
         {tabs.map((tab, idx) => {
           const isActive = activeTab === tab.id;
@@ -26,27 +28,31 @@ export function AlumniTabNavigation({ activeTab, setActiveTab }) {
             <React.Fragment key={tab.id}>
               <button
                 onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  'relative py-4 px-4 text-sm sm:text-base font-semibold transition-colors duration-200 focus:outline-none select-none cursor-pointer',
-                  isActive
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                )}
+                className="relative flex-1 text-center text-sm sm:text-base font-semibold transition-all duration-200 focus:outline-none select-none cursor-pointer hover:bg-slate-50"
+                style={{ 
+                  color: isActive ? '#2563eb' : '#475569',
+                  backgroundColor: '#ffffff',
+                  paddingTop: '20px',
+                  paddingBottom: '20px'
+                }}
               >
                 <span>{tab.label}</span>
                 {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-blue-600 dark:bg-blue-500 rounded-t-md" />
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-[3px] rounded-t-sm" 
+                    style={{ backgroundColor: '#2563eb' }}
+                  />
                 )}
               </button>
               {idx < tabs.length - 1 && (
-                <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 mx-2 flex-shrink-0" />
+                <div 
+                  className="h-6 w-px flex-shrink-0" 
+                  style={{ backgroundColor: '#e2e8f0' }}
+                />
               )}
             </React.Fragment>
           );
         })}
-      </div>
-      <div className="flex items-center pl-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-350 transition-colors">
-        <ChevronRight className="w-5 h-5" />
       </div>
     </div>
   );

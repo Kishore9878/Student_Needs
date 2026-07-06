@@ -269,9 +269,105 @@ function AccountSetting({ mode }) {
 
   return (
     <main className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in-up">
+      <style>{`
+        .settings-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 36px;
+          align-items: stretch;
+          width: 100%;
+        }
+        @media (min-width: 1024px) {
+          .settings-grid {
+            grid-template-columns: minmax(280px, 0.75fr) minmax(0, 2.25fr);
+          }
+        }
+        .settings-sidebar {
+          align-self: stretch;
+          height: 100%;
+          min-height: 570px;
+          border-radius: 18px;
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+          overflow: hidden;
+          padding-top: 16px;
+          padding-bottom: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .settings-nav-btn {
+          height: 70px;
+          display: flex;
+          align-items: center;
+          padding-left: 24px;
+          padding-right: 24px;
+          gap: 18px;
+          width: calc(100% - 24px);
+          margin: 0 12px;
+          box-sizing: border-box;
+          position: relative;
+          transition: all 0.2s ease;
+          border-radius: 8px;
+          color: var(--muted-foreground);
+          font-weight: 500;
+          text-align: left;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+        .settings-nav-btn:hover {
+          background: var(--secondary);
+          color: var(--foreground);
+        }
+        .settings-nav-btn.active {
+          background: rgba(59, 130, 246, 0.08);
+          color: #3b82f6;
+          font-weight: 600;
+        }
+        .settings-nav-btn.active::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 10px;
+          bottom: 10px;
+          width: 3px;
+          border-radius: 0 3px 3px 0;
+          background: #3b82f6;
+        }
+        .nav-icon {
+          width: 26px;
+          height: 26px;
+          flex-shrink: 0;
+        }
+        .notification-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+          padding: 20px 24px;
+          min-height: 88px;
+          width: 100%;
+          box-sizing: border-box;
+          background: var(--surface-secondary);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          transition: background-color 150ms ease, border-color 150ms ease;
+          cursor: pointer;
+        }
+        .notification-row:hover {
+          background: var(--bg-secondary);
+          border-color: var(--accent);
+        }
+        .dark .notification-row:hover,
+        [data-theme="dark"] .notification-row:hover {
+          background: var(--card-hover-bg);
+        }
+      `}</style>
+
+
       {/* Title */}
       {mode !== "expenses-only" && (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px" }}>
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold font-sans text-foreground tracking-tight flex items-center gap-3">
             <span className="text-[var(--primary)]">Settings Panel</span>
           </h2>
@@ -281,56 +377,40 @@ function AccountSetting({ mode }) {
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="settings-grid">
         {/* Navigation Sidebar/Tabs */}
         {mode !== "expenses-only" && (
-          <div className="w-full lg:w-64 bg-card border border-border rounded-[var(--radius-lg)] p-4 flex flex-row lg:flex-col gap-2 overflow-x-auto shrink-0 select-none">
+          <div className="bg-card border border-border settings-sidebar shrink-0 select-none">
             <button
               onClick={() => handleTabChange("profile")}
-              className={`flex items-center gap-3 px-4 py-3 rounded-[var(--radius-md)] text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                activeTab === "profile" 
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
+              className={`settings-nav-btn ${activeTab === "profile" ? "active" : ""}`}
             >
-              <User className="w-4 h-4" />
+              <User className="nav-icon" />
               <span>Profile Settings</span>
             </button>
             
             <button
               onClick={() => handleTabChange("account")}
-              className={`flex items-center gap-3 px-4 py-3 rounded-[var(--radius-md)] text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                activeTab === "account" 
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
+              className={`settings-nav-btn ${activeTab === "account" ? "active" : ""}`}
             >
-              <SettingsIcon className="w-4 h-4" />
+              <SettingsIcon className="nav-icon" />
               <span>Account Preference</span>
             </button>
 
             <button
               onClick={() => handleTabChange("notifications")}
-              className={`flex items-center gap-3 px-4 py-3 rounded-[var(--radius-md)] text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                activeTab === "notifications" 
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
+              className={`settings-nav-btn ${activeTab === "notifications" ? "active" : ""}`}
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="nav-icon" />
               <span>Notifications</span>
             </button>
 
             {showExpenseTab && (
               <button
                 onClick={() => handleTabChange("expenses")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-[var(--radius-md)] text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                  activeTab === "expenses" 
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
+                className={`settings-nav-btn ${activeTab === "expenses" ? "active" : ""}`}
               >
-                <Wallet className="w-4 h-4" />
+                <Wallet className="nav-icon" />
                 <span>💰 Expense Tracker</span>
               </button>
             )}
@@ -341,7 +421,7 @@ function AccountSetting({ mode }) {
         <div className={mode === "expenses-only" ? "w-full" : "flex-1 w-full min-w-0"}>
           {/* Tab 1: Profile */}
           {activeTab === "profile" && (
-            <div className="glass-panel p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)]">
+            <div className="w-full">
               {role === "student" && <StudentProfileView />}
               {(role === "tutor" || role === "teacher") && <TutorProfileView />}
               {role === "alumni" && <AlumniProfileView />}
@@ -350,8 +430,19 @@ function AccountSetting({ mode }) {
 
           {/* Tab 2: Account */}
           {activeTab === "account" && (
-            <div className="space-y-6">
-              <div className="glass-panel p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)]">
+            <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+              <div 
+                className="bg-card border border-border" 
+                style={{ 
+                  padding: "42px 40px", 
+                  minHeight: "190px",
+                  borderRadius: "18px",
+                  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
                 <ThemePreference
                   variant="inline"
                   title="Theme Preference"
@@ -359,20 +450,40 @@ function AccountSetting({ mode }) {
                 />
               </div>
 
-              <div className="glass-panel p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] space-y-4">
-                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                  <ShieldCheck className="text-primary w-5 h-5" /> Privacy Preferences
+              <div 
+                className="bg-card border border-border" 
+                style={{ 
+                  padding: "48px 40px", 
+                  minHeight: "335px",
+                  borderRadius: "18px",
+                  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <h3 className="text-lg font-bold text-foreground" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <ShieldCheck className="text-primary" style={{ width: "30px", height: "30px" }} /> Privacy Preferences
                 </h3>
-                <p className="text-muted-foreground text-xs leading-relaxed">
+                <p className="text-muted-foreground text-xs leading-relaxed" style={{ marginTop: "24px" }}>
                   Configure privacy controls for your profile, referral searchability, and messaging channels.
                 </p>
-                <div className="space-y-3 pt-2">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="rounded border-border accent-primary h-4 w-4" />
+                <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "32px" }}>
+                  <label className="cursor-pointer" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <input 
+                      type="checkbox" 
+                      defaultChecked 
+                      className="rounded border-border accent-primary" 
+                      style={{ width: "24px", height: "24px", cursor: 'pointer' }}
+                    />
                     <span className="text-sm font-medium text-foreground">Make my profile visible to verified alumni</span>
                   </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="rounded border-border accent-primary h-4 w-4" />
+                  <label className="cursor-pointer" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <input 
+                      type="checkbox" 
+                      defaultChecked 
+                      className="rounded border-border accent-primary" 
+                      style={{ width: "24px", height: "24px", cursor: 'pointer' }}
+                    />
                     <span className="text-sm font-medium text-foreground">Allow tutors to view my attendance history before classes</span>
                   </label>
                 </div>
@@ -382,27 +493,64 @@ function AccountSetting({ mode }) {
 
           {/* Tab 3: Notifications */}
           {activeTab === "notifications" && (
-            <div className="glass-panel p-6 bg-card border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] space-y-6">
-              <div>
-                <h3 className="text-lg font-bold text-foreground">General Platform Alerts</h3>
-                <p className="text-muted-foreground text-xs mt-1">Select channel notification defaults.</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-[var(--radius-md)] border border-border/50 bg-secondary/10">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground">Class Booking Confirmations</h4>
-                    <p className="text-xs text-muted-foreground">Receive real-time alerts when booking a new tutorial class.</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="rounded h-4 w-4 accent-primary" />
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div 
+                className="bg-card border border-border" 
+                style={{ 
+                  padding: "36px 40px", 
+                  borderRadius: "18px",
+                  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "100%",
+                  maxWidth: "100%",
+                  minWidth: "0",
+                  boxSizing: "border-box",
+                }}
+              >
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "28px" }}>
+                  <h2 className="text-lg font-bold text-foreground" style={{ margin: 0 }}>General Platform Alerts</h2>
+                  <p className="text-muted-foreground text-xs" style={{ margin: 0 }}>Select channel notification defaults.</p>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-[var(--radius-md)] border border-border/50 bg-secondary/10">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground">Referral Application Updates</h4>
-                    <p className="text-xs text-muted-foreground">Receive notifications when alumni refer you or update job statuses.</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="rounded h-4 w-4 accent-primary" />
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <label className="notification-row">
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", minWidth: 0, flex: 1 }}>
+                      <h4 className="text-foreground" style={{ fontSize: "18px", fontWeight: 600, margin: 0 }}>Class Booking Confirmations</h4>
+                      <p className="text-muted-foreground" style={{ fontSize: "15px", fontWeight: 400, margin: 0 }}>Receive real-time alerts when booking a new tutorial class.</p>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      defaultChecked 
+                      className="rounded accent-primary" 
+                      style={{ 
+                        flexShrink: 0,
+                        marginLeft: "24px",
+                        width: "24px",
+                        height: "24px",
+                        cursor: "pointer"
+                      }} 
+                    />
+                  </label>
+
+                  <label className="notification-row">
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", minWidth: 0, flex: 1 }}>
+                      <h4 className="text-foreground" style={{ fontSize: "18px", fontWeight: 600, margin: 0 }}>Referral Application Updates</h4>
+                      <p className="text-muted-foreground" style={{ fontSize: "15px", fontWeight: 400, margin: 0 }}>Receive notifications when alumni refer you or update job statuses.</p>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      defaultChecked 
+                      className="rounded accent-primary" 
+                      style={{ 
+                        flexShrink: 0,
+                        marginLeft: "24px",
+                        width: "24px",
+                        height: "24px",
+                        cursor: "pointer"
+                      }} 
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -412,7 +560,7 @@ function AccountSetting({ mode }) {
           {activeTab === "expenses" && showExpenseTab && (
             <div className="space-y-6">
               {loadingSettings ? (
-                <div className="glass-panel p-8 text-center border border-border rounded-[var(--radius-lg)] bg-card">
+                <div className="glass-panel text-center border border-border rounded-[var(--radius-lg)] bg-card" style={{ padding: '32px 28px' }}>
                   <span className="spinner spinner-lg block mx-auto mb-2" />
                   <p className="text-muted-foreground text-sm">Loading expense configuration...</p>
                 </div>
@@ -421,7 +569,7 @@ function AccountSetting({ mode }) {
                   {/* Overview Dashboard Cards */}
                   {summaryMetrics && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="glass-panel p-6 border border-border/60 bg-card rounded-[var(--radius-lg)] relative overflow-hidden flex flex-col justify-between">
+                      <div className="glass-panel border border-border/60 bg-card rounded-[var(--radius-lg)] relative overflow-hidden flex flex-col justify-between" style={{ padding: '24px 28px' }}>
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Budget Health</span>
                         <div className="mt-3 flex items-baseline gap-2">
                           <span className="text-3xl font-extrabold text-foreground">{summaryMetrics.utilizationPercentage}%</span>
@@ -437,7 +585,7 @@ function AccountSetting({ mode }) {
                         </div>
                       </div>
 
-                      <div className="glass-panel p-6 border border-border/60 bg-card rounded-[var(--radius-lg)] relative overflow-hidden flex flex-col justify-between">
+                      <div className="glass-panel border border-border/60 bg-card rounded-[var(--radius-lg)] relative overflow-hidden flex flex-col justify-between" style={{ padding: '24px 28px' }}>
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Savings Progress</span>
                         <div className="mt-3 flex items-baseline gap-2">
                           <span className={`text-3xl font-extrabold ${summaryMetrics.currentSavings >= summaryMetrics.savingsGoal ? "text-emerald-500" : "text-foreground"}`}>
@@ -451,7 +599,7 @@ function AccountSetting({ mode }) {
                       </div>
 
                       {/* Quick Actions Card inside settings */}
-                      <div className="glass-panel p-6 border border-border/60 bg-card rounded-[var(--radius-lg)] relative overflow-hidden flex flex-col justify-between">
+                      <div className="glass-panel border border-border/60 bg-card rounded-[var(--radius-lg)] relative overflow-hidden flex flex-col justify-between" style={{ padding: '24px 28px' }}>
                         <span className="text-xs font-bold text-primary uppercase tracking-wider">Quick Actions</span>
                         <div className="grid grid-cols-2 gap-2 mt-4">
                           <button
@@ -481,7 +629,7 @@ function AccountSetting({ mode }) {
                   )}
 
                   {/* Budget Configuration Card */}
-                  <div className="glass-panel p-6 border border-border bg-card rounded-[var(--radius-lg)] space-y-6">
+                  <div className="glass-panel border border-border bg-card rounded-[var(--radius-lg)] space-y-6" style={{ padding: '24px 28px' }}>
                     <h3 className="text-lg font-bold text-foreground">💰 Budget Configuration</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -553,7 +701,7 @@ function AccountSetting({ mode }) {
                   </div>
 
                   {/* Category Limits Card */}
-                  <div className="glass-panel p-6 border border-border bg-card rounded-[var(--radius-lg)] space-y-6">
+                  <div className="glass-panel border border-border bg-card rounded-[var(--radius-lg)] space-y-6" style={{ padding: '24px 28px' }}>
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                       <div>
                         <h3 className="text-lg font-bold text-foreground">Spending Limits by Category</h3>
@@ -589,7 +737,7 @@ function AccountSetting({ mode }) {
 
                   {/* Notification and Alert Toggles */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="glass-panel p-6 border border-border bg-card rounded-[var(--radius-lg)] space-y-6">
+                    <div className="glass-panel border border-border bg-card rounded-[var(--radius-lg)] space-y-6" style={{ padding: '24px 28px' }}>
                       <h3 className="text-lg font-bold text-foreground">⚠️ Budget Alert Thresholds</h3>
                       <div className="space-y-4">
                         <label className="flex items-center justify-between p-3 rounded-[var(--radius-md)] border border-border/55 bg-secondary/10 cursor-pointer">
@@ -643,7 +791,7 @@ function AccountSetting({ mode }) {
                       </div>
                     </div>
 
-                    <div className="glass-panel p-6 border border-border bg-card rounded-[var(--radius-lg)] space-y-6">
+                    <div className="glass-panel border border-border bg-card rounded-[var(--radius-lg)] space-y-6" style={{ padding: '24px 28px' }}>
                       <h3 className="text-lg font-bold text-foreground">🔔 Expense Notifications</h3>
                       <div className="grid grid-cols-1 gap-4">
                         <label className="flex items-center justify-between p-3 rounded-[var(--radius-md)] border border-border/55 bg-secondary/10 cursor-pointer">
