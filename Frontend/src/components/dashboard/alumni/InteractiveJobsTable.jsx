@@ -12,7 +12,15 @@ import { ApplicantStatusIndicator } from "./ApplicantStatusIndicator";
 import { EmptyState } from "../shared/EmptyState";
 import { Briefcase, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 
-export const InteractiveJobsTable = React.memo(({ jobs = [], onRowClick, onActionClick, actionLabel = "View" }) => {
+export const InteractiveJobsTable = React.memo(({ 
+  jobs = [], 
+  onRowClick, 
+  onActionClick, 
+  actionLabel = "View",
+  emptyTitle = "No Jobs Found",
+  emptyDescription = "There are currently no job postings to display.",
+  emptyIcon: EmptyIcon = Briefcase
+}) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -50,11 +58,20 @@ export const InteractiveJobsTable = React.memo(({ jobs = [], onRowClick, onActio
 
   if (!jobs || jobs.length === 0) {
     return (
-      <EmptyState 
-        icon={Briefcase} 
-        title="No Jobs Found" 
-        description="There are currently no job postings to display." 
-      />
+      <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 bg-transparent">
+        <div 
+          className="w-16 h-16 rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0 border mb-4"
+          style={{ backgroundColor: 'rgba(239, 246, 255, 0.5)', borderColor: '#dbeafe' }}
+        >
+          <EmptyIcon className="w-6 h-6" />
+        </div>
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+          {emptyTitle}
+        </h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mx-auto w-[320px] sm:w-[450px] max-w-full">
+          {emptyDescription}
+        </p>
+      </div>
     );
   }
 

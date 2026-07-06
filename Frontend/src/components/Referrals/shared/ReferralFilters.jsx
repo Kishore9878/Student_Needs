@@ -12,7 +12,8 @@ export function ReferralFilters({
   },
   onFilterChange,
   companies = [],
-  roles = []
+  roles = [],
+  borderless = false
 }) {
   const handleChange = (field, value) => {
     if (onFilterChange) {

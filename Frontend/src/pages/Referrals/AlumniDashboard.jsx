@@ -799,11 +799,47 @@ export function AlumniDashboard() {
   }, [allCandidates, candidatesFilters]);  return (
     <PageLayout
       className={cn(
-        "pb-8",
+        "pb-8 px-8 md:px-8",
         isUnifiedLayout ? "mt-0" : "mt-20 sm:mt-24"
       )}
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <style>{`
+        .alumni-dashboard-action-btn {
+          min-width: 170px !important;
+          height: 52px !important;
+          padding-left: 22px !important;
+          padding-right: 22px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 12px !important;
+          white-space: nowrap !important;
+          box-sizing: border-box !important;
+          border-radius: 12px !important;
+          background-color: var(--card-bg) !important;
+          border: 1px solid var(--border-color) !important;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+          color: var(--text-primary) !important;
+          font-size: 14px !important;
+          font-weight: 600 !important;
+          transition: all 0.2s ease-in-out !important;
+          cursor: pointer !important;
+          width: 100% !important;
+        }
+
+        .alumni-dashboard-action-btn:hover {
+          background-color: var(--card-hover-bg) !important;
+          border-color: var(--accent) !important;
+          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12) !important;
+        }
+      `}</style>
+      <div 
+        className="flex flex-col md:flex-row items-start justify-between gap-8"
+        style={{
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
         <div className="flex flex-col items-start justify-center">
           <h1 className="font-sans text-3xl font-bold tracking-tight text-foreground">
             Alumni Referral Dashboard
@@ -812,22 +848,20 @@ export function AlumniDashboard() {
             {user ? `Welcome back, ${alumniName}!` : 'Create jobs and provide signed referrals to verified students'}
           </p>
         </div>
-        <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row md:flex-col gap-4 w-full md:w-auto flex-shrink-0 items-stretch md:items-end justify-start">
           <PremiumButton
-            variant="primary"
             onClick={() => setShowCreateJob(true)}
-            leftIcon={Briefcase}
-            className="text-sm font-semibold animate-fade-in"
+            className="alumni-dashboard-action-btn animate-fade-in"
           >
-            Post Job
+            <Briefcase style={{ width: '20px', height: '20px', flexShrink: 0 }} />
+            <span>Post Job</span>
           </PremiumButton>
           <PremiumButton
-            variant="success"
             onClick={() => setShowCreateReferral(true)}
-            leftIcon={Star}
-            className="text-sm font-semibold animate-fade-in"
+            className="alumni-dashboard-action-btn animate-fade-in"
           >
-            Post Referral
+            <Star style={{ width: '20px', height: '20px', flexShrink: 0 }} />
+            <span>Post Referral</span>
           </PremiumButton>
         </div>
       </div>
@@ -839,53 +873,83 @@ export function AlumniDashboard() {
         <div className="space-y-4 sm:space-y-6">
           {isAuthenticated && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              <div className="bg-card rounded-[var(--radius-md)] border border-border/50 p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {activeTab === 'jobs' ? 'My Posted Jobs' : 'My Posted Referrals'}
-                  </h3>
+              <div className="bg-card rounded-[var(--radius-md)] border border-border/50 flex flex-col min-h-[420px]">
+                <div style={{ padding: '24px 28px 0' }}>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {activeTab === 'jobs' ? 'My Posted Jobs' : 'My Posted Referrals'}
+                    </h3>
+                  </div>
                 </div>
-                <InteractiveJobsTable 
-                  jobs={backendOpportunities.filter(opp => 
-                    activeTab === 'jobs' 
-                      ? opp.opportunityType === 'Job' 
-                      : (opp.opportunityType === 'Referral' || !opp.opportunityType)
-                  )}
-                  onRowClick={(opp) => {
-                    setSelectedBackendOpportunity(opp);
-                    loadApplicationsForOpportunity(opp._id);
-                  }}
-                  onActionClick={handleEditOpportunityClick}
-                  actionLabel="Edit"
-                />
+                <div className="flex-1 flex flex-col" style={{ padding: '16px 28px 24px' }}>
+                  <InteractiveJobsTable 
+                    jobs={backendOpportunities.filter(opp => 
+                      activeTab === 'jobs' 
+                        ? opp.opportunityType === 'Job' 
+                        : (opp.opportunityType === 'Referral' || !opp.opportunityType)
+                    )}
+                    onRowClick={(opp) => {
+                      setSelectedBackendOpportunity(opp);
+                      loadApplicationsForOpportunity(opp._id);
+                    }}
+                    onActionClick={handleEditOpportunityClick}
+                    actionLabel="Edit"
+                    emptyTitle={activeTab === 'jobs' ? 'No Jobs Found' : 'No Referrals Found'}
+                    emptyDescription={activeTab === 'jobs' ? 'There are currently no job postings to display.' : 'There are currently no referral postings to display.'}
+                    emptyIcon={activeTab === 'jobs' ? Briefcase : Star}
+                  />
+                </div>
               </div>
-              <div className="bg-card rounded-[var(--radius-md)] border border-border/50">
+              <div className="bg-card rounded-[var(--radius-md)] border border-border/50 p-6 flex flex-col min-h-[420px]">
                 {selectedBackendOpportunity ? (
-                  <div className="p-4 sm:p-6">
+                  <div className="h-full flex flex-col flex-1">
                     <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 truncate">
                       Applications for "{selectedBackendOpportunity.jobTitle}"
                     </h3>
                     {!Array.isArray(selectedOpportunityApplications) || selectedOpportunityApplications.length === 0 ? (
-                      <div className="text-center py-6 sm:py-8 text-muted-foreground">
-                        <Briefcase className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 opacity-50" />
-                        <p className="text-sm sm:text-base">No applications yet</p>
+                      <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 bg-transparent">
+                        <div 
+                          className="w-16 h-16 rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0 border mb-4"
+                          style={{ backgroundColor: 'rgba(239, 246, 255, 0.5)', borderColor: '#dbeafe' }}
+                        >
+                          <Users className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+                          No Applications Yet
+                        </h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mx-auto w-[320px] sm:w-[450px] max-w-full">
+                          Candidates who apply for this opportunity will show up here.
+                        </p>
                       </div>
                     ) : (
                       <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
-                    <CandidateTable
-                      candidates={selectedOpportunityApplications}
-                      onActionClick={(app) => {
-                        loadStudentProfile(app.student?._id || app._id, app);
-                      }}
-                      actionLabel="Review"
-                      emptyMessage="No applications yet"
-                    />
+                        <CandidateTable
+                          candidates={selectedOpportunityApplications}
+                          onActionClick={(app) => {
+                            loadStudentProfile(app.student?._id || app._id, app);
+                          }}
+                          actionLabel="Review"
+                          emptyMessage="No applications yet"
+                        />
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-full min-h-[200px] sm:min-h-[300px] text-sm sm:text-base text-muted-foreground px-4">
-                    <p className="text-center">Select an opportunity to view applications</p>
+                  <div className="h-full w-full flex flex-col flex-1 justify-center">
+                    <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 bg-transparent">
+                      <div 
+                        className="w-16 h-16 rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0 border mb-4"
+                        style={{ backgroundColor: 'rgba(239, 246, 255, 0.5)', borderColor: '#dbeafe' }}
+                      >
+                        <FileText className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+                        Select an Opportunity
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mx-auto w-[320px] sm:w-[450px] max-w-full">
+                        Select a job or referral opportunity from the list to view its pending applications and candidate reviews.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -895,54 +959,100 @@ export function AlumniDashboard() {
       )}
 
       {activeTab === 'applications' && (
-        <div className="space-y-4 sm:space-y-6">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">Pending Applications</h3>
-              <p className="text-xs text-muted-foreground">Review applications for your posted jobs and referrals</p>
-            </div>
-            <ReferralFilters
-              filters={appsFilters}
-              onFilterChange={setAppsFilters}
-              companies={appsCompanies}
-              roles={appsRoles}
-            />
-          </div>
-
-          <CandidateTable
-            candidates={filteredAppsList}
-            onActionClick={(app) => {
-              loadStudentProfile(app.student?._id || app._id, app);
+        <div className="bg-card border border-border/50 rounded-[var(--radius-lg)] shadow-sm w-full min-w-0 box-border flex flex-col">
+          <div 
+            style={{
+              paddingLeft: '40px',
+              paddingRight: '40px',
+              paddingTop: '32px',
+              paddingBottom: '32px',
+              boxSizing: 'border-box',
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '32px'
             }}
-            actionLabel="Review"
-            emptyMessage="No pending applications found."
-          />
+          >
+            {/* Header */}
+            <div className="flex flex-col gap-2 text-left w-full min-w-0 box-border">
+              <h3 className="text-2xl font-bold text-foreground">Pending Applications</h3>
+              <p className="text-sm text-muted-foreground">Review applications for your posted jobs and referrals</p>
+            </div>
+
+            {/* Filters */}
+            <div className="w-full min-w-0 box-border">
+              <ReferralFilters
+                filters={appsFilters}
+                onFilterChange={setAppsFilters}
+                companies={appsCompanies}
+                roles={appsRoles}
+                borderless={true}
+              />
+            </div>
+
+            {/* Table */}
+            <div className="w-full min-w-0 box-border">
+              <CandidateTable
+                candidates={filteredAppsList}
+                onActionClick={(app) => {
+                  loadStudentProfile(app.student?._id || app._id, app);
+                }}
+                actionLabel="Review"
+                emptyMessage="No pending applications found."
+              />
+            </div>
+          </div>
         </div>
       )}
 
       {activeTab === 'candidates' && (
-        <div className="space-y-4 sm:space-y-6">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">Verified Candidates</h3>
-              <p className="text-xs text-muted-foreground">Review blockchain-verified student candidates for referral</p>
-            </div>
-            <ReferralFilters
-              filters={candidatesFilters}
-              onFilterChange={setCandidatesFilters}
-              companies={candidatesCompanies}
-              roles={candidatesRoles}
-            />
-          </div>
-
-          <CandidateTable
-            candidates={filteredCandidatesList}
-            onActionClick={(candidate) => {
-              loadStudentProfile(candidate.student?._id || candidate._id, candidate);
+        <div className="bg-card border border-border/50 rounded-[var(--radius-lg)] shadow-sm w-full min-w-0 box-border flex flex-col">
+          <div 
+            style={{
+              paddingLeft: '40px',
+              paddingRight: '40px',
+              paddingTop: '32px',
+              paddingBottom: '32px',
+              boxSizing: 'border-box',
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '32px'
             }}
-            actionLabel="Review"
-            emptyMessage="No verified candidates found."
-          />
+          >
+            {/* Header */}
+            <div className="flex flex-col gap-2 text-left w-full min-w-0 box-border">
+              <h3 className="text-2xl font-bold text-foreground">Verified Candidates</h3>
+              <p className="text-sm text-muted-foreground">Review blockchain-verified student candidates for referral</p>
+            </div>
+
+            {/* Filters */}
+            <div className="w-full min-w-0 box-border">
+              <ReferralFilters
+                filters={candidatesFilters}
+                onFilterChange={setCandidatesFilters}
+                companies={candidatesCompanies}
+                roles={candidatesRoles}
+                borderless={true}
+              />
+            </div>
+
+            {/* Table */}
+            <div className="w-full min-w-0 box-border">
+              <CandidateTable
+                candidates={filteredCandidatesList}
+                onActionClick={(candidate) => {
+                  loadStudentProfile(candidate.student?._id || candidate._id, candidate);
+                }}
+                actionLabel="Review"
+                emptyMessage="No verified candidates found."
+              />
+            </div>
+          </div>
         </div>
       )}
 

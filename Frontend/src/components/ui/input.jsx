@@ -28,16 +28,19 @@ const PremiumInput = React.forwardRef(({
     <div className="relative w-full flex flex-col gap-1.5">
       <div className="relative flex items-center w-full">
         {LeftIcon && (
-          <div className="absolute left-3.5 h-5 w-5 text-[var(--text-muted)] pointer-events-none flex items-center justify-center">
+          <div 
+            className="absolute h-5 w-5 text-[var(--text-muted)] pointer-events-none flex items-center justify-center"
+            style={{ left: "18px" }}
+          >
             {React.isValidElement(LeftIcon) ? LeftIcon : <LeftIcon className="w-4 h-4" />}
           </div>
         )}
         <input
           ref={ref}
           type={type}
+          style={LeftIcon ? { paddingLeft: "52px" } : undefined}
           className={cn(
             "flex h-11 w-full rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3.5 py-2.5 text-sm text-[var(--text-primary)] transition-all placeholder:text-[var(--text-muted)]/60 focus-visible:outline-none focus-visible:border-[var(--accent)] focus-visible:ring-2 focus-visible:ring-[var(--accent)]/10 disabled:cursor-not-allowed disabled:opacity-50",
-            LeftIcon && "pl-11",
             RightIcon && "pr-11",
             error && "border-[var(--danger)] focus-visible:ring-[var(--danger)]/10 focus-visible:border-[var(--danger)]",
             className

@@ -22,29 +22,44 @@ export const ThemePreference = ({
   ];
 
   if (variant === "inline") {
+    const visibleOptions = options.filter(opt => opt.id !== "system");
     return (
-      <div className={cn("flex items-center justify-between gap-4", className)}>
-        <div>
-          <h4 className="font-medium text-foreground">{title}</h4>
-          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+      <div className={cn("flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full", className)}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <h4 className="text-lg font-bold text-foreground">{title}</h4>
+          <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
         </div>
-        <div className="flex rounded-[var(--radius-sm)] border border-border p-1 bg-secondary/50">
-          {options.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setTheme(id)}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--radius-sm)] text-xs font-medium transition-colors",
-                theme === id
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
-            </button>
-          ))}
+        <div 
+          className="border border-border bg-card overflow-hidden shrink-0"
+          style={{
+            width: "405px",
+            height: "58px",
+            maxWidth: "100%",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            borderRadius: "10px",
+          }}
+        >
+          {visibleOptions.map(({ id, label, icon: Icon }) => {
+            const active = theme === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setTheme(id)}
+                className="flex items-center justify-center gap-2 px-6 h-full text-sm font-semibold transition-all cursor-pointer"
+                style={{
+                  backgroundColor: active ? "#3b82f6" : "transparent",
+                  color: active ? "#ffffff" : "var(--foreground)",
+                  border: "none",
+                  borderRadius: "0",
+                }}
+              >
+                <Icon className="w-[18px] h-[18px]" />
+                <span>{label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     );

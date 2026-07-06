@@ -1,5 +1,5 @@
+import React from 'react';
 import { cn } from '@/lib/Referrals/utils.js';
-import { Briefcase, Users, Star, FileText, User } from 'lucide-react';
 
 /**
  * Tab navigation for the Alumni Dashboard.
@@ -8,77 +8,52 @@ import { Briefcase, Users, Star, FileText, User } from 'lucide-react';
  * @param {Function} props.setActiveTab - State setter to change the active tab
  */
 export function AlumniTabNavigation({ activeTab, setActiveTab }) {
+  const tabs = [
+    { id: 'referrals', label: 'My Referrals' },
+    { id: 'jobs', label: 'Posted Jobs' },
+    { id: 'applications', label: 'Applications' },
+    { id: 'candidates', label: 'Verified Candidates' },
+    { id: 'profile', label: 'Profile' },
+  ];
+
   return (
-    <div className="flex gap-2 p-1 bg-muted rounded-[var(--radius-sm)] w-fit flex-wrap">
-      {/* Referrals Tab */}
-      <button
-        onClick={() => setActiveTab('referrals')}
-        className={cn(
-          'px-4 py-2 rounded-[var(--radius-sm)] text-sm font-medium transition-all',
-          activeTab === 'referrals'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <Star className="w-4 h-4 inline-block mr-2" />
-        My Referrals
-      </button>
-
-      {/* Jobs Tab */}
-      <button
-        onClick={() => setActiveTab('jobs')}
-        className={cn(
-          'px-4 py-2 rounded-[var(--radius-sm)] text-sm font-medium transition-all',
-          activeTab === 'jobs'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <Briefcase className="w-4 h-4 inline-block mr-2" />
-        Posted Jobs
-      </button>
-
-      {/* Applications Tab */}
-      <button
-        onClick={() => setActiveTab('applications')}
-        className={cn(
-          'px-4 py-2 rounded-[var(--radius-sm)] text-sm font-medium transition-all',
-          activeTab === 'applications'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <FileText className="w-4 h-4 inline-block mr-2" />
-        Applications
-      </button>
-
-      {/* Candidates Tab */}
-      <button
-        onClick={() => setActiveTab('candidates')}
-        className={cn(
-          'px-4 py-2 rounded-[var(--radius-sm)] text-sm font-medium transition-all',
-          activeTab === 'candidates'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <Users className="w-4 h-4 inline-block mr-2" />
-        Verified Candidates
-      </button>
-
-      {/* Profile Tab */}
-      <button
-        onClick={() => setActiveTab('profile')}
-        className={cn(
-          'px-4 py-2 rounded-[var(--radius-sm)] text-sm font-medium transition-all',
-          activeTab === 'profile'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <User className="w-4 h-4 inline-block mr-2" />
-        Profile
-      </button>
+    <div 
+      className="w-full border rounded-lg mt-5 mb-6 shadow-sm flex items-center justify-between relative overflow-hidden"
+      style={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0' }}
+    >
+      <div className="flex items-center flex-1 overflow-x-auto no-scrollbar">
+        {tabs.map((tab, idx) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <React.Fragment key={tab.id}>
+              <button
+                onClick={() => setActiveTab(tab.id)}
+                className="relative flex-1 text-center text-sm sm:text-base font-semibold transition-all duration-200 focus:outline-none select-none cursor-pointer hover:bg-slate-50"
+                style={{ 
+                  color: isActive ? '#2563eb' : '#475569',
+                  backgroundColor: '#ffffff',
+                  paddingTop: '20px',
+                  paddingBottom: '20px'
+                }}
+              >
+                <span>{tab.label}</span>
+                {isActive && (
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-[3px] rounded-t-sm" 
+                    style={{ backgroundColor: '#2563eb' }}
+                  />
+                )}
+              </button>
+              {idx < tabs.length - 1 && (
+                <div 
+                  className="h-6 w-px flex-shrink-0" 
+                  style={{ backgroundColor: '#e2e8f0' }}
+                />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 }
