@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { HiOutlineMenuAlt2, HiOutlineSearch } from 'react-icons/hi';
+import { HiOutlineMenuAlt2 } from 'react-icons/hi';
 import { FiLogOut } from 'react-icons/fi';
 import { MdArrowBack } from 'react-icons/md';
 import LoadingBar from 'react-top-loading-bar';
@@ -13,7 +13,16 @@ import { useSidebar } from "@/contexts/SidebarContext";
 
 const TopNavbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const ref = useRef(null);
+
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path.includes("/recurring")) return "Recurring Transactions";
+    if (path.includes("/analytics")) return "Expenses Analytics";
+    if (path.includes("/settings")) return "Expenses Settings";
+    return "Expenses Tracker";
+  };
   const { user, logout } = useAuth();
   const { toggleSidebar, toggleMobileMenu } = useSidebar();
 
@@ -50,15 +59,10 @@ const TopNavbar = () => {
           <MdArrowBack size={20} />
           <span className="hidden sm:inline">Back to Dashboard</span>
         </Link>
-        
-        <div className="hidden md:flex items-center bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-[var(--radius-sm)] px-4 py-2 hover:border-[var(--primary)]/50 transition-colors min-w-0 h-10 w-[320px]">
-          <HiOutlineSearch size={20} className="text-muted-foreground mr-2 shrink-0" />
-          <input 
-            type="text" 
-            placeholder="Search transactions..." 
-            className="bg-transparent border-none outline-none text-foreground placeholder-muted-foreground/60 w-full text-sm"
-          />
-        </div>
+
+        <h1 className="text-lg font-sans font-semibold text-foreground tracking-tight truncate">
+          {getPageTitle()}
+        </h1>
       </div>
 
       <div className="flex items-center gap-4 sm:gap-6">

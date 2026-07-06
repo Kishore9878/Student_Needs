@@ -1,35 +1,40 @@
-import { Button } from "@/components/ui/button.jsx";
+import { useNavigate } from 'react-router-dom';
 import {
-  Users,
-  CheckCircle,
-  Loader2,
-  Building2,
-  MapPin,
-  Calendar,
-  TrendingUp,
+  Users, CheckCircle, Loader2, Building2, MapPin,
+  Calendar, TrendingUp, Briefcase, GraduationCap, Lock,
 } from 'lucide-react';
 
 /**
  * ReferralsList Component
- * Displays a grid of referral opportunities posted by alumni.
- * * @param {Object} props
+ * Displays a grid of referral opportunities posted by alumni (legacy job-object format).
+ * @param {Object} props
  * @param {Array} props.jobs - Array of Job objects available for referral
  * @param {Object|null} props.student - Current logged-in student profile
  * @param {string|null} props.isApplying - ID of the job currently being processed
  * @param {Function} props.onApply - Async handler to trigger the referral application
  */
 export function ReferralsList({ jobs, student, isApplying, onApply }) {
-  // All jobs posted by alumni are referral opportunities
   const referralJobs = jobs || [];
 
   if (referralJobs.length === 0) {
     return (
-      <div className="bg-card max-w-7xl mx-auto rounded-[var(--radius-sm)] p-12 border border-border/50 text-center">
-        <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-foreground mb-2">
+      <div style={{
+        background: "var(--card-bg)", border: "1px solid var(--border-color)",
+        borderRadius: "16px", padding: "64px 32px", textAlign: "center",
+      }}>
+        <div style={{
+          width: "72px", height: "72px", borderRadius: "20px",
+          background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.1))",
+          border: "1.5px solid rgba(99,102,241,0.2)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          margin: "0 auto 20px",
+        }}>
+          <Users size={32} style={{ color: "#6366f1", opacity: 0.8 }} />
+        </div>
+        <h3 style={{ fontSize: "18px", fontWeight: "800", color: "var(--text-primary)", margin: "0 0 8px", letterSpacing: "-0.01em" }}>
           No Referral Opportunities Yet
         </h3>
-        <p className="text-muted-foreground">
+        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: 0, maxWidth: "300px", marginLeft: "auto", marginRight: "auto", lineHeight: "1.6" }}>
           Referral opportunities will appear here when alumni post them
         </p>
       </div>
@@ -37,95 +42,170 @@ export function ReferralsList({ jobs, student, isApplying, onApply }) {
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-8xl mx-auto">
-      {referralJobs?.map((job) => {
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
+      {referralJobs.map((job) => {
         const hasApplied = student?.appliedJobs?.includes(job.id);
         const canApply = student?.resumeStatus === 'verified';
         const referralCount = job.referred?.length || 0;
+        const companyInitials = (job.company || "CO").slice(0, 2).toUpperCase();
 
         return (
           <div
             key={job.id}
-            className="bg-card rounded-[var(--radius-sm)] p-6 border border-border/50 shadow-[var(--shadow-sm)] hover:shadow-md transition-shadow flex flex-col mt-4"
+            style={{
+              background: "var(--card-bg)", border: "1px solid var(--border-color)",
+              borderRadius: "16px", padding: "20px",
+              display: "flex", flexDirection: "column",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.07)";
+              e.currentTarget.style.borderColor = "rgba(99,102,241,0.25)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.borderColor = "var(--border-color)";
+              e.currentTarget.style.transform = "none";
+            }}
           >
-            <div className="flex-1">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-lg font-semibold text-foreground">
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px" }}>
+              <div style={{
+                width: "46px", height: "46px", borderRadius: "12px",
+                background: "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))",
+                border: "1.5px solid rgba(99,102,241,0.2)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "14px", fontWeight: "800", color: "#6366f1", flexShrink: 0,
+              }}>
+                {companyInitials}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{
+                  fontSize: "15px", fontWeight: "800", color: "var(--text-primary)",
+                  margin: "0 0 3px", letterSpacing: "-0.01em",
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                }}>
                   {job.title}
                 </h3>
-                {referralCount > 0 && (
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                    <TrendingUp className="w-3 h-3" />
-                    {referralCount} Referred
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-3">
-                <span className="flex items-center gap-1">
-                  <Building2 className="w-4 h-4" />
-                  {job.company}
-                </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  {job.location}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'N/A'}
-                </span>
-              </div>
-
-              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                {job.description}
-              </p>
-
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                  {job.type}
-                </span>
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
-                  Referral Available
-                </span>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "0 0 6px", display: "flex", alignItems: "center", gap: "4px" }}>
+                  <Building2 size={11} /> {job.company}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: "4px",
+                    padding: "3px 9px", borderRadius: "999px",
+                    background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)",
+                    color: "#10b981", fontSize: "10px", fontWeight: "700",
+                  }}>
+                    <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+                    Referral Available
+                  </span>
+                  {referralCount > 0 && (
+                    <span style={{
+                      display: "inline-flex", alignItems: "center", gap: "4px",
+                      padding: "3px 9px", borderRadius: "999px",
+                      background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)",
+                      color: "#6366f1", fontSize: "10px", fontWeight: "700",
+                    }}>
+                      <TrendingUp size={9} /> {referralCount} referred
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-border/50 flex flex-col items-start">
-              {hasApplied ? (
-                <Button variant="success" disabled className="w-full justify-center">
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Applied
-                </Button>
-              ) : (
-                <Button
-                  variant="student"
-                  onClick={() => onApply(job.id)}
-                  disabled={!canApply || isApplying === job.id}
-                  className="bg-primary text-background rounded-[var(--radius-sm)] w-full justify-center"
-                >
-                  {isApplying === job.id ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Signing...
-                    </>
-                  ) : (
-                    <>
-                      <Users className="w-4 h-4 mr-2" />
-                      Apply for Referral
-                    </>
-                  )}
-                </Button>
+            {/* Meta info */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
+              {job.location && (
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: "4px",
+                  padding: "3px 9px", borderRadius: "8px",
+                  background: "rgba(0,0,0,0.04)", border: "1px solid var(--border-color)",
+                  color: "var(--text-secondary)", fontSize: "10px", fontWeight: "600",
+                }}>
+                  <MapPin size={9} /> {job.location}
+                </span>
               )}
-              
-              {!canApply && !hasApplied && (
-                <p className="text-xs text-yellow-600 mt-2">
-                  Resume must be verified to apply
-                </p>
+              {job.type && (
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: "4px",
+                  padding: "3px 9px", borderRadius: "8px",
+                  background: "rgba(0,0,0,0.04)", border: "1px solid var(--border-color)",
+                  color: "var(--text-secondary)", fontSize: "10px", fontWeight: "600",
+                }}>
+                  <Briefcase size={9} /> {job.type}
+                </span>
+              )}
+              {job.postedAt && (
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: "4px",
+                  padding: "3px 9px", borderRadius: "8px",
+                  background: "rgba(0,0,0,0.04)", border: "1px solid var(--border-color)",
+                  color: "var(--text-muted)", fontSize: "10px", fontWeight: "600",
+                }}>
+                  <Calendar size={9} /> {new Date(job.postedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </span>
+              )}
+            </div>
+
+            {/* Description */}
+            {job.description && (
+              <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "0 0 14px", lineHeight: "1.6", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                {job.description}
+              </p>
+            )}
+
+            {/* Action */}
+            <div style={{ marginTop: "auto", paddingTop: "14px", borderTop: "1px solid var(--border-color)" }}>
+              {hasApplied ? (
+                <div style={{
+                  height: "38px", borderRadius: "10px",
+                  background: "rgba(16,185,129,0.07)", border: "1px solid rgba(16,185,129,0.2)",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+                  color: "#10b981", fontSize: "13px", fontWeight: "700",
+                }}>
+                  <CheckCircle size={14} /> Applied
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={() => canApply ? onApply(job.id) : null}
+                    disabled={!canApply || isApplying === job.id}
+                    style={{
+                      height: "38px", width: "100%", borderRadius: "10px",
+                      background: canApply ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "rgba(0,0,0,0.05)",
+                      border: canApply ? "none" : "1px solid var(--border-color)",
+                      color: canApply ? "#fff" : "var(--text-muted)",
+                      fontSize: "13px", fontWeight: "700",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+                      cursor: canApply && !isApplying ? "pointer" : "not-allowed",
+                      opacity: (!canApply || isApplying === job.id) ? 0.7 : 1,
+                      transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={e => { if (canApply && isApplying !== job.id) e.currentTarget.style.opacity = "0.9"; }}
+                    onMouseLeave={e => { if (canApply && isApplying !== job.id) e.currentTarget.style.opacity = "1"; }}
+                  >
+                    {isApplying === job.id ? (
+                      <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Applying...</>
+                    ) : !canApply ? (
+                      <><Lock size={13} /> Resume Not Verified</>
+                    ) : (
+                      <><GraduationCap size={13} /> Apply for Referral</>
+                    )}
+                  </button>
+                  {!canApply && !hasApplied && (
+                    <p style={{ fontSize: "10px", color: "#f59e0b", textAlign: "center", margin: "6px 0 0", fontWeight: "600" }}>
+                      ⚠ Your resume must be verified to apply
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </div>
         );
       })}
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

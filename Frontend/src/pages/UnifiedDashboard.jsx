@@ -11,7 +11,6 @@ import {
   CheckCircle,
   GraduationCap,
   Wallet,
-  Plus,
   ChevronLeft,
   ChevronRight,
   Sparkles,
@@ -1077,37 +1076,6 @@ const UnifiedDashboard = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* ══════════════════════════════════════════════════════════
-          FLOATING ACTION BUTTON
-         ══════════════════════════════════════════════════════════ */}
-      <div style={{ position: "fixed", bottom: "32px", right: "32px", zIndex: 50 }}>
-        <button
-          onClick={() => setIsQuickAddExpenseOpen(true)}
-          title="Quick Add Expense"
-          style={{
-            width: "52px", height: "52px",
-            borderRadius: "50%",
-            background: "var(--primary)",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 4px 20px rgba(59,130,246,0.35)",
-            transition: "transform 0.2s, box-shadow 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.08)";
-            e.currentTarget.style.boxShadow = "0 8px 28px rgba(59,130,246,0.5)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow = "0 4px 20px rgba(59,130,246,0.35)";
-          }}
-        >
-          <Plus size={22} />
-        </button>
       </div>
 
       {/* ══════════════════════════════════════════════════════════

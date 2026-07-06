@@ -17,7 +17,6 @@ import {
   Inbox,
   CalendarCheck,
   ChevronsLeft,
-  HelpCircle,
 } from "lucide-react";
 
 const Sidebar = ({ className, role = "student" }) => {
@@ -171,25 +170,6 @@ const Sidebar = ({ className, role = "student" }) => {
             {isCollapsed && (
               <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--text-primary)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
                 Settings
-              </div>
-            )}
-          </Link>
-
-          <Link
-            to="/student/settings"
-            className={cn(
-              "group relative flex items-center transition-all duration-200 cursor-pointer w-full",
-              isCollapsed 
-                ? "w-10 h-10 justify-center rounded-lg" 
-                : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold",
-              "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
-            )}
-          >
-            <HelpCircle className="w-5 h-5 shrink-0 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
-            {!isCollapsed && <span className="truncate">Help & Support</span>}
-            {isCollapsed && (
-              <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--text-primary)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
-                Help & Support
               </div>
             )}
           </Link>

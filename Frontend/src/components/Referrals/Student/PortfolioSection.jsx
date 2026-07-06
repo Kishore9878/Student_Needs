@@ -143,121 +143,152 @@ export function PortfolioSection({ portfolioUrl: initialPortfolioUrl, onPortfoli
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Globe className="w-5 h-5" />
-            <div>
-              <CardTitle>Portfolio</CardTitle>
-              <CardDescription>
-                Add your personal website or online portfolio
-              </CardDescription>
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        background: "var(--card-bg)",
+        border: "1px solid var(--border-color)",
+        borderRadius: "20px",
+        padding: "24px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+        transition: "all 0.15s ease",
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = "rgba(16,185,129,0.3)";
+        e.currentTarget.style.boxShadow = "0 6px 20px rgba(16,185,129,0.08)";
+        e.currentTarget.style.transform = "translateY(-2px)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = "var(--border-color)";
+        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
+        e.currentTarget.style.transform = "none";
+      }}
+    >
+      {/* Top section: Header + Description + Preview/Input */}
+      <div>
+        {/* Header: Icon, Title, Status badge aligned right */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{
+              width: "38px", height: "38px", borderRadius: "10px",
+              background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
+            }}>
+              <Globe style={{ width: "18px", height: "18px", color: "#10b981" }} />
             </div>
+            <h3 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>Portfolio</h3>
           </div>
           {hasPortfolioUrl && (
-            <Badge variant="default" className="gap-1">
-              <CheckCircle2 className="w-3 h-3" />
-              Added
-            </Badge>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: "4px",
+              padding: "4px 10px", borderRadius: "999px",
+              background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)",
+              color: "#10b981", fontSize: "12px", fontWeight: "600"
+            }}>
+              <CheckCircle2 style={{ width: "13px", height: "13px" }} /> Added
+            </div>
           )}
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+
+        {/* Description */}
+        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 16px", lineHeight: "1.5" }}>
+          Add your personal website or online portfolio
+        </p>
+
+        {/* Content Preview or Edit Form */}
         {hasPortfolioUrl && !isEditing ? (
-          <div className="space-y-4">
-            <div className="p-4 rounded-[var(--radius-sm)] bg-muted/50 border">
-              <div className="flex items-center gap-3">
-                <Globe className="w-8 h-8 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-foreground">
-                    Personal Portfolio
-                  </p>
-                  <a
-                    href={portfolioUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1 truncate"
-                  >
-                    {portfolioUrl}
-                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                  </a>
-                </div>
+          <div style={{
+            padding: "16px", borderRadius: "14px",
+            background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.12)",
+            marginBottom: "16px"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <Globe style={{ width: "22px", height: "22px", color: "#10b981", flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", margin: "0 0 2px" }}>
+                  Personal Portfolio
+                </p>
+                <a
+                  href={portfolioUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: "12px", color: "#10b981", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: "500" }}
+                  onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+                  onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+                >
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{portfolioUrl}</span>
+                  <ExternalLink size={11} style={{ flexShrink: 0 }} />
+                </a>
               </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.open(portfolioUrl, "_blank")}
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                View Site
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(true)}
-              >
-                <Edit2 className="w-4 h-4 mr-2" />
-                Edit
-              </Button>
-
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleDelete}
-                disabled={deleting}
-              >
-                {deleting ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Trash2 className="w-4 h-4 mr-2" />
-                )}
-                Remove
-              </Button>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="flex gap-2">
+          <div style={{ marginBottom: "16px" }}>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "12px" }}>
               <Input
                 type="url"
                 value={portfolioUrl}
                 onChange={(e) => setPortfolioUrl(e.target.value)}
                 placeholder="https://myportfolio.com"
-                className="flex-1"
+                style={{ flex: "1 1 200px", height: "42px", borderRadius: "10px", border: "1.5px solid var(--border-color)", background: "var(--card-bg)", color: "var(--text-primary)", padding: "0 12px", fontSize: "13px" }}
                 onKeyPress={(e) => e.key === "Enter" && handleSave()}
               />
-              <Button
-                onClick={handleSave}
-                disabled={saving || !portfolioUrl.trim()}
-              >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4 mr-2" />
-                )}
-                Save
-              </Button>
-              {isEditing && (
-                <Button variant="outline" onClick={handleCancel}>
-                  Cancel
+              <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                <Button onClick={handleSave} disabled={saving || !portfolioUrl.trim()} style={{ height: "42px", padding: "0 18px", borderRadius: "10px", background: "linear-gradient(135deg, #10b981, #059669)", color: "#fff", fontWeight: "600", fontSize: "13px", border: "none" }}>
+                  {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-1.5" />} Save
                 </Button>
-              )}
+                {isEditing && (
+                  <Button variant="outline" onClick={handleCancel} style={{ height: "42px", padding: "0 14px", borderRadius: "10px", fontWeight: "600", fontSize: "13px" }}>
+                    Cancel
+                  </Button>
+                )}
+              </div>
             </div>
-
-            <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <p>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "12px", color: "var(--text-muted)", lineHeight: "1.4" }}>
+              <AlertCircle style={{ width: "15px", height: "15px", marginTop: "1px", flexShrink: 0, color: "var(--text-muted)" }} />
+              <p style={{ margin: 0 }}>
                 Add your personal website, GitHub Pages site, or Behance/Dribbble link to showcase your best works.
               </p>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Bottom section: Action Buttons in one row on desktop */}
+      {hasPortfolioUrl && !isEditing && (
+        <div style={{ paddingTop: "8px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(portfolioUrl, "_blank")}
+              style={{ flex: "1 1 auto", height: "40px", borderRadius: "10px", fontWeight: "600", fontSize: "13px", borderColor: "rgba(16,185,129,0.3)", color: "#10b981", background: "rgba(16,185,129,0.04)" }}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" /> View
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditing(true)}
+              style={{ flex: "1 1 auto", height: "40px", borderRadius: "10px", fontWeight: "600", fontSize: "13px" }}
+            >
+              <Edit2 className="w-4 h-4 mr-2" /> Edit
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDelete}
+              disabled={deleting}
+              style={{ flex: "0 0 auto", height: "40px", borderRadius: "10px", fontWeight: "600", fontSize: "13px", background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)" }}
+            >
+              {deleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-1.5" />} Remove
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

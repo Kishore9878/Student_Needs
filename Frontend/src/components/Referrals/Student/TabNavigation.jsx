@@ -5,8 +5,8 @@ import {
   Briefcase,
   QrCode,
   Users,
-  CheckSquare,
   MessageSquare,
+  User,
 } from 'lucide-react';
 
 /**
@@ -22,23 +22,18 @@ export function TabNavigation({ activeTab, student, appliedCount = 0, unreadChat
     <div className="flex gap-1.5 sm:gap-2 p-1 sm:p-1.5 bg-muted rounded-[var(--radius-sm)] w-full sm:w-fit mx-auto flex-wrap justify-center">
 
 
-      {/* Applied Jobs Tab with Count Badge */}
+      {/* Browse Referrals Tab */}
       <Link
-        to="/student/applied"
+        to="/student/referrals"
         className={cn(
-          'px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-[var(--radius-sm)] text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 sm:gap-2',
-          activeTab === 'applied'
+          'px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-[var(--radius-sm)] text-xs sm:text-sm font-medium transition-all flex items-center',
+          activeTab === 'referrals'
             ? 'bg-card text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
         )}
       >
-        <CheckSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-        Applied Jobs
-        {appliedCount > 0 && (
-          <span className="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-bold">
-            {appliedCount}
-          </span>
-        )}
+        <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+        Browse Referrals
       </Link>
 
       {/* Browse Jobs Tab */}
@@ -55,18 +50,42 @@ export function TabNavigation({ activeTab, student, appliedCount = 0, unreadChat
         Browse Jobs
       </Link>
 
-      {/* Browse Referrals Tab */}
+      {/* My Applications Tab with Count Badge */}
       <Link
-        to="/student/referrals"
+        to="/student/applied"
         className={cn(
-          'px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-[var(--radius-sm)] text-xs sm:text-sm font-medium transition-all flex items-center',
-          activeTab === 'referrals'
+          'px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-[var(--radius-sm)] text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 sm:gap-2',
+          activeTab === 'applied'
             ? 'bg-card text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
         )}
       >
-        <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-        Browse Referrals
+        <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        My Applications
+        {appliedCount > 0 && (
+          <span className="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-bold">
+            {appliedCount}
+          </span>
+        )}
+      </Link>
+
+      {/* Chats Tab */}
+      <Link
+        to="/student/chat"
+        className={cn(
+          'px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-[var(--radius-sm)] text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 sm:gap-2',
+          activeTab === 'chat'
+            ? 'bg-card text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground'
+        )}
+      >
+        <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        Chats
+        {unreadChatsCount > 0 && (
+          <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-bold animate-pulse">
+            {unreadChatsCount}
+          </span>
+        )}
       </Link>
 
       {/* My Profile Tab */}
@@ -79,27 +98,8 @@ export function TabNavigation({ activeTab, student, appliedCount = 0, unreadChat
             : 'text-muted-foreground hover:text-foreground'
         )}
       >
-        <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+        <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
         My Profile
-      </Link>
-
-      {/* Chat Tab */}
-      <Link
-        to="/student/chat"
-        className={cn(
-          'px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-[var(--radius-sm)] text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 sm:gap-2',
-          activeTab === 'chat'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-        Chat
-        {unreadChatsCount > 0 && (
-          <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-bold animate-pulse">
-            {unreadChatsCount}
-          </span>
-        )}
       </Link>
 
       {/* QR Code Tab - Only visible if the student has a resumeHash (on-chain record) */}
