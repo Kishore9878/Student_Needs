@@ -520,7 +520,7 @@ export default function StudentProfileView() {
     : (imagePreviewUrl || getStudentImageUrl(profile?.image));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header and Toggle Edit Mode */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/20 pb-4">
         <div>
@@ -567,8 +567,8 @@ export default function StudentProfileView() {
       </div>
 
       {/* Live Completeness bar */}
-      <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)]">
-        <CardHeader className="pb-3">
+      <Card className="bg-card border border-border/50 shadow-sm">
+        <CardHeader className="p-8 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <TrendingUp className="w-5 h-5 text-primary" />
@@ -581,7 +581,7 @@ export default function StudentProfileView() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="p-8 pt-0 space-y-4">
           <div className="w-full bg-muted rounded-full h-2.5">
             <div
               className="bg-primary h-2.5 rounded-full transition-all duration-300"
@@ -601,10 +601,10 @@ export default function StudentProfileView() {
       </Card>
 
       {/* Main Form content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left column: Profile Pic & Info details */}
-        <div className="space-y-6 lg:col-span-1">
-          <div className="glass-panel p-6 flex flex-col items-center text-center">
+        <div className="space-y-8 lg:col-span-1">
+          <Card className="bg-card border border-border/50 shadow-sm p-8 flex flex-col items-center text-center">
             <div className="relative group w-32 h-32 rounded-[var(--radius-lg)] overflow-hidden border-4 border-background bg-muted flex items-center justify-center shrink-0 shadow-[var(--shadow-md)]">
               {displayImageSrc ? (
                 <img
@@ -649,14 +649,14 @@ export default function StudentProfileView() {
                 Remove Photo
               </Button>
             )}
-          </div>
+          </Card>
 
           {/* Social Links card */}
-          <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)]">
-            <CardHeader className="pb-3">
+          <Card className="bg-card border border-border/50 shadow-sm">
+            <CardHeader className="p-8 pb-4">
               <CardTitle className="text-base font-bold">Social Links</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="p-8 pt-0 space-y-4">
               {/* LinkedIn */}
               {!isEditing ? (
                 profile?.linkedinUrl ? (
@@ -736,8 +736,8 @@ export default function StudentProfileView() {
         </div>
 
         {/* Right column: Form Fields details */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)] p-6 space-y-6">
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="bg-card border border-border/50 shadow-sm p-8 space-y-8">
             <h3 className="text-lg font-bold text-foreground border-b border-border/20 pb-2">Academic & Personal Profile</h3>
 
             {!isEditing ? (
@@ -1043,7 +1043,7 @@ export default function StudentProfileView() {
 
           {/* Projects and Certifications */}
           {!isEditing && projects.length > 0 && (
-            <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)] p-6 space-y-4">
+            <Card className="bg-card border border-border/50 shadow-sm p-8 space-y-6">
               <h3 className="text-lg font-bold text-foreground">Projects</h3>
               <div className="space-y-4">
                 {projects.map((project, idx) => (
@@ -1064,7 +1064,7 @@ export default function StudentProfileView() {
           )}
 
           {isEditing && (
-            <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)] p-6 space-y-4">
+            <Card className="bg-card border border-border/50 shadow-sm p-8 space-y-6">
               <Label className="text-base font-bold text-foreground">Manage Projects</Label>
               <div className="p-4 rounded-[var(--radius-md)] border border-border/30 bg-muted/10 space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

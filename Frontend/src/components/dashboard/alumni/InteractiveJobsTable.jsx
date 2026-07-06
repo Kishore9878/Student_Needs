@@ -58,14 +58,17 @@ export const InteractiveJobsTable = React.memo(({
 
   if (!jobs || jobs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center text-center p-8 w-full min-h-[320px] rounded-xl border border-dashed border-border/60 bg-transparent">
-        <div className="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm shrink-0">
+      <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 bg-transparent">
+        <div 
+          className="w-16 h-16 rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0 border mb-4"
+          style={{ backgroundColor: 'rgba(239, 246, 255, 0.5)', borderColor: '#dbeafe' }}
+        >
           <EmptyIcon className="w-6 h-6" />
         </div>
-        <h3 className="text-lg sm:text-xl font-semibold text-foreground mt-4 mb-2 tracking-tight whitespace-nowrap">
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
           {emptyTitle}
         </h3>
-        <p className="w-full text-sm sm:text-base text-muted-foreground max-w-sm leading-relaxed mx-auto">
+        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mx-auto w-[320px] sm:w-[450px] max-w-full">
           {emptyDescription}
         </p>
       </div>

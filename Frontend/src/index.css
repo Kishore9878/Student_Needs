@@ -436,3 +436,27 @@ html.lenis body {
     border-left: 2px solid var(--accent);
   }
 
+  /* Custom responsive filter grid for ReferralFilters.jsx */
+  .pending-applications-filter-grid {
+    display: grid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    gap: 20px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  @media (min-width: 640px) {
+    .pending-applications-filter-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .pending-applications-filter-grid {
+      grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr)) !important;
+    }
+  }
+
+

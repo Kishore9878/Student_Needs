@@ -20,47 +20,183 @@ export function AlumniStats({ backendOpportunities = [] }) {
     : 0;
 
   return (
-    <div className="mx-auto grid sm:grid-cols-2 lg:grid-cols-7 gap-4">
+    <div 
+      className="grid sm:grid-cols-2 lg:grid-cols-7 gap-4"
+      style={{
+        display: 'grid',
+        gridAutoRows: '96px',
+        alignItems: 'start',
+        width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
+      }}
+    >
       {/* Jobs Posted */}
-      <div className="bg-card rounded-[var(--radius-sm)] px-4 py-6 border border-border/50 space-y-2">
-        <p className="text-3xl font-bold text-foreground">{jobsCount}</p>
-        <p className="text-sm text-muted-foreground">Jobs Posted</p>
+      <div 
+        className="bg-card rounded-[var(--radius-sm)] border border-border/50"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '12px 10px',
+          boxSizing: 'border-box',
+          gap: '4px',
+          height: '96px',
+          minHeight: '96px',
+          maxHeight: '96px',
+          width: '100%',
+          minWidth: 0,
+          alignSelf: 'start',
+        }}
+      >
+        <p className="text-foreground" style={{ fontSize: '30px', fontWeight: '700', lineHeight: '1', textAlign: 'center', margin: 0 }}>{jobsCount}</p>
+        <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: '500', lineHeight: '1.15', textAlign: 'center', width: '100%', margin: 0 }}>Jobs Posted</p>
       </div>
 
       {/* Referrals Posted */}
-      <div className="bg-card rounded-[var(--radius-sm)] px-4 py-6 border border-border/50 space-y-2">
-        <p className="text-3xl font-bold text-foreground">{referralsCount}</p>
-        <p className="text-sm text-muted-foreground">Referrals Posted</p>
+      <div 
+        className="bg-card rounded-[var(--radius-sm)] border border-border/50"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '12px 10px',
+          boxSizing: 'border-box',
+          gap: '4px',
+          height: '96px',
+          minHeight: '96px',
+          maxHeight: '96px',
+          width: '100%',
+          minWidth: 0,
+          alignSelf: 'start',
+        }}
+      >
+        <p className="text-foreground" style={{ fontSize: '30px', fontWeight: '700', lineHeight: '1', textAlign: 'center', margin: 0 }}>{referralsCount}</p>
+        <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: '500', lineHeight: '1.15', textAlign: 'center', width: '100%', margin: 0 }}>Referrals Posted</p>
       </div>
 
       {/* Active Opportunities */}
-      <div className="bg-card rounded-[var(--radius-sm)] px-4 py-6 border border-border/50 space-y-2">
-        <p className="text-3xl font-bold text-foreground">{activeOpportunities}</p>
-        <p className="text-sm text-muted-foreground">Active Opportunities</p>
+      <div 
+        className="bg-card rounded-[var(--radius-sm)] border border-border/50"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '12px 10px',
+          boxSizing: 'border-box',
+          gap: '4px',
+          height: '96px',
+          minHeight: '96px',
+          maxHeight: '96px',
+          width: '100%',
+          minWidth: 0,
+          alignSelf: 'start',
+        }}
+      >
+        <p className="text-foreground" style={{ fontSize: '30px', fontWeight: '700', lineHeight: '1', textAlign: 'center', margin: 0 }}>{activeOpportunities}</p>
+        <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: '500', lineHeight: '1.15', textAlign: 'center', width: '100%', margin: 0 }}>Active Opportunities</p>
       </div>
 
-      {/* Applications Received (New) */}
-      <div className="bg-card rounded-[var(--radius-sm)] px-4 py-6 border border-border/50 space-y-2">
-        <p className="text-3xl font-bold text-[var(--primary)]">{applicationsReceived}</p>
-        <p className="text-sm text-muted-foreground">Applications Received</p>
+      {/* Applications Received */}
+      <div 
+        className="bg-card rounded-[var(--radius-sm)] border border-border/50"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '12px 10px',
+          boxSizing: 'border-box',
+          gap: '4px',
+          height: '96px',
+          minHeight: '96px',
+          maxHeight: '96px',
+          width: '100%',
+          minWidth: 0,
+          alignSelf: 'start',
+        }}
+      >
+        <p className="text-[var(--primary)]" style={{ fontSize: '30px', fontWeight: '700', lineHeight: '1', textAlign: 'center', margin: 0 }}>{applicationsReceived}</p>
+        <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: '500', lineHeight: '1.15', textAlign: 'center', width: '100%', margin: 0 }}>Applications Received</p>
       </div>
 
       {/* Referrals Given */}
-      <div className="bg-card rounded-[var(--radius-sm)] px-4 py-6 border border-border/50 space-y-2">
-        <p className="text-3xl font-bold text-success">{totalReferralsGiven}</p>
-        <p className="text-sm text-muted-foreground">Referrals Given</p>
+      <div 
+        className="bg-card rounded-[var(--radius-sm)] border border-border/50"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '12px 10px',
+          boxSizing: 'border-box',
+          gap: '4px',
+          height: '96px',
+          minHeight: '96px',
+          maxHeight: '96px',
+          width: '100%',
+          minWidth: 0,
+          alignSelf: 'start',
+        }}
+      >
+        <p className="text-success" style={{ fontSize: '30px', fontWeight: '700', lineHeight: '1', textAlign: 'center', margin: 0 }}>{totalReferralsGiven}</p>
+        <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: '500', lineHeight: '1.15', textAlign: 'center', width: '100%', margin: 0 }}>Referrals Given</p>
       </div>
 
-      {/* Conversion Rate (New) */}
-      <div className="bg-card rounded-[var(--radius-sm)] px-4 py-6 border border-border/50 space-y-2">
-        <p className="text-3xl font-bold text-[var(--primary)]">{conversionRate}%</p>
-        <p className="text-sm text-muted-foreground">Referral Conversion</p>
+      {/* Referral Conversion */}
+      <div 
+        className="bg-card rounded-[var(--radius-sm)] border border-border/50"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '12px 10px',
+          boxSizing: 'border-box',
+          gap: '4px',
+          height: '96px',
+          minHeight: '96px',
+          maxHeight: '96px',
+          width: '100%',
+          minWidth: 0,
+          alignSelf: 'start',
+        }}
+      >
+        <p className="text-[var(--primary)]" style={{ fontSize: '30px', fontWeight: '700', lineHeight: '1', textAlign: 'center', margin: 0 }}>{conversionRate}%</p>
+        <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: '500', lineHeight: '1.15', textAlign: 'center', width: '100%', margin: 0 }}>Referral Conversion</p>
       </div>
 
       {/* Total Referrals Limit */}
-      <div className="bg-card rounded-[var(--radius-sm)] px-4 py-6 border border-border/50 space-y-2">
-        <p className="text-3xl font-bold text-foreground">{totalReferralsPossible}</p>
-        <p className="text-sm text-muted-foreground">Total Referrals Limit</p>
+      <div 
+        className="bg-card rounded-[var(--radius-sm)] border border-border/50"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '12px 10px',
+          boxSizing: 'border-box',
+          gap: '4px',
+          height: '96px',
+          minHeight: '96px',
+          maxHeight: '96px',
+          width: '100%',
+          minWidth: 0,
+          alignSelf: 'start',
+        }}
+      >
+        <p className="text-foreground" style={{ fontSize: '30px', fontWeight: '700', lineHeight: '1', textAlign: 'center', margin: 0 }}>{totalReferralsPossible}</p>
+        <p className="text-muted-foreground" style={{ fontSize: '14px', fontWeight: '500', lineHeight: '1.15', textAlign: 'center', width: '100%', margin: 0 }}>Total Referrals Limit</p>
       </div>
     </div>
   );

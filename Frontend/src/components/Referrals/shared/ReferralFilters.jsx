@@ -14,7 +14,8 @@ export function ReferralFilters({
   },
   onFilterChange,
   companies = [],
-  roles = []
+  roles = [],
+  borderless = false
 }) {
   const handleChange = (field, value) => {
     if (onFilterChange) {
@@ -25,13 +26,17 @@ export function ReferralFilters({
     }
   };
 
+  const containerClass = borderless
+    ? "w-full flex flex-col gap-6"
+    : "bg-card/40 border border-border/40 p-4 rounded-[var(--radius-lg)] space-y-4 shadow-sm w-full";
+
   return (
-    <div className="bg-card/40 border border-border/40 p-4 rounded-[var(--radius-lg)] space-y-4 shadow-sm w-full">
+    <div className={containerClass}>
       {/* Filters Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 items-end">
+      <div className="pending-applications-filter-grid items-end">
         {/* Search */}
-        <div className="flex flex-col gap-1.5 lg:col-span-2">
-          <label className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase px-1">
+        <div className="flex flex-col gap-2.5 min-w-0 w-full">
+          <label className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase px-1">
             Search
           </label>
           <PremiumInput
@@ -39,19 +44,19 @@ export function ReferralFilters({
             leftIcon={Search}
             value={filters.search}
             onChange={(e) => handleChange("search", e.target.value)}
-            className="h-10"
+            className="h-14 pr-[18px] text-sm bg-background border-border/50 rounded-[var(--radius-md)] w-full"
           />
         </div>
 
         {/* Company Filter */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase px-1">
+        <div className="flex flex-col gap-2.5 min-w-0 w-full">
+          <label className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase px-1">
             Company
           </label>
           <Select
             value={filters.company}
             onChange={(e) => handleChange("company", e.target.value)}
-            className="h-10 text-xs"
+            className="h-14 pl-[18px] pr-10 text-sm bg-background border-border/50 rounded-[var(--radius-md)] w-full"
           >
             <option value="">All Companies</option>
             {companies?.map((co) => (
@@ -63,14 +68,14 @@ export function ReferralFilters({
         </div>
 
         {/* Role Filter */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase px-1">
+        <div className="flex flex-col gap-2.5 min-w-0 w-full">
+          <label className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase px-1">
             Role
           </label>
           <Select
             value={filters.role}
             onChange={(e) => handleChange("role", e.target.value)}
-            className="h-10 text-xs"
+            className="h-14 pl-[18px] pr-10 text-sm bg-background border-border/50 rounded-[var(--radius-md)] w-full"
           >
             <option value="">All Roles</option>
             {roles?.map((r) => (
@@ -82,14 +87,14 @@ export function ReferralFilters({
         </div>
 
         {/* Status Filter */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase px-1">
+        <div className="flex flex-col gap-2.5 min-w-0 w-full">
+          <label className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase px-1">
             Status
           </label>
           <Select
             value={filters.status}
             onChange={(e) => handleChange("status", e.target.value)}
-            className="h-10 text-xs"
+            className="h-14 pl-[18px] pr-10 text-sm bg-background border-border/50 rounded-[var(--radius-md)] w-full"
           >
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
@@ -99,44 +104,26 @@ export function ReferralFilters({
             <option value="rejected">Rejected</option>
           </Select>
         </div>
-
-        {/* Interview Stage Filter */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase px-1">
-            Interview Stage
-          </label>
-          <Select
-            value={filters.stage}
-            onChange={(e) => handleChange("stage", e.target.value)}
-            className="h-10 text-xs"
-          >
-            <option value="">All Stages</option>
-            <option value="resume_screen">Resume Screen</option>
-            <option value="screening">Screening</option>
-            <option value="technical">Technical Round</option>
-            <option value="managerial">Managerial Round</option>
-            <option value="hr">HR Round</option>
-            <option value="offered">Offered</option>
-          </Select>
-        </div>
       </div>
 
       {/* Sorting & Additional controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border/30">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+      <div className="flex items-center justify-between gap-4 pt-4 border-t border-border/30 mt-4 mb-6 w-full flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
             Sort By
           </span>
-          <select
-            value={filters.sortBy}
-            onChange={(e) => handleChange("sortBy", e.target.value)}
-            className="bg-transparent text-xs text-foreground font-semibold border-none focus:ring-0 outline-none cursor-pointer"
-          >
-            <option value="date-desc">Newest First</option>
-            <option value="date-asc">Oldest First</option>
-            <option value="name-asc">Candidate A-Z</option>
-            <option value="name-desc">Candidate Z-A</option>
-          </select>
+          <div className="w-[220px] max-w-full min-w-0">
+            <Select
+              value={filters.sortBy}
+              onChange={(e) => handleChange("sortBy", e.target.value)}
+              className="h-12 text-xs font-semibold pl-[18px] pr-10 rounded-[var(--radius-md)] border-border/50 bg-background w-full"
+            >
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="name-asc">Candidate A-Z</option>
+              <option value="name-desc">Candidate Z-A</option>
+            </Select>
+          </div>
         </div>
 
         {/* Clear Filters Button */}
@@ -154,7 +141,7 @@ export function ReferralFilters({
                 });
               }
             }}
-            className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+            className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
           >
             Reset Filters
           </button>

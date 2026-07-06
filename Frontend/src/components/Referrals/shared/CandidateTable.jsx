@@ -18,7 +18,8 @@ import {
   AlertCircle,
   Briefcase,
   User,
-  ExternalLink 
+  ExternalLink,
+  Inbox
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip.jsx";
 
@@ -39,35 +40,38 @@ export function CandidateTable({
   };
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-border/40 overflow-hidden bg-card/30">
+    <div className="rounded-[var(--radius-lg)] border border-border/50 overflow-hidden bg-card shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="h-[48px] border-b border-border/40 hover:bg-transparent">
-            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground">
+          <TableRow className="border-b border-border/40 hover:bg-transparent bg-slate-50/50 dark:bg-slate-900/30">
+            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground pl-7 py-5 align-middle h-14 text-left">
               Candidate
             </TableHead>
-            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground">
+            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground py-5 align-middle h-14 text-left">
               Company
             </TableHead>
-            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground">
+            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground py-5 align-middle h-14 text-left">
               Role
             </TableHead>
-            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground">
+            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground py-5 align-middle h-14 text-left">
               Status
             </TableHead>
-            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground">
+            <TableHead className="font-semibold text-xs tracking-wider uppercase text-muted-foreground py-5 align-middle h-14 text-left">
               Interview Stage
             </TableHead>
-            <TableHead className="text-right font-semibold text-xs tracking-wider uppercase text-muted-foreground">
+            <TableHead className="text-right font-semibold text-xs tracking-wider uppercase text-muted-foreground pr-7 py-5 align-middle h-14">
               Actions
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {candidates.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} className="h-32 text-center text-muted-foreground text-sm">
-                {emptyMessage}
+            <TableRow className="hover:bg-transparent">
+              <TableCell colSpan={6} className="p-0">
+                <div className="flex flex-col items-center justify-center gap-4 text-center py-10 text-muted-foreground" style={{ minHeight: "170px" }}>
+                  <Inbox className="w-10 h-10 text-slate-400 dark:text-slate-500 shrink-0" />
+                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{emptyMessage}</span>
+                </div>
               </TableCell>
             </TableRow>
           ) : (
@@ -101,9 +105,9 @@ export function CandidateTable({
               return (
                 <TableRow
                   key={candidate._id || candidate.id || idx}
-                  className="h-[56px] border-b border-border/30 hover:bg-secondary/20 transition-colors"
+                  className="border-b border-border/30 hover:bg-secondary/20 transition-colors"
                 >
-                  <TableCell className="font-medium text-foreground py-0">
+                  <TableCell className="font-medium text-foreground py-3 pl-7 align-middle text-left">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold uppercase">
                         {studentName[0] || "C"}
@@ -114,19 +118,19 @@ export function CandidateTable({
                     </div>
                   </TableCell>
                   
-                  <TableCell className="py-0 text-muted-foreground font-medium text-sm">
+                  <TableCell className="py-3 align-middle text-muted-foreground font-medium text-sm text-left">
                     <span className="truncate max-w-[150px] block" title={companyName}>
                       {companyName}
                     </span>
                   </TableCell>
 
-                  <TableCell className="py-0 text-muted-foreground text-sm">
+                  <TableCell className="py-3 align-middle text-muted-foreground text-sm text-left">
                     <span className="truncate max-w-[180px] block font-medium text-foreground/90" title={roleTitle}>
                       {roleTitle}
                     </span>
                   </TableCell>
 
-                  <TableCell className="py-0">
+                  <TableCell className="py-3 align-middle text-left">
                     <Badge 
                       variant={statusInfo.badgeVariant} 
                       className="inline-flex items-center capitalize font-semibold tracking-wide text-[10px] px-2 py-0.5 rounded-[var(--radius-sm)]"
@@ -136,7 +140,7 @@ export function CandidateTable({
                     </Badge>
                   </TableCell>
 
-                  <TableCell className="py-0">
+                  <TableCell className="py-3 align-middle text-left">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -156,7 +160,7 @@ export function CandidateTable({
                     </TooltipProvider>
                   </TableCell>
 
-                  <TableCell className="text-right py-0">
+                  <TableCell className="text-right py-3 pr-7 align-middle">
                     <Button
                       variant="outline"
                       size="sm"
