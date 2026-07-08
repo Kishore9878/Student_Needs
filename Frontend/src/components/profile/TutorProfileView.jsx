@@ -314,19 +314,36 @@ export default function TutorProfileView() {
     : (imagePreviewUrl || picSrc || bulb2);
 
   return (
-    <div className="container-xl px-4 mt-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: "32px", paddingBottom: "32px" }}>
       {/* Header and Toggle Edit Mode */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card/40 backdrop-blur-md rounded-[var(--radius-md)] p-4 border border-border/40 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Tutor Profile</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
+      <div style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: "16px",
+        flexWrap: "wrap",
+        paddingBottom: "28px",
+        borderBottom: "1px solid var(--border-color)",
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <h1 style={{ fontSize: "34px", fontWeight: "800", letterSpacing: "-0.03em", lineHeight: "1.1", color: "var(--text-primary)", margin: 0 }}>
+            Tutor Profile
+          </h1>
+          <p style={{ fontSize: "14px", color: "var(--text-muted)", margin: 0, lineHeight: "1.5" }}>
             Last Updated: {formatLastUpdated(dbProfileData?.updatedAt)}
           </p>
         </div>
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-btn-primary text-btn-primary-text hover:bg-btn-primary-hover px-4 py-2 rounded-md transition-colors"
+            style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center",
+              padding: "0 16px", height: "36px", fontSize: "13px", fontWeight: "600",
+              borderRadius: "8px", background: "var(--primary)", color: "#fff",
+              border: "none", cursor: "pointer", transition: "all 0.2s ease"
+            }}
+            className="hover:opacity-90"
           >
             <Edit3 className="w-4 h-4 inline-block mr-2" />
             Edit Profile
@@ -335,14 +352,26 @@ export default function TutorProfileView() {
           <div className="flex gap-2">
             <button
               onClick={handleCancel}
-              className="bg-btn-secondary text-btn-secondary-text hover:bg-btn-secondary-hover border border-[var(--border-color)] px-4 py-2 rounded-md transition-colors"
+              style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                padding: "0 16px", height: "36px", fontSize: "13px", fontWeight: "600",
+                borderRadius: "8px", background: "var(--bg-secondary)", color: "var(--text-primary)",
+                border: "1px solid var(--border-color)", cursor: "pointer", transition: "all 0.2s ease"
+              }}
+              className="hover:bg-[var(--bg-secondary)]/80"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={saving}
-              className="bg-btn-primary text-btn-primary-text hover:bg-btn-primary-hover px-4 py-2 rounded-md transition-colors"
+              style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                padding: "0 16px", height: "36px", fontSize: "13px", fontWeight: "600",
+                borderRadius: "8px", background: "var(--primary)", color: "#fff",
+                border: "none", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, transition: "all 0.2s ease"
+              }}
+              className="hover:opacity-90"
             >
               {saving ? (
                 <>
@@ -358,86 +387,111 @@ export default function TutorProfileView() {
       </div>
 
       {/* Live Completeness bar */}
-      <Card className="bg-card/40 backdrop-blur-md border-border/50 shadow-[var(--shadow-md)] p-4 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2.5">
-            <TrendingUp className="w-5 h-5 text-primary" />
+      <div style={{
+        background: "var(--card-bg)", border: "1px solid var(--border-color)", borderRadius: "16px", padding: "24px",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)"
+      }}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "rgba(59,130,246,0.12)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <TrendingUp size={20} />
+            </div>
             <div>
-              <h3 className="text-base font-bold text-foreground">Profile Completeness</h3>
-              <p className="text-xs text-muted-foreground">{liveCompleteness}% Complete</p>
+              <h3 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>Profile Completeness</h3>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>{liveCompleteness}% Complete</p>
             </div>
           </div>
         </div>
-        <div className="w-full bg-muted rounded-full h-2.5 mb-3">
+        <div style={{ width: "100%", background: "var(--bg-secondary)", borderRadius: "999px", height: "10px", marginBottom: "12px", overflow: "hidden" }}>
           <div
-            className="bg-primary h-2.5 rounded-full transition-all duration-300"
-            style={{ width: `${liveCompleteness}%` }}
+            style={{ background: "var(--primary)", height: "100%", borderRadius: "999px", transition: "width 0.3s ease", width: `${liveCompleteness}%` }}
           />
         </div>
         {liveMissingFields.length > 0 && (
-          <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-[var(--radius-sm)] border border-border/20">
-            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-semibold text-foreground">Missing items:</span>{" "}
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "rgba(245,158,11,0.1)", padding: "12px", borderRadius: "8px", border: "1px solid rgba(245,158,11,0.2)" }}>
+            <AlertCircle size={16} color="var(--warning)" style={{ marginTop: "2px", flexShrink: 0 }} />
+            <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
+              <span style={{ fontWeight: "600", color: "var(--text-primary)" }}>Missing items:</span>{" "}
               {liveMissingFields.join(", ")}
             </div>
           </div>
         )}
-      </Card>
+      </div>
 
-      <div className="background-white">
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "24px" }} className="lg:grid-cols-3">
         {/* LEFT CARD - IMAGE UPLOAD */}
-        <div id="uploadProfileCard">
-          <h2 className="card-header">Profile Photo</h2>
+        <div className="lg:col-span-1">
+          <div style={{
+            background: "var(--card-bg)", border: "1px solid var(--border-color)", borderRadius: "16px", padding: "24px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)", display: "flex", flexDirection: "column", gap: "20px"
+          }}>
+            <h2 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", margin: 0, paddingBottom: "16px", borderBottom: "1px solid var(--border-color)" }}>Profile Photo</h2>
 
-          <div className="card-body text-center flex flex-col items-center">
-            <img
-              className="img-account-profile object-cover rounded-full w-32 h-32 mb-4"
-              src={displayImageSrc}
-              alt="Profile"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = bulb2;
-              }}
-            />
+            <div className="flex flex-col items-center">
+              <img
+                className="object-cover rounded-full mb-6 border-4 border-[var(--bg-secondary)]"
+                style={{ width: "140px", height: "140px", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                src={displayImageSrc}
+                alt="Profile"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = bulb2;
+                }}
+              />
 
-            {isEditing && (
-              <div className="flex flex-col gap-2 mt-2 w-full px-4">
-                <label htmlFor="tutor-avatar-file" className="bg-btn-primary text-btn-primary-text hover:bg-btn-primary-hover px-4 py-2 rounded-md transition-colors cursor-pointer flex items-center justify-center">
-                  <Upload className="w-4 h-4 inline-block mr-2" />
-                  Select New Image
-                </label>
-                <input
-                  id="tutor-avatar-file"
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={handleImageSelect}
-                />
-                {displayImageSrc !== bulb2 && (
-                  <button
-                    className="bg-btn-danger text-btn-danger-text hover:bg-btn-danger-hover px-4 py-2 rounded-md transition-colors"
-                    type="button"
-                    onClick={handleRemovePendingImage}
-                  >
-                    <Trash2 className="w-4 h-4 inline-block mr-2" />
-                    Remove Image
-                  </button>
-                )}
+              {isEditing && (
+                <div className="flex flex-col gap-3 w-full">
+                  <label htmlFor="tutor-avatar-file" style={{
+                    display: "inline-flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
+                    padding: "0 16px", height: "36px", fontSize: "13px", fontWeight: "600", width: "100%",
+                    borderRadius: "8px", background: "var(--primary)", color: "#fff",
+                    border: "none", cursor: "pointer", transition: "all 0.2s ease"
+                  }} className="hover:opacity-90">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Select New Image
+                  </label>
+                  <input
+                    id="tutor-avatar-file"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleImageSelect}
+                  />
+                  {displayImageSrc !== bulb2 && (
+                    <button
+                      type="button"
+                      onClick={handleRemovePendingImage}
+                      style={{
+                        display: "inline-flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
+                        padding: "0 16px", height: "36px", fontSize: "13px", fontWeight: "600", width: "100%",
+                        borderRadius: "8px", background: "transparent", color: "var(--danger)",
+                        border: "1px solid rgba(239,68,68,0.3)", cursor: "pointer", transition: "all 0.2s ease"
+                      }}
+                      className="hover:bg-red-50 dark:hover:bg-red-950/20"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Remove Image
+                    </button>
+                  )}
+                </div>
+              )}
+              <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "16px", textAlign: "center" }}>
+                JPG, JPEG, PNG, or WEBP. Max 5 MB
               </div>
-            )}
-            <div className="small text-muted mt-2">
-              JPG, JPEG, PNG, or WEBP. Max 5 MB
             </div>
           </div>
         </div>
 
         {/* RIGHT CARD - DETAILS VIEW OR EDIT */}
-        <div className="pl-3 w-full">
+        <div className="lg:col-span-2">
           {!isEditing ? (
             /* ================= VIEW MODE ================= */
-            <div className="p-4 space-y-6">
-              <h2 className="card-header">Tutor Details</h2>
+            <div style={{
+              background: "var(--card-bg)", border: "1px solid var(--border-color)", borderRadius: "16px", padding: "32px",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)", display: "flex", flexDirection: "column", gap: "24px"
+            }}>
+              <h2 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>Tutor Details</h2>
+
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-border/20">
                 <div className="flex items-start gap-3">
@@ -595,10 +649,13 @@ export default function TutorProfileView() {
             </div>
           ) : (
             /* ================= EDIT MODE ================= */
-            <div>
-              <h2 className="card-header">Edit Tutor Details</h2>
+            <div style={{
+              background: "var(--card-bg)", border: "1px solid var(--border-color)", borderRadius: "16px", padding: "32px",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)", display: "flex", flexDirection: "column", gap: "24px"
+            }}>
+              <h2 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>Edit Tutor Details</h2>
 
-              <form className="card-body form-grid space-y-4" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+              <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
                 {/* USERNAME */}
                 <div className="mb-3 full-row">
                   <label className="small font-semibold text-foreground">Username</label>

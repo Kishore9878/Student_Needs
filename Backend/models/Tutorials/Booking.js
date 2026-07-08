@@ -36,7 +36,7 @@ time: {
 
 status: {
   type: String,
-  enum: ["pending", "accepted", "upcoming", "in_progress", "completed", "declined", "Booked", "Completed", "Cancelled"],
+  enum: ["pending", "accepted", "upcoming", "in_progress", "completed", "declined", "Booked", "Completed", "Cancelled", "Missed"],
   default: "pending",
 },
 meetingLink: {

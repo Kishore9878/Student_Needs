@@ -1,18 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, CalendarCheck, Check, X } from "lucide-react";
+import { ArrowLeft, CalendarCheck, Check, X, ClipboardCheck, Users, Filter, BookOpen } from "lucide-react";
 import API, {
   TUTOR_ATTENDANCE_PATHS,
 } from "@/services/Attendance/tutorAttendanceApi";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { PremiumButton } from "@/components/dashboard/shared/Primitives";
+import { 
+  AttendancePageLayout, 
+  AttendancePageHeader, 
+  AttendanceSectionCard,
+  AttendanceEmptyState,
+  AttendanceAlert,
+  AttendanceFilterCard
+} from "@/components/dashboard/attendance/SharedUI";
 
 const todayISO = () => new Date().toISOString().split("T")[0];
 
@@ -162,160 +163,158 @@ export default function TutorMarkAttendance() {
   const loading = loadingSubjects || loadingStudents;
 
   return (
-    <div className="space-y-6 pb-8">
-      <Link
-        to="/tutorials/attendance"
-        className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Attendance Hub
-      </Link>
+    <AttendancePageLayout>
+      <AttendancePageHeader
+        title="Mark Online Class Attendance"
+        description="Select a subject you teach, then mark students who booked that course."
+        icon={ClipboardCheck}
+      />
 
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Mark Online Class Attendance
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Select a subject you teach, then mark students who booked that course.
-        </p>
-        {subjects.length === 0 && !loadingSubjects && (
-          <p className="text-sm text-amber-600 dark:text-amber-400 mt-2">
-            <Link
-              to="/tutorials/attendance/subjects"
-              className="underline font-medium"
-            >
-              Add subjects
-            </Link>{" "}
-            before marking attendance.
-          </p>
-        )}
-      </div>
+      {subjects.length === 0 && !loadingSubjects && (
+        <AttendanceAlert
+          title="Add subjects before marking attendance"
+          description={
+            <span>
+              You haven't added any subjects yet.{" "}
+              <Link
+                to="/tutorials/attendance/subjects"
+                className="underline font-semibold hover:text-amber-800 dark:hover:text-amber-300 transition-colors"
+              >
+                Click here
+              </Link>{" "}
+              to add them.
+            </span>
+          }
+          type="warning"
+        />
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Session details</CardTitle>
-          <CardDescription>
-            Subject list comes from your tutor subjects
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <label className="text-sm font-medium mb-1 block">
-              Course / Subject
-            </label>
-            <select
-              className="w-full rounded-[var(--radius-sm)] border border-input bg-background px-3 py-2 text-sm"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              disabled={subjects.length === 0}
-            >
-              <option value="">Select subject</option>
-              {subjects.map((s) => (
-                <option key={s._id} value={s.subjectName}>
-                  {s.subjectName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-1 block">Date</label>
-            <input
-              type="date"
-              className="w-full rounded-[var(--radius-sm)] border border-input bg-background px-3 py-2 text-sm"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-1 block">
-              Session time (optional)
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. 10:00 AM"
-              className="w-full rounded-[var(--radius-sm)] border border-input bg-background px-3 py-2 text-sm"
-              value={sessionTime}
-              onChange={(e) => setSessionTime(e.target.value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <AttendanceFilterCard title="Session details" icon={Filter}>
+        <div>
+          <label className="text-sm font-medium mb-1.5 block text-foreground">
+            Course / Subject
+          </label>
+          <select
+            className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm disabled:opacity-50"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            disabled={subjects.length === 0}
+          >
+            <option value="">Select subject</option>
+            {subjects.map((s) => (
+              <option key={s._id} value={s.subjectName}>
+                {s.subjectName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-1.5 block text-foreground">Date</label>
+          <input
+            type="date"
+            className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-1.5 block text-foreground">
+            Session time (optional)
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. 10:00 AM"
+            className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
+            value={sessionTime}
+            onChange={(e) => setSessionTime(e.target.value)}
+          />
+        </div>
+      </AttendanceFilterCard>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-lg">Enrolled students</CardTitle>
-            <CardDescription>
-              {markedCount} of {filteredStudents.length} marked · students with
-              bookings for this subject
-            </CardDescription>
-          </div>
-          <Button
+      <AttendanceSectionCard 
+        title="Enrolled students" 
+        icon={Users}
+        noPadding={true}
+        action={
+          <PremiumButton
             onClick={submitAttendance}
             disabled={saving || loading || !subject || subjects.length === 0}
+            className="shadow-md w-full sm:w-auto"
           >
             <CalendarCheck className="w-4 h-4 mr-2" />
             {saving ? "Saving…" : "Save attendance"}
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <span className="spinner spinner-lg" />
-            </div>
-          ) : !subject ? (
-            <p className="text-sm text-muted-foreground py-6 text-center">
-              Select a subject to load enrolled students.
-            </p>
-          ) : filteredStudents.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-6 text-center">
-              No students have booked this subject yet. They will appear after
-              booking a class with you for the same course name.
-            </p>
-          ) : (
-            <div className="divide-y rounded-[var(--radius-sm)] border">
-              {filteredStudents.map((student) => {
-                const status = marks[student.studentId];
-                return (
-                  <div
-                    key={student.studentId}
-                    className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
-                  >
-                    <div>
-                      <p className="font-medium">{student.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {student.bookingCount} booking(s)
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={status === "present" ? "default" : "outline"}
-                        onClick={() => setStatus(student.studentId, "present")}
-                      >
-                        <Check className="w-4 h-4 mr-1" />
-                        Present
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={
-                          status === "absent" ? "destructive" : "outline"
-                        }
-                        onClick={() => setStatus(student.studentId, "absent")}
-                      >
-                        <X className="w-4 h-4 mr-1" />
-                        Absent
-                      </Button>
-                    </div>
+          </PremiumButton>
+        }
+      >
+        <div className="p-6 border-b border-border/50 bg-secondary/10">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">{markedCount}</span> of <span className="font-semibold text-foreground">{filteredStudents.length}</span> marked · students with bookings for this subject
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <span className="spinner spinner-lg text-primary" />
+          </div>
+        ) : !subject ? (
+          <AttendanceEmptyState
+            icon={BookOpen}
+            title="Select a subject"
+            description="Choose a subject from the session details above to load enrolled students."
+          />
+        ) : filteredStudents.length === 0 ? (
+          <AttendanceEmptyState
+            icon={Users}
+            title="No students found"
+            description="No students have booked this subject yet. They will appear here once they book a class with you for this course."
+          />
+        ) : (
+          <div className="divide-y divide-border">
+            {filteredStudents.map((student) => {
+              const status = marks[student.studentId];
+              return (
+                <div
+                  key={student.studentId}
+                  className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 bg-background hover:bg-secondary/20 transition-colors"
+                >
+                  <div>
+                    <p className="font-bold text-foreground">{student.name}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      {student.bookingCount} booking(s)
+                    </p>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                  <div className="flex gap-3 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      className={`h-10 px-4 rounded-xl border text-sm font-semibold flex items-center justify-center transition-all flex-1 sm:flex-auto ${
+                        status === "present"
+                          ? "bg-green-500/10 text-green-600 border-green-500/30 ring-2 ring-green-500/20"
+                          : "bg-background text-muted-foreground border-border hover:bg-green-500/5 hover:border-green-500/30 hover:text-green-600"
+                      }`}
+                      onClick={() => setStatus(student.studentId, "present")}
+                    >
+                      <Check className="w-4 h-4 mr-1.5" />
+                      Present
+                    </button>
+                    <button
+                      type="button"
+                      className={`h-10 px-4 rounded-xl border text-sm font-semibold flex items-center justify-center transition-all flex-1 sm:flex-auto ${
+                        status === "absent"
+                          ? "bg-red-500/10 text-red-600 border-red-500/30 ring-2 ring-red-500/20"
+                          : "bg-background text-muted-foreground border-border hover:bg-red-500/5 hover:border-red-500/30 hover:text-red-600"
+                      }`}
+                      onClick={() => setStatus(student.studentId, "absent")}
+                    >
+                      <X className="w-4 h-4 mr-1.5" />
+                      Absent
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </AttendanceSectionCard>
+    </AttendancePageLayout>
   );
 }

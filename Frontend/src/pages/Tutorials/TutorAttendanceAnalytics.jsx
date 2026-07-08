@@ -1,19 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, Calendar, User } from "lucide-react";
+import { ArrowLeft, Calendar, User, Search, Filter, BarChart3, Clock, LineChart, CheckCircle2, XCircle, Users2 } from "lucide-react";
 import API, {
   TUTOR_ATTENDANCE_PATHS,
 } from "@/services/Attendance/tutorAttendanceApi";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
+import { PremiumCard } from "@/components/dashboard/shared/Primitives";
+import { 
+  AttendancePageLayout, 
+  AttendancePageHeader, 
+  AttendanceFilterCard,
+  AttendanceStatCard,
+  AttendanceSectionCard,
+  AttendanceEmptyState
+} from "@/components/dashboard/attendance/SharedUI";
 
 const todayISO = () => new Date().toISOString().split("T")[0];
 const getDateMonthsBack = (months) => {
@@ -214,271 +216,258 @@ export default function TutorAttendanceAnalytics() {
   );
 
   return (
-    <div className="space-y-6 pb-8">
-      <Link
-        to="/tutorials/attendance"
-        className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Attendance Hub
-      </Link>
+    <AttendancePageLayout>
+      <AttendancePageHeader
+        title="Attendance Analytics"
+        description="View detailed attendance reports for your sessions and students"
+        icon={LineChart}
+      />
 
       {!isTeacher ? (
-        <Card className="border-[var(--danger)] bg-[var(--danger-bg)] text-[var(--danger)]">
-          <CardContent className="pt-6">
-            <p className="font-medium">
-              Attendance Analytics is for teachers only.
-            </p>
-          </CardContent>
-        </Card>
+        <PremiumCard className="border-[var(--danger)] bg-[var(--danger-bg)] text-[var(--danger)] p-6">
+          <p className="font-bold text-center text-lg">
+            Attendance Analytics is for teachers only.
+          </p>
+        </PremiumCard>
       ) : (
         <>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Attendance Analytics
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              View detailed attendance reports for your sessions and students
-            </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <AttendanceStatCard 
+              title="Total Sessions" 
+              value={filteredRecords.length} 
+              icon={Clock} 
+              colorClass="text-blue-600 bg-blue-500/10 dark:text-blue-400"
+            />
+            <AttendanceStatCard 
+              title="Present" 
+              value={filteredRecords.filter(r => r.status === 'present').length} 
+              icon={CheckCircle2} 
+              colorClass="text-green-600 bg-green-500/10 dark:text-green-400"
+            />
+            <AttendanceStatCard 
+              title="Absent" 
+              value={filteredRecords.filter(r => r.status === 'absent').length} 
+              icon={XCircle} 
+              colorClass="text-red-600 bg-red-500/10 dark:text-red-400"
+            />
+            <AttendanceStatCard 
+              title="Students" 
+              value={filteredSummary.length} 
+              icon={Users2} 
+              colorClass="text-purple-600 bg-purple-500/10 dark:text-purple-400"
+            />
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Filters</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Subject Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Subject
-                  </label>
-                  <select
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    disabled={loadingSubjects}
-                    className="w-full px-3 py-2 rounded-[var(--radius-sm)] border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <option value="">Select a subject...</option>
-                    {subjects.map((s) => (
-                      <option key={s.subjectName} value={s.subjectName}>
-                        {s.subjectName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          <AttendanceFilterCard title="Filters" icon={Filter}>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Subject
+              </label>
+              <select
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                disabled={loadingSubjects}
+                className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm disabled:opacity-50"
+              >
+                <option value="">Select a subject...</option>
+                {subjects.map((s) => (
+                  <option key={s.subjectName} value={s.subjectName}>
+                    {s.subjectName}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                {/* Date From */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    From
-                  </label>
-                  <input
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full px-3 py-2 rounded-[var(--radius-sm)] border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                From
+              </label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
+              />
+            </div>
 
-                {/* Date To */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    To
-                  </label>
-                  <input
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full px-3 py-2 rounded-[var(--radius-sm)] border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                To
+              </label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
+              />
+            </div>
 
-                {/* Search Student */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Search Student
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Student name..."
-                    value={searchStudent}
-                    onChange={(e) => setSearchStudent(e.target.value)}
-                    className="w-full px-3 py-2 rounded-[var(--radius-sm)] border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Search Student
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Student name..."
+                  value={searchStudent}
+                  onChange={(e) => setSearchStudent(e.target.value)}
+                  className="w-full h-12 pl-10 pr-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
+                />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </AttendanceFilterCard>
 
-          {/* Student Summary */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold tracking-tight">
-              Student Summary
-            </h2>
+          <AttendanceSectionCard title="Student Summary" icon={BarChart3} noPadding={true}>
             {filteredSummary.length === 0 ? (
-              <Card>
-                <CardContent className="pt-6">
-                  <p className="text-center text-muted-foreground">
-                    {loadingData
-                      ? "Loading attendance data..."
-                      : "No students found for the selected filters"}
-                  </p>
-                </CardContent>
-              </Card>
+              <AttendanceEmptyState
+                icon={BarChart3}
+                title={loadingData ? "Loading attendance data..." : "No students found"}
+                description={loadingData ? "Please wait..." : "No students match your selected filters. Try adjusting the subject or date range."}
+              />
             ) : (
-              <Card className="overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        <th className="px-4 py-3 text-left font-medium text-foreground">
-                          Student
-                        </th>
-                        <th className="px-4 py-3 text-left font-medium text-foreground">
-                          Total Sessions
-                        </th>
-                        <th className="px-4 py-3 text-left font-medium text-foreground">
-                          Present
-                        </th>
-                        <th className="px-4 py-3 text-left font-medium text-foreground">
-                          Absent
-                        </th>
-                        <th className="px-4 py-3 text-left font-medium text-foreground">
-                          Attendance %
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredSummary.map((student) => {
-                        const attendancePercentage =
-                          getAttendancePercentage(student);
-                        return (
-                          <tr
-                            key={student.studentId}
-                            className="border-b transition-colors hover:bg-muted/50"
-                          >
-                            <td className="px-4 py-3 text-foreground">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                  <User className="w-4 h-4" />
-                                </div>
-                                <div>
-                                  <p className="font-medium">
-                                    {student.studentName}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    ID: {student.studentId}
-                                  </p>
-                                </div>
+              <div className="overflow-x-auto w-full">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border bg-secondary/30">
+                      <th className="px-6 py-4 text-left font-bold text-foreground">
+                        Student
+                      </th>
+                      <th className="px-6 py-4 text-left font-bold text-foreground">
+                        Total Sessions
+                      </th>
+                      <th className="px-6 py-4 text-left font-bold text-foreground">
+                        Present
+                      </th>
+                      <th className="px-6 py-4 text-left font-bold text-foreground">
+                        Absent
+                      </th>
+                      <th className="px-6 py-4 text-left font-bold text-foreground">
+                        Attendance %
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredSummary.map((student) => {
+                      const attendancePercentage =
+                        getAttendancePercentage(student);
+                      return (
+                        <tr
+                          key={student.studentId}
+                          className="transition-colors hover:bg-secondary/10 bg-card"
+                        >
+                          <td className="px-6 py-4 text-foreground">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-[inset_0_1px_3px_rgba(0,0,0,0.1)]">
+                                <User className="w-4 h-4" />
                               </div>
-                            </td>
-                            <td className="px-4 py-3 text-foreground">
-                              {student.totalSessions}
-                            </td>
-                            <td className="px-4 py-3 text-green-600 dark:text-green-400">
-                              {student.presentCount}
-                            </td>
-                            <td className="px-4 py-3 text-red-600 dark:text-red-400">
-                              {student.absentCount}
-                            </td>
-                            <td className="px-4 py-3 text-foreground min-w-44">
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between gap-3">
-                                  <span className="text-sm font-medium">
-                                    {attendancePercentage}%
-                                  </span>
-                                </div>
-                                <div className="w-full h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
-                                  <div
-                                    className={`h-full transition-all ${getProgressBarColor(
-                                      attendancePercentage,
-                                    )}`}
-                                    style={{ width: `${attendancePercentage}%` }}
-                                  />
-                                </div>
+                              <div>
+                                <p className="font-bold text-foreground text-sm">
+                                  {student.studentName}
+                                </p>
+                                <p className="text-xs text-muted-foreground font-medium">
+                                  ID: {student.studentId}
+                                </p>
                               </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-foreground font-medium">
+                            {student.totalSessions}
+                          </td>
+                          <td className="px-6 py-4 text-green-600 dark:text-green-400 font-bold">
+                            {student.presentCount}
+                          </td>
+                          <td className="px-6 py-4 text-red-600 dark:text-red-400 font-bold">
+                            {student.absentCount}
+                          </td>
+                          <td className="px-6 py-4 text-foreground min-w-48">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="text-sm font-bold text-foreground">
+                                  {attendancePercentage}%
+                                </span>
+                              </div>
+                              <div className="w-full h-2.5 bg-secondary/50 border border-border/50 rounded-full overflow-hidden shadow-inner">
+                                <div
+                                  className={`h-full transition-all duration-500 ease-out ${getProgressBarColor(
+                                    attendancePercentage,
+                                  )}`}
+                                  style={{ width: `${attendancePercentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
-          </div>
+          </AttendanceSectionCard>
 
-          {/* Session History */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold tracking-tight">
-              Session History
-            </h2>
+          <AttendanceSectionCard title="Session History" icon={Clock} noPadding={true}>
             {groupedHistory.length === 0 ? (
-              <Card>
-                <CardContent className="pt-6">
-                  <p className="text-center text-muted-foreground">
-                    {loadingData
-                      ? "Loading session data..."
-                      : "No session records found for the selected filters"}
-                  </p>
-                </CardContent>
-              </Card>
+              <AttendanceEmptyState
+                icon={Clock}
+                title={loadingData ? "Loading session data..." : "No session records found"}
+                description={loadingData ? "Please wait..." : "No attendance was marked in the selected date range."}
+              />
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-0 divide-y divide-border/50">
                 {groupedHistory.map((group) => (
-                  <Card key={group.date} className="overflow-hidden">
-                    <CardHeader className="border-b bg-muted/20">
+                  <div key={group.date} className="w-full bg-card">
+                    <div className="border-b border-border bg-secondary/10 p-4 sm:p-6">
                       <div className="flex items-center justify-between gap-4">
                         <div>
-                          <CardTitle className="text-lg">
+                          <h3 className="text-lg font-bold text-foreground">
                             {formatDateLabel(group.date)}
-                          </CardTitle>
-                          <CardDescription>
+                          </h3>
+                          <p className="text-sm text-muted-foreground mt-1 font-medium">
                             {group.records.length} attendance record
                             {group.records.length === 1 ? "" : "s"}
-                          </CardDescription>
+                          </p>
                         </div>
-                        <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-background border border-border shadow-sm rounded-lg text-sm font-bold text-primary">
                           <Calendar className="w-4 h-4" />
                           {group.date}
                         </div>
                       </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
+                    </div>
+                    <div className="p-0">
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="border-b bg-muted/50">
-                              <th className="px-4 py-3 text-left font-medium text-foreground">
+                            <tr className="border-b border-border bg-background">
+                              <th className="px-6 py-4 text-left font-bold text-foreground">
                                 Session Time
                               </th>
-                              <th className="px-4 py-3 text-left font-medium text-foreground">
+                              <th className="px-6 py-4 text-left font-bold text-foreground">
                                 Student Name
                               </th>
-                              <th className="px-4 py-3 text-left font-medium text-foreground">
+                              <th className="px-6 py-4 text-left font-bold text-foreground">
                                 Status
                               </th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody className="divide-y divide-border">
                             {group.records.map((record) => (
                               <tr
                                 key={record._id}
-                                className="border-b transition-colors hover:bg-muted/50"
+                                className="transition-colors hover:bg-secondary/10 bg-card"
                               >
-                                <td className="px-4 py-3 text-foreground">
+                                <td className="px-6 py-4 text-foreground font-medium">
                                   {record.sessionTime || "N/A"}
                                 </td>
-                                <td className="px-4 py-3 text-foreground">
+                                <td className="px-6 py-4 text-foreground font-bold">
                                   {record.studentName || "Student"}
                                 </td>
-                                <td className="px-4 py-3">
+                                <td className="px-6 py-4">
                                   <Badge
                                     className={`${getStatusColor(
                                       record.status,
-                                    )} border-0 font-medium`}
+                                    )} border-0 font-bold px-3 py-1 text-xs uppercase tracking-wider`}
                                   >
                                     {record.status}
                                   </Badge>
@@ -488,14 +477,14 @@ export default function TutorAttendanceAnalytics() {
                           </tbody>
                         </table>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
-          </div>
+          </AttendanceSectionCard>
         </>
       )}
-    </div>
+    </AttendancePageLayout>
   );
 }
