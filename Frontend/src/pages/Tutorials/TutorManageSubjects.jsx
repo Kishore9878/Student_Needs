@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, BookPlus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, BookPlus, Pencil, Trash2, Library } from "lucide-react";
 import API, { TUTOR_ATTENDANCE_PATHS } from "@/services/Attendance/tutorAttendanceApi";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PremiumButton } from "@/components/dashboard/shared/Primitives";
+import { 
+  AttendancePageLayout, 
+  AttendancePageHeader, 
+  AttendanceSectionCard,
+  AttendanceEmptyState 
+} from "@/components/dashboard/attendance/SharedUI";
 
 const getErrorMessage = (err) =>
   err?.response?.data?.message || err?.message || "Something went wrong";
@@ -83,84 +88,80 @@ export default function TutorManageSubjects() {
   };
 
   return (
-    <div className="space-y-6 pb-8">
-      <Link
-        to="/tutorials/attendance"
-        className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary"
+    <AttendancePageLayout>
+      <AttendancePageHeader
+        title="Tutor Subjects"
+        description="Add the courses you teach. These subjects are used throughout the attendance system."
+        icon={BookPlus}
+        action={
+          <PremiumButton onClick={() => setModal({ open: true, mode: "add", id: null, name: "" })} className="shadow-md w-full sm:w-auto">
+            <BookPlus className="w-4 h-4 mr-2" />
+            Add Subject
+          </PremiumButton>
+        }
+      />
+
+      <AttendanceSectionCard 
+        title="Your subjects" 
+        icon={Library}
+        noPadding={true}
       >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Attendance Hub
-      </Link>
-
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tutor Subjects</h1>
-          <p className="text-muted-foreground mt-1">
-            Add courses you teach. The attendance page uses these subjects in the
-            dropdown.
-          </p>
+        <div className="p-6 border-b border-border/50">
+          <p className="text-sm text-muted-foreground">Examples: Java Programming, Web Development, Python, DSA</p>
         </div>
-        <Button onClick={() => setModal({ open: true, mode: "add", id: null, name: "" })}>
-          <BookPlus className="w-4 h-4 mr-2" />
-          Add Subject
-        </Button>
-      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Your subjects</CardTitle>
-          <CardDescription>
-            Examples: Java Programming, Web Development, Python, DSA
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-10">
-              <span className="spinner spinner-lg" />
-            </div>
-          ) : subjects.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              No subjects yet. Add a subject before marking attendance.
-            </p>
-          ) : (
-            <ul className="divide-y rounded-[var(--radius-sm)] border">
-              {subjects.map((s) => (
-                <li
-                  key={s._id}
-                  className="flex items-center justify-between gap-3 px-4 py-3"
-                >
-                  <span className="font-medium">{s.subjectName}</span>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        setModal({
-                          open: true,
-                          mode: "edit",
-                          id: s._id,
-                          name: s.subjectName,
-                        })
-                      }
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => deleteSubject(s._id, s.subjectName)}
-                    >
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <span className="spinner spinner-lg text-primary" />
+          </div>
+        ) : subjects.length === 0 ? (
+          <AttendanceEmptyState
+            icon={BookPlus}
+            title="No subjects added"
+            description="Start by creating your first subject before marking attendance."
+            action={
+              <PremiumButton onClick={() => setModal({ open: true, mode: "add", id: null, name: "" })}>
+                <BookPlus className="w-4 h-4 mr-2" />
+                Add Subject
+              </PremiumButton>
+            }
+          />
+        ) : (
+          <ul className="divide-y divide-border">
+            {subjects.map((s) => (
+              <li
+                key={s._id}
+                className="flex items-center justify-between gap-3 px-6 py-4 bg-background hover:bg-secondary/20 transition-colors group"
+              >
+                <span className="font-semibold text-foreground">{s.subjectName}</span>
+                <div className="flex gap-3 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                  <button
+                    type="button"
+                    className="p-2 rounded-xl bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/50 hover:bg-primary/5 shadow-sm transition-all"
+                    onClick={() =>
+                      setModal({
+                        open: true,
+                        mode: "edit",
+                        id: s._id,
+                        name: s.subjectName,
+                      })
+                    }
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    className="p-2 rounded-xl bg-card border border-border text-muted-foreground hover:text-destructive hover:border-destructive/50 hover:bg-destructive/10 shadow-sm transition-all"
+                    onClick={() => deleteSubject(s._id, s.subjectName)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </AttendanceSectionCard>
 
       <Dialog open={modal.open} onOpenChange={(open) => !open && setModal({ ...modal, open: false })}>
         <DialogContent>
@@ -171,21 +172,21 @@ export default function TutorManageSubjects() {
           </DialogHeader>
           <input
             type="text"
-            className="w-full rounded-[var(--radius-sm)] border border-input bg-background px-3 py-2 text-sm"
+            className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
             placeholder="e.g. Java Programming"
             value={modal.name}
             onChange={(e) => setModal({ ...modal, name: e.target.value })}
           />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setModal({ ...modal, open: false })}>
+          <DialogFooter className="mt-4">
+            <PremiumButton variant="outline" onClick={() => setModal({ ...modal, open: false })}>
               Cancel
-            </Button>
-            <Button onClick={saveSubject} disabled={submitting}>
-              {submitting ? "Saving…" : "Save"}
-            </Button>
+            </PremiumButton>
+            <PremiumButton onClick={saveSubject} disabled={submitting}>
+              {submitting ? "Saving…" : "Save Subject"}
+            </PremiumButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </AttendancePageLayout>
   );
 }

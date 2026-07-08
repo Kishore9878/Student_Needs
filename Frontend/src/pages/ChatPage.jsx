@@ -8,6 +8,7 @@ import ChatWindow from "@/components/chat/ChatWindow.jsx";
 import { X, Download } from "lucide-react";
 import { cn } from "@/lib/utils.js";
 import toast from "react-hot-toast";
+import { PageLayout } from "@/components/dashboard/shared/Primitives";
 
 export default function ChatPage() {
   const { user } = useAuth();
@@ -369,12 +370,12 @@ export default function ChatPage() {
   };
 
   return (
-    <div
-      className={cn(
-        "flex gap-4",
-        "h-[calc(100vh-96px)]"
-      )}
-    >
+    <PageLayout className="h-[calc(100vh-4rem)] p-4">
+      <div
+        className={cn(
+          "flex gap-4 w-full h-full"
+        )}
+      >
       {/* ── Conversation Sidebar Card ── */}
       <div
         className={cn(
@@ -481,6 +482,7 @@ export default function ChatPage() {
         </div>
       )}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
+      </div>
+    </PageLayout>
   );
 }

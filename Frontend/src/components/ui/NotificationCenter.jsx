@@ -105,66 +105,93 @@ export const NotificationCenter = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-[var(--radius-md)] border border-border bg-card shadow-[var(--shadow-lg)] overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center justify-between p-4 border-b border-border bg-secondary/30">
-            <h3 className="font-semibold text-foreground tracking-tight">Notifications</h3>
+        <div style={{
+          position: "absolute", right: 0, top: "40px",
+          width: "360px",
+          background: "var(--card-bg)",
+          border: "1px solid var(--border-color)",
+          borderRadius: "16px",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.12)",
+          overflow: "hidden", zIndex: 50,
+          display: "flex", flexDirection: "column",
+          animation: "fadeIn 0.2s ease"
+        }}>
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "16px", borderBottom: "1px solid var(--border-color)",
+            background: "var(--bg-secondary, rgba(0,0,0,0.02))"
+          }}>
+            <h3 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-primary)", margin: 0, letterSpacing: "-0.01em" }}>Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="text-xs flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
+                style={{
+                  fontSize: "12px", display: "flex", alignItems: "center", gap: "4px",
+                  color: "#3b82f6", background: "none", border: "none", cursor: "pointer", fontWeight: "600"
+                }}
               >
-                <Check className="w-3 h-3" /> Mark all read
+                <Check size={14} /> Mark all read
               </button>
             )}
           </div>
 
-          <div className="max-h-[400px] overflow-y-auto">
+          <div style={{ maxHeight: "400px", overflowY: "auto" }}>
             {loading && notifications.length === 0 ? (
-              <div className="flex items-center justify-center p-8">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <div style={{ display: "flex", alignItems: "center", justifyCenter: "center", padding: "40px" }}>
+                <Loader2 size={24} style={{ animation: "spin 1s linear infinite", color: "var(--text-muted)", margin: "0 auto" }} />
               </div>
             ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
-                <Bell className="w-8 h-8 mb-2 opacity-20" />
-                <p className="text-sm">No new notifications</p>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", textAlign: "center", color: "var(--text-muted)" }}>
+                <Bell size={32} style={{ marginBottom: "8px", opacity: 0.2 }} />
+                <p style={{ fontSize: "13px", margin: 0, fontWeight: "500" }}>No new notifications</p>
               </div>
             ) : (
-              <ul className="divide-y divide-border">
+              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
                 {notifications.map((notif) => (
                   <li
                     key={notif._id}
                     onClick={() => handleMarkAsRead(notif._id, notif.link)}
-                    className={`p-4 hover:bg-secondary/50 cursor-pointer transition-colors ${
-                      !notif.isRead ? "bg-primary/5" : ""
-                    }`}
+                    style={{
+                      padding: "16px", cursor: "pointer",
+                      borderBottom: "1px solid var(--border-color)",
+                      background: !notif.isRead ? "rgba(59,130,246,0.04)" : "transparent",
+                      transition: "background 0.15s ease",
+                      display: "flex", gap: "12px", alignItems: "flex-start"
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = !notif.isRead ? "rgba(59,130,246,0.08)" : "var(--bg-secondary, rgba(0,0,0,0.02))"}
+                    onMouseLeave={e => e.currentTarget.style.background = !notif.isRead ? "rgba(59,130,246,0.04)" : "transparent"}
                   >
-                    <div className="flex justify-between items-start gap-3">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2">
-                          {!notif.isRead && (
-                            <span className="w-2 h-2 rounded-full bg-primary" />
-                          )}
-                          <p className={`text-sm font-medium ${!notif.isRead ? "text-foreground" : "text-muted-foreground"}`}>
-                            {notif.title}
-                          </p>
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {notif.message}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground/60 mt-1">
-                          {new Date(notif.createdAt).toLocaleDateString()} at {new Date(notif.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                        </p>
-                      </div>
+                    {!notif.isRead ? (
+                      <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#3b82f6", marginTop: "6px", flexShrink: 0 }} />
+                    ) : (
+                      <div style={{ width: "8px", height: "8px", flexShrink: 0 }} />
+                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{
+                        fontSize: "13.5px", fontWeight: !notif.isRead ? "700" : "600",
+                        color: !notif.isRead ? "var(--text-primary)" : "var(--text-secondary)",
+                        margin: "0 0 4px", lineHeight: "1.3"
+                      }}>
+                        {notif.title}
+                      </p>
+                      <p style={{ fontSize: "12.5px", color: "var(--text-muted)", margin: "0 0 8px", lineHeight: "1.4" }}>
+                        {notif.message}
+                      </p>
+                      <p style={{ fontSize: "10.5px", color: "var(--text-muted)", margin: 0, opacity: 0.8, fontWeight: "500" }}>
+                        {new Date(notif.createdAt).toLocaleDateString()} at {new Date(notif.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </p>
                     </div>
                   </li>
                 ))}
               </ul>
             )}
           </div>
-          <div className="p-2 border-t border-border bg-secondary/30 text-center">
+          <div style={{ padding: "12px", borderTop: "1px solid var(--border-color)", background: "var(--bg-secondary, rgba(0,0,0,0.02))", textAlign: "center" }}>
             <button 
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              style={{ fontSize: "12px", color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontWeight: "600" }}
               onClick={() => setIsOpen(false)}
+              onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+              onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
             >
               Close
             </button>
