@@ -62,6 +62,8 @@ import {
   useStudentSignup,
 } from "@/services/Referrals/Auth/hooks.js";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // const roles = [
 //   {
 //     id: "student",
@@ -1395,7 +1397,7 @@ function RoleAuthShell({
               <div className="uc-social-buttons flex gap-3 w-full">
                 <button
                   type="button"
-                  onClick={() => window.location.href = `${process.env.VITE_API_BASE_URL}/api/v1/student/auth/google?role=${role}`}
+                  onClick={() => window.location.href = `${API_BASE_URL}/api/v1/student/auth/google?role=${role}`}
                   className="uc-social-btn flex-grow py-2.5 px-4 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-secondary)] text-sm font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -1408,7 +1410,7 @@ function RoleAuthShell({
                 </button>
                 <button
                   type="button"
-                  onClick={() => window.location.href = `${process.env.VITE_API_BASE_URL}/api/v1/student/auth/github?role=${role}`}
+                  onClick={() => window.location.href = `${API_BASE_URL}/api/v1/student/auth/github?role=${role}`}
                   className="uc-social-btn flex-grow py-2.5 px-4 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-secondary)] text-sm font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
