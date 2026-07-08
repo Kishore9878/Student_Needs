@@ -75,6 +75,8 @@ const handleSocialAuth = async (profile, targetRole = "student", done) => {
   }
 };
 
+const BACKEND_URL = (process.env.BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+
 // 🔐 GOOGLE STRATEGY
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(
@@ -83,7 +85,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:8000/api/v1/student/auth/google/callback",
+        callbackURL: `${BACKEND_URL}/api/v1/student/auth/google/callback`,
         passReqToCallback: true,
       },
       async (req, accessToken, refreshToken, profile, done) => {
@@ -102,7 +104,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "http://localhost:8000/api/v1/student/auth/github/callback",
+        callbackURL: `${BACKEND_URL}/api/v1/student/auth/github/callback`,
         scope: ["user:email"],
         passReqToCallback: true,
       },
