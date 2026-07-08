@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import API from "@/services/api/tutorialsApi.js";
 import { useNavigate, Link } from "react-router-dom";
-import { BookOpen } from "lucide-react";
-import { API_PREFIXES, getApiUrl } from "@/config/api.js";
+import { API_PREFIXES, getApiUrl, getGoogleOAuthUrl, getGithubOAuthUrl } from "@/config/api.js";
 
 // Google SVG Icon
 const GoogleIcon = () => (
@@ -132,7 +131,7 @@ function TutorRegisterPage() {
                 <button 
                   type="button" 
                   className="flex items-center justify-center gap-2 h-11 bg-transparent border border-[var(--border-color)] hover:bg-[var(--bg-secondary)]/80 rounded-[var(--radius-sm)] text-sm font-semibold text-[var(--text-primary)] transition-all cursor-pointer" 
-                  onClick={() => window.location.href = `${getApiUrl(API_PREFIXES.referrals)}/student/auth/google?role=tutor`}
+                  onClick={() => window.location.href = getGoogleOAuthUrl("tutor")}
                 >
                   <GoogleIcon />
                   Google
@@ -140,7 +139,7 @@ function TutorRegisterPage() {
                 <button 
                   type="button" 
                   className="flex items-center justify-center gap-2 h-11 bg-transparent border border-[var(--border-color)] hover:bg-[var(--bg-secondary)]/80 rounded-[var(--radius-sm)] text-sm font-semibold text-[var(--text-primary)] transition-all cursor-pointer" 
-                  onClick={() => window.location.href = `${getApiUrl(API_PREFIXES.referrals)}/student/auth/github?role=tutor`}
+                  onClick={() => window.location.href = getGithubOAuthUrl("tutor")}
                 >
                   <GitHubIcon />
                   GitHub

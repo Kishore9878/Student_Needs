@@ -20,6 +20,9 @@ import { auth } from "../../middlewares/Referrals/auth.js";
 
 const router = express.Router();
 
+const getFrontendUrl = () =>
+  (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+
 // ================= LOCAL AUTH ENDPOINTS =================
 router.post("/signup", signup);
 router.post("/verify-otp", verifyOtp);
@@ -53,7 +56,7 @@ router.get("/auth/google/callback", (req, res, next) => {
       if (err || !result) {
         const errMsg = info?.message || "Google authentication failed";
         return res.redirect(
-          `${process.env.FRONTEND_URL || "http://localhost:5173"}/login/student?error=${encodeURIComponent(errMsg)}`,
+          `${getFrontendUrl()}/login/student?error=${encodeURIComponent(errMsg)}`,
         );
       }
       try {
@@ -84,13 +87,13 @@ router.get("/auth/google/callback", (req, res, next) => {
         res.cookie("refreshToken", refresh, {
           httpOnly: true,
           secure: isProduction,
-          sameSite: "Lax",
+          sameSite: isProduction ? "None" : "Lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         res.cookie("token", token, {
           httpOnly: true,
           secure: isProduction,
-          sameSite: "Lax",
+          sameSite: isProduction ? "None" : "Lax",
           maxAge: 15 * 60 * 1000,
         });
 
@@ -100,11 +103,11 @@ router.get("/auth/google/callback", (req, res, next) => {
         console.log("✅ Frontend payload created");
         console.log(
           "Redirect URL:",
-          `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/social-success?token=...`,
+          `${getFrontendUrl()}/auth/social-success?token=...`,
         );
 
         return res.redirect(
-          `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/social-success?token=${token}&user=${userParam}`,
+          `${getFrontendUrl()}/auth/social-success?token=${token}&user=${userParam}`,
         );
       } catch (error) {
         console.error("❌ Google callback error:");
@@ -133,7 +136,7 @@ router.get("/auth/github/callback", (req, res, next) => {
       if (err || !result) {
         const errMsg = info?.message || "GitHub authentication failed";
         return res.redirect(
-          `${process.env.FRONTEND_URL || "http://localhost:5173"}/login/student?error=${encodeURIComponent(errMsg)}`,
+          `${getFrontendUrl()}/login/student?error=${encodeURIComponent(errMsg)}`,
         );
       }
       try {
@@ -154,13 +157,13 @@ router.get("/auth/github/callback", (req, res, next) => {
         res.cookie("refreshToken", refresh, {
           httpOnly: true,
           secure: isProduction,
-          sameSite: "Lax",
+          sameSite: isProduction ? "None" : "Lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         res.cookie("token", token, {
           httpOnly: true,
           secure: isProduction,
-          sameSite: "Lax",
+          sameSite: isProduction ? "None" : "Lax",
           maxAge: 15 * 60 * 1000,
         });
 
@@ -168,7 +171,7 @@ router.get("/auth/github/callback", (req, res, next) => {
         const userParam = encodeURIComponent(JSON.stringify(frontendPayload));
 
         return res.redirect(
-          `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/social-success?token=${token}&user=${userParam}`,
+          `${getFrontendUrl()}/auth/social-success?token=${token}&user=${userParam}`,
         );
       } catch (error) {
         return next(error);
