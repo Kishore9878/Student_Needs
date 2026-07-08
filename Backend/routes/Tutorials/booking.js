@@ -9,6 +9,19 @@ import TutorialMessage from "../../models/Tutorials/TutorialMessage.js";
 
 const router = express.Router();
 
+const updateMissedBookings = async (bookings) => {
+  const now = new Date();
+  for (let b of bookings) {
+    if (["upcoming", "accepted", "pending", "Booked"].includes(b.status)) {
+      const bookingDateTime = new Date(`${b.date}T${b.time}`);
+      if (bookingDateTime < now) {
+        b.status = "Missed";
+        await b.save();
+      }
+    }
+  }
+};
+
 /**
  * ✅ CREATE BOOKING (FROM FRONTEND)
  */
@@ -209,6 +222,8 @@ router.get("/", async (req, res) => {
 
     const bookings = await Booking.find({ userId });
 
+    await updateMissedBookings(bookings);
+
     // Sync meeting link if empty
     for (let b of bookings) {
       if (!b.meetingLink && (b.status === "upcoming" || b.status === "in_progress")) {
@@ -277,6 +292,8 @@ router.get("/for-tutor", async (req, res) => {
       tutorId: new mongoose.Types.ObjectId(tutorId),
     });
 
+    await updateMissedBookings(bookings);
+
     res.json({ bookings });
   } catch (err) {
     console.error(err);
@@ -295,7 +312,7 @@ router.patch("/:id/status", async (req, res) => {
     }
 
     const { status } = req.body;
-    const validStatuses = ["pending", "accepted", "upcoming", "in_progress", "completed", "declined", "Booked", "Completed", "Cancelled"];
+    const validStatuses = ["pending", "accepted", "upcoming", "in_progress", "completed", "declined", "Booked", "Completed", "Cancelled", "Missed"];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ msg: "Invalid status" });

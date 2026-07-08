@@ -12,11 +12,22 @@ import {
 /* ══════════════════════════════════════════════════════
    Helpers
 ══════════════════════════════════════════════════════ */
-const normalizeStatus = (status, date) => {
+const normalizeStatus = (status, date, time) => {
   if (!status) return "pending";
   const s = status.toLowerCase();
   if (s === "cancelled" || s === "canceled") return "cancelled";
   if (s === "completed" || s === "in_progress") return "completed";
+  if (s === "missed") return "missed";
+  
+  if (["upcoming", "accepted", "pending", "booked"].includes(s)) {
+    if (date && time) {
+      const bookingDateTime = new Date(`${date}T${time}`);
+      if (bookingDateTime < new Date()) {
+        return "missed";
+      }
+    }
+  }
+
   if (s === "upcoming" || s === "accepted") return "upcoming";
   // fallback: if date is future → upcoming, else completed
   if (date && new Date(date) >= new Date()) return "upcoming";
@@ -28,6 +39,7 @@ const STATUS_CONFIG = {
   pending:   { label: "Pending",   color: "#f59e0b", bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.25)", icon: AlertCircle },
   completed: { label: "Completed", color: "#10b981", bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.25)", icon: CheckCircle },
   cancelled: { label: "Cancelled", color: "#ef4444", bg: "rgba(239,68,68,0.1)",  border: "rgba(239,68,68,0.2)",  icon: XCircle },
+  missed:    { label: "Missed",    color: "#6b7280", bg: "rgba(107,114,128,0.1)", border: "rgba(107,114,128,0.25)", icon: AlertCircle },
 };
 
 const getInitials = (name = "") =>
@@ -75,7 +87,7 @@ const TutorAvatar = ({ name, color = "#3b82f6" }) => (
 /* ── Booking Card ── */
 const BookingCard = ({ booking, onCancel, onMessage, onJoin }) => {
   const [hovered, setHovered] = useState(false);
-  const status = normalizeStatus(booking.status, booking.date);
+  const status = normalizeStatus(booking.status, booking.date, booking.time);
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   const canCancel  = ["upcoming", "pending"].includes(status);
   const canJoin    = (status === "upcoming" || booking.status === "in_progress") && booking.meetingLinkPublished && booking.meetingLink;
@@ -303,9 +315,10 @@ function ManageBookingPage() {
   };
 
   // ── Counts ──
-  const upcomingCount  = bookings.filter(b => normalizeStatus(b.status, b.date) === "upcoming").length;
-  const completedCount = bookings.filter(b => normalizeStatus(b.status, b.date) === "completed").length;
-  const cancelledCount = bookings.filter(b => normalizeStatus(b.status, b.date) === "cancelled").length;
+  const upcomingCount  = bookings.filter(b => normalizeStatus(b.status, b.date, b.time) === "upcoming").length;
+  const completedCount = bookings.filter(b => normalizeStatus(b.status, b.date, b.time) === "completed").length;
+  const cancelledCount = bookings.filter(b => normalizeStatus(b.status, b.date, b.time) === "cancelled").length;
+  const missedCount    = bookings.filter(b => normalizeStatus(b.status, b.date, b.time) === "missed").length;
 
   return (
     <>
@@ -342,12 +355,13 @@ function ManageBookingPage() {
 
         {/* ── Summary Row ── */}
         {!loading && bookings.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "24px" }}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "24px" }}
             className="bookings-summary-grid">
             {[
               { label: "Upcoming",  count: upcomingCount,  color: "#3b82f6", bg: "rgba(59,130,246,0.08)",  border: "rgba(59,130,246,0.2)"  },
               { label: "Completed", count: completedCount, color: "#10b981", bg: "rgba(16,185,129,0.08)",  border: "rgba(16,185,129,0.2)"  },
               { label: "Cancelled", count: cancelledCount, color: "#ef4444", bg: "rgba(239,68,68,0.06)",   border: "rgba(239,68,68,0.15)"  },
+              { label: "Missed",    count: missedCount,    color: "#6b7280", bg: "rgba(107,114,128,0.08)", border: "rgba(107,114,128,0.2)" },
             ].map(({ label, count, color, bg, border }) => (
               <div key={label} style={{
                 background: "var(--card-bg)", border: "1px solid var(--border-color)",

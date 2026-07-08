@@ -1,13 +1,13 @@
 import React from "react";
-import DashboardLayout from "@/components/layouts/DashboardLayout";
 import TutorProfileView from "@/components/profile/TutorProfileView.jsx";
+import { PageLayout } from "@/components/dashboard/shared/Primitives";
 
 function TutorEditProfilePage() {
   return (
-    <DashboardLayout pageTitle="Edit Profile" role="tutor">
+    <PageLayout className="pb-8">
       <TutorProfileView />
-    </DashboardLayout>
+    </PageLayout>
   );
 }
 
-export default TutorEditProfilePage;
+export default TutorEditProfilePage;

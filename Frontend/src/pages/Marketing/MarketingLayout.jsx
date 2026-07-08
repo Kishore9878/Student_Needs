@@ -94,7 +94,7 @@ export default function MarketingLayout() {
     if (location.pathname === "/" || location.pathname === "") return null;
     
     return (
-      <nav aria-label="breadcrumb" className="container mx-auto px-6 py-3 text-xs text-muted-foreground select-none">
+      <nav aria-label="breadcrumb" className="w-full max-w-[1440px] mx-auto px-5 md:px-8 lg:px-12 xl:px-[56px] mt-8 pt-0 pb-0 text-xs text-muted-foreground select-none">
         <ol className="flex items-center gap-1.5 flex-wrap">
           <li>
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
@@ -265,172 +265,284 @@ export default function MarketingLayout() {
         )}
       </AnimatePresence>
 
-      {/* 🚀 CONSOLIDATED COMPACT PREMIUM FOOTER (280px-350px height) */}
-      <footer className="uc-footer bg-[var(--card-bg)] border-t border-[var(--border-color)] mt-16 px-space-md md:px-space-lg py-space-lg w-full text-xs text-[var(--text-secondary)]">
-        <div className="max-w-[1600px] mx-auto uc-footer-grid-audit gap-space-lg text-left mb-space-lg">
-          {/* Section 1: About UniConnect */}
-          <div className="space-y-3">
-            <h5 className="font-bold text-foreground text-sm uppercase tracking-wider">About UniConnect</h5>
-            <p className="text-muted-foreground leading-relaxed text-[11px] max-w-sm">
-              UniConnect is an all-in-one student platform that helps students manage academics, connect with tutors, track attendance, monitor expenses, discover referrals, and build professional alumni networks.
-            </p>
-            {/* Social SVGs */}
-            <div className="flex gap-2.5 pt-1">
-              <a href="https://twitter.com/uniconnect" target="_blank" rel="noreferrer" className="p-1.5 bg-secondary hover:bg-secondary/80 border border-border/60 rounded text-muted-foreground hover:text-primary transition-all" aria-label="Twitter">
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-              <a href="https://github.com/uniconnect" target="_blank" rel="noreferrer" className="p-1.5 bg-secondary hover:bg-secondary/80 border border-border/60 rounded text-muted-foreground hover:text-primary transition-all" aria-label="GitHub">
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-                </svg>
-              </a>
-              <a href="https://linkedin.com/company/uniconnect" target="_blank" rel="noreferrer" className="p-1.5 bg-secondary hover:bg-secondary/80 border border-border/60 rounded text-muted-foreground hover:text-primary transition-all" aria-label="LinkedIn">
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-              </a>
-            </div>
-          </div>
+      {/* 🚀 CONSOLIDATED COMPACT PREMIUM FOOTER */}
+      <footer className="uc-footer w-full bg-[var(--card-bg)] border-t border-[var(--border-color)] mt-16 text-xs text-[var(--text-secondary)]">
+        <style>{`
+          .uc-footer {
+            padding-top: 48px !important;
+            padding-bottom: 48px !important;
+            box-sizing: border-box !important;
+          }
 
-          {/* Section 2: Quick FAQs (Accordion) */}
-          <div className="space-y-3">
-            <h5 className="font-bold text-foreground text-sm uppercase tracking-wider">Quick FAQs</h5>
-            <div className="space-y-1.5">
-              {faqs.map((faq, idx) => (
-                <div key={idx} className="border border-border/50 rounded-[var(--radius-sm)] overflow-hidden bg-background/50">
-                  <button
-                    onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-left font-semibold text-[11px] text-foreground hover:bg-secondary/40 transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    {activeFaq === idx ? <ChevronUp className="w-3 h-3 text-primary" /> : <ChevronDown className="w-3 h-3 text-muted-foreground" />}
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {activeFaq === idx && (
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: "auto" }}
-                        exit={{ height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="px-3 pb-2 text-[10px] text-muted-foreground leading-normal border-t border-border/20 pt-1.5 bg-secondary/10 font-normal">
-                          {faq.a}
-                        </p>
-                      </motion.div>
-                    )}
+          .footer-content {
+            padding-top: 0 !important;
+          }
+
+          .uc-marketing-footer-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 32px 40px !important;
+            width: 100% !important;
+          }
+          @media (min-width: 768px) {
+            .uc-marketing-footer-grid {
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+          }
+          @media (min-width: 1280px) {
+            .uc-marketing-footer-grid {
+              grid-template-columns: 1fr 1.25fr 1.15fr 1.2fr !important;
+            }
+          }
+
+          .uc-footer-about-text {
+            max-width: 300px !important;
+            width: 100% !important;
+            font-size: 14px !important;
+            line-height: 24px !important;
+            word-break: normal !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+          }
+
+          .uc-footer-heading {
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.06em !important;
+            text-transform: uppercase !important;
+            margin-bottom: 16px !important;
+            color: var(--foreground) !important;
+          }
+
+          .uc-footer-input {
+            width: 100% !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            background-color: #ffffff !important;
+            color: var(--foreground) !important;
+            outline: none !important;
+            box-sizing: border-box !important;
+          }
+          [data-theme="dark"] .uc-footer-input {
+            border-color: var(--border-color) !important;
+            background-color: var(--background) !important;
+          }
+
+          .uc-footer-textarea-wrapper {
+            position: relative !important;
+            width: 100% !important;
+            display: flex !important;
+            align-items: stretch !important;
+          }
+
+          .uc-footer-textarea {
+            width: 100% !important;
+            min-height: 80px !important;
+            padding: 12px 40px 12px 12px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            background-color: #ffffff !important;
+            color: var(--foreground) !important;
+            outline: none !important;
+            resize: none !important;
+            box-sizing: border-box !important;
+          }
+          [data-theme="dark"] .uc-footer-textarea {
+            border-color: var(--border-color) !important;
+            background-color: var(--background) !important;
+          }
+
+          .uc-footer-send-btn {
+            position: absolute !important;
+            right: 12px !important;
+            bottom: 12px !important;
+            color: var(--primary) !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 24px !important;
+            height: 24px !important;
+          }
+          .uc-footer-send-btn:hover {
+            color: var(--primary-hover) !important;
+          }
+        `}</style>
+        <div className="w-full max-w-[1440px] mx-auto px-5 md:px-8 lg:px-10 footer-content">
+          <div className="uc-marketing-footer-grid text-left mb-10">
+            {/* Section 1: About UniConnect */}
+            <div className="flex flex-col justify-start">
+              <h5 className="uc-footer-heading">About UniConnect</h5>
+              <p className="uc-footer-about-text text-muted-foreground mb-4">
+                UniConnect is an all-in-one student platform that helps students manage academics, connect with tutors, track attendance, monitor expenses, discover referrals, and build professional alumni networks.
+              </p>
+              {/* Social SVGs */}
+              <div className="flex gap-2.5 pt-1">
+                <a href="https://twitter.com/uniconnect" target="_blank" rel="noreferrer" className="p-1.5 bg-secondary hover:bg-secondary/80 border border-border/60 rounded text-muted-foreground hover:text-primary transition-all" aria-label="Twitter">
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
+                <a href="https://github.com/uniconnect" target="_blank" rel="noreferrer" className="p-1.5 bg-secondary hover:bg-secondary/80 border border-border/60 rounded text-muted-foreground hover:text-primary transition-all" aria-label="GitHub">
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                  </svg>
+                </a>
+                <a href="https://linkedin.com/company/uniconnect" target="_blank" rel="noreferrer" className="p-1.5 bg-secondary hover:bg-secondary/80 border border-border/60 rounded text-muted-foreground hover:text-primary transition-all" aria-label="LinkedIn">
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            {/* Section 2: Quick FAQs (Accordion) */}
+            <div className="flex flex-col justify-start">
+              <h5 className="uc-footer-heading">Quick FAQs</h5>
+              <div className="flex flex-col gap-2">
+                {faqs.map((faq, idx) => (
+                  <div key={idx} className="border border-slate-200 dark:border-border/50 rounded-lg overflow-hidden bg-white dark:bg-background/50">
+                    <button
+                      onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                      className="w-full min-h-[42px] flex items-center justify-between px-3.5 text-left font-medium text-sm text-foreground hover:bg-secondary/40 transition-colors"
+                      type="button"
+                    >
+                      <span>{faq.q}</span>
+                      {activeFaq === idx ? <ChevronUp className="w-4 h-4 text-primary" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {activeFaq === idx && (
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: "auto" }}
+                          exit={{ height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <p className="px-3.5 pb-3 text-xs text-muted-foreground leading-relaxed border-t border-slate-100 dark:border-border/20 pt-2 bg-secondary/10 font-normal">
+                            {faq.a}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Section 3: Success Stories (Testimonials) */}
+            <div className="flex flex-col justify-between">
+              <div className="flex flex-col">
+                <h5 className="uc-footer-heading">Success Stories</h5>
+                <div className="relative overflow-hidden w-full bg-white dark:bg-background/40 border border-slate-200 dark:border-border/40 p-5 rounded-xl min-h-[110px] flex flex-col justify-center">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeTestimonial}
+                      initial={{ opacity: 0, x: 15 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -15 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col gap-2"
+                    >
+                      <div className="flex gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-3.5 h-3.5 fill-amber-400 stroke-amber-400" />
+                        ))}
+                      </div>
+                      <p className="text-sm italic text-foreground leading-snug font-medium">
+                        "{testimonials[activeTestimonial].text}"
+                      </p>
+                      <span className="text-xs text-primary font-bold">
+                        — {testimonials[activeTestimonial].author}
+                      </span>
+                    </motion.div>
                   </AnimatePresence>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Section 3: Success Stories (Testimonials) */}
-          <div className="space-y-3 flex flex-col justify-between">
-            <div>
-              <h5 className="font-bold text-foreground text-sm uppercase tracking-wider">Success Stories</h5>
-              <div className="relative overflow-hidden h-[74px] mt-1.5">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeTestimonial}
-                    initial={{ opacity: 0, x: 15 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -15 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute inset-0 flex flex-col justify-center bg-background/40 border border-border/40 p-2.5 rounded-[var(--radius-sm)]"
-                  >
-                    <div className="flex gap-1 mb-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-2.5 h-2.5 fill-amber-400 stroke-amber-400" />
-                      ))}
-                    </div>
-                    <p className="text-[10.5px] italic text-foreground leading-snug font-medium line-clamp-2">
-                      "{testimonials[activeTestimonial].text}"
-                    </p>
-                    <span className="text-[9px] text-primary font-bold mt-1 block">
-                      — {testimonials[activeTestimonial].author}
-                    </span>
-                  </motion.div>
-                </AnimatePresence>
+              </div>
+              {/* Quick Site Links */}
+              <div className="flex gap-3 text-[10.5px] text-muted-foreground pt-4 font-medium">
+                <Link to="/gallery" className="hover:text-primary transition-colors">Platform Gallery</Link>
+                <span>•</span>
+                <Link to="/updates" className="hover:text-primary transition-colors">Release Updates</Link>
+                <span>•</span>
+                <Link to="/security" className="hover:text-primary transition-colors">Security Details</Link>
               </div>
             </div>
-            {/* Quick Site Links */}
-            <div className="flex gap-3 text-[10px] text-muted-foreground pt-2 font-medium">
-              <Link to="/gallery" className="hover:text-primary transition-colors">Platform Gallery</Link>
-              <span>•</span>
-              <Link to="/updates" className="hover:text-primary transition-colors">Release Updates</Link>
-              <span>•</span>
-              <Link to="/security" className="hover:text-primary transition-colors">Security Details</Link>
-            </div>
-          </div>
 
-          {/* Section 4: Quick Contact Form */}
-          <div className="space-y-3">
-            <h5 className="font-bold text-foreground text-sm uppercase tracking-wider">Quick Contact</h5>
-            <form onSubmit={handleContactSubmit} className="space-y-2">
-              <div className="grid grid-cols-2 gap-1.5">
+            {/* Section 4: Quick Contact Form */}
+            <div className="flex flex-col justify-start">
+              <h5 className="uc-footer-heading">Quick Contact</h5>
+              <form onSubmit={handleContactSubmit} className="flex flex-col gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="uc-footer-input"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="uc-footer-input"
+                  />
+                </div>
                 <input
                   type="text"
-                  placeholder="Name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="px-2.5 py-1 bg-background border border-border rounded text-[10.5px] text-foreground focus:outline-none focus:border-primary placeholder:text-muted-foreground"
+                  placeholder="Subject"
+                  value={formData.subject}
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  className="uc-footer-input"
                 />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="px-2.5 py-1 bg-background border border-border rounded text-[10.5px] text-foreground focus:outline-none focus:border-primary placeholder:text-muted-foreground"
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="Subject"
-                value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                className="w-full px-2.5 py-1 bg-background border border-border rounded text-[10.5px] text-foreground focus:outline-none focus:border-primary placeholder:text-muted-foreground"
-              />
-              <div className="relative flex items-center">
-                <textarea
-                  placeholder="Message..."
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows="1"
-                  className="w-full pl-2.5 pr-8 py-1 bg-background border border-border rounded text-[10.5px] text-foreground focus:outline-none focus:border-primary placeholder:text-muted-foreground resize-none"
-                />
-                <button
-                  type="submit"
-                  disabled={sending}
-                  className="absolute right-1 text-primary hover:text-primary-hover transition-colors p-1"
-                  aria-label="Send Inquiry"
-                >
-                  {sending ? (
-                    <span className="w-3 h-3 border border-t-transparent border-primary rounded-full animate-spin block" />
-                  ) : (
-                    <Send className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              </div>
+                <div className="uc-footer-textarea-wrapper">
+                  <textarea
+                    placeholder="Message..."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="uc-footer-textarea"
+                  />
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="uc-footer-send-btn"
+                    aria-label="Send Inquiry"
+                  >
+                    {sending ? (
+                      <span className="w-4 h-4 border border-t-transparent border-primary rounded-full animate-spin block" />
+                    ) : (
+                      <Send className="w-4.5 h-4.5" />
+                    )}
+                  </button>
+                </div>
 
-              {success && (
-                <div className="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
-                  <Check className="w-3 h-3" /> Inquiry sent! We'll reply soon.
-                </div>
-              )}
-              {errorMsg && (
-                <div className="text-[10px] text-rose-500 font-semibold flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" /> {errorMsg}
-                </div>
-              )}
-            </form>
+                {success && (
+                  <div className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Inquiry sent! We'll reply soon.
+                  </div>
+                )}
+                {errorMsg && (
+                  <div className="text-[11px] text-rose-500 font-semibold flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" /> {errorMsg}
+                  </div>
+                )}
+              </form>
+            </div>
           </div>
         </div>
 
         {/* Bottom strip */}
-        <div className="max-w-7xl mx-auto pt-4 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] text-muted-foreground font-medium">
+        <div className="max-w-[1440px] mx-auto px-5 md:px-8 lg:px-10 pt-4 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] text-muted-foreground font-medium">
           <span>&copy; {new Date().getFullYear()} UniConnect Platform. Unifying student life.</span>
           <div className="flex gap-3 items-center">
             <span>Version 1.2.0</span>
@@ -442,19 +554,146 @@ export default function MarketingLayout() {
         </div>
       </footer>
 
-      {/* 🚀 STICKY BOTTOM CTA BAR (Desktop Only) */}
+      {/* 🚀 STICKY BOTTOM CTA BAR */}
       <div className="sticky-cta-bar select-none">
-        <div className="flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs text-muted-foreground font-medium">UniConnect Operating System - Start boosting academic performance today.</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link to="/features" className="px-4 py-1.5 bg-secondary hover:bg-secondary/80 border border-border text-foreground rounded text-xs font-bold transition-all hover:border-primary">
-            Explore Features
-          </Link>
-          <Link to="/role-selection" className="px-4.5 py-1.5 bg-primary text-white rounded text-xs font-black hover:bg-primary-hover transition-colors shadow-[var(--shadow-md)] flex items-center gap-1.5">
-            Join UniConnect <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+        <style>{`
+          .sticky-cta-bar {
+            position: relative !important;
+            background: #ffffff !important;
+            border-top: 1px solid #e2e8f0 !important;
+            padding: 20px 40px !important;
+            min-height: 80px !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            display: block !important;
+          }
+
+          .sticky-cta-container {
+            width: 100% !important;
+            max-width: 1600px !important;
+            margin: 0 auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 24px !important;
+          }
+
+          /* Green dot */
+          .sticky-cta-status-dot {
+            width: 12px !important;
+            height: 12px !important;
+            border-radius: 9999px !important;
+            background-color: #10b981 !important;
+            flex-shrink: 0 !important;
+          }
+
+          /* Left status row */
+          .sticky-cta-left {
+            display: flex !important;
+            align-items: center !important;
+            gap: 14px !important;
+          }
+
+          .sticky-cta-text {
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            line-height: 1.4 !important;
+            color: #334155 !important;
+          }
+
+          /* Right buttons container */
+          .sticky-cta-right {
+            display: flex !important;
+            align-items: center !important;
+            gap: 14px !important;
+          }
+
+          /* Explore features button */
+          .sticky-cta-btn-secondary {
+            height: 44px !important;
+            padding: 0 22px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            background: #ffffff !important;
+            color: #334155 !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-sizing: border-box !important;
+            transition: background-color 150ms ease, border-color 150ms ease !important;
+          }
+          .sticky-cta-btn-secondary:hover {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #1e293b !important;
+          }
+
+          /* Join UniConnect button */
+          .sticky-cta-btn-primary {
+            height: 44px !important;
+            padding: 0 22px !important;
+            border-radius: 12px !important;
+            background: var(--primary, #2563eb) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            text-decoration: none !important;
+            box-sizing: border-box !important;
+            transition: background-color 150ms ease !important;
+          }
+          .sticky-cta-btn-primary:hover {
+            background: var(--primary-hover, #1d4ed8) !important;
+          }
+
+          @media (max-width: 768px) {
+            .sticky-cta-bar {
+              padding: 20px !important;
+            }
+            .sticky-cta-container {
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 14px !important;
+              align-items: center !important;
+            }
+            .sticky-cta-text {
+              font-size: 14px !important;
+              text-align: center !important;
+            }
+            .sticky-cta-left {
+              flex-direction: row !important;
+              justify-content: center !important;
+            }
+            .sticky-cta-right {
+              width: 100% !important;
+              justify-content: center !important;
+            }
+            .sticky-cta-btn-secondary,
+            .sticky-cta-btn-primary {
+              flex: 1 !important;
+              height: 40px !important;
+            }
+          }
+        `}</style>
+        <div className="sticky-cta-container">
+          <div className="sticky-cta-left">
+            <span className="sticky-cta-status-dot animate-pulse" />
+            <span className="sticky-cta-text">UniConnect Operating System - Start boosting academic performance today.</span>
+          </div>
+          <div className="sticky-cta-right">
+            <Link to="/features" className="sticky-cta-btn-secondary">
+              Explore Features
+            </Link>
+            <Link to="/role-selection" className="sticky-cta-btn-primary">
+              Join UniConnect <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
