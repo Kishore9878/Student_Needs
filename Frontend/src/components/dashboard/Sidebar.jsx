@@ -33,7 +33,12 @@ const Sidebar = ({ className, role = "student" }) => {
     "student"
   ).toLowerCase();
 
-  const displayName = user?.name || user?.fullName || user?.username || "User";
+  const displayName =
+    user?.name ||
+    (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.firstName) ||
+    user?.fullName ||
+    user?.username ||
+    "User";
 
   let links = [];
 
@@ -173,39 +178,50 @@ const Sidebar = ({ className, role = "student" }) => {
               </div>
             )}
           </Link>
-
-          <button
-            onClick={logout}
-            className={cn(
-              "group relative flex items-center transition-all duration-200 cursor-pointer w-full text-[var(--danger)] hover:bg-[var(--danger)]/10",
-              isCollapsed 
-                ? "w-10 h-10 justify-center rounded-lg" 
-                : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold"
-            )}
-          >
-            <LogOut className="w-5 h-5 shrink-0 text-[var(--danger)]" />
-            {!isCollapsed && <span className="truncate">Log out</span>}
-            {isCollapsed && (
-              <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--danger)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
-                Log out
-              </div>
-            )}
-          </button>
         </div>
       </nav>
+ 
+      {/* Footer Container */}
+      <div
+        className={cn(
+          "mt-auto shrink-0 flex flex-col w-full border-t border-[var(--border-color)]",
+          isCollapsed ? "items-center px-2 pt-4 pb-5" : "px-3 pt-6 pb-6"
+        )}
+      >
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          className={cn(
+            "group relative flex items-center transition-all duration-200 cursor-pointer w-full bg-transparent text-[var(--danger)]/90 hover:text-[var(--danger)] hover:bg-[var(--danger)]/[0.05]",
+            isCollapsed 
+              ? "w-10 h-10 justify-center rounded-lg mx-auto" 
+              : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold"
+          )}
+        >
+          <LogOut className="w-5 h-5 shrink-0 text-[var(--danger)]" />
+          {!isCollapsed && <span className="truncate">Log out</span>}
+          {isCollapsed && (
+            <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--danger)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+              Log out
+            </div>
+          )}
+        </button>
 
-      {/* Footer Profile Section */}
-      <div className={cn(
-        "mt-auto shrink-0 flex flex-col p-3 border-t border-[var(--border-color)] bg-[var(--bg-primary)]/40",
-        isCollapsed ? "items-center" : ""
-      )}>
-        {/* User Badge Info Card */}
+        {/* Spacing below Logout */}
+        <div className={cn(isCollapsed ? "h-4" : "h-6")} />
+
+        {/* User Profile Section */}
         <div className={cn(
-          "flex items-center rounded-lg border border-[var(--border-color)] transition-all duration-200 overflow-hidden bg-[var(--card-bg)] shadow-sm",
-          isCollapsed ? "w-10 h-10 justify-center p-0 border-none" : "gap-3 p-2.5 w-full"
+          "flex items-center transition-all duration-200 overflow-hidden",
+          isCollapsed 
+            ? "w-10 h-10 justify-center p-0 border-none bg-transparent shadow-none mx-auto" 
+            : "gap-3 p-3 w-full rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] shadow-[var(--shadow-sm)]"
         )}>
           {/* User Avatar Circle */}
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#8b5cf6] border border-[var(--border-color)] overflow-hidden flex items-center justify-center shrink-0 font-bold text-white shadow-sm">
+          <div className={cn(
+            "rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#8b5cf6] border border-[var(--border-color)] overflow-hidden flex items-center justify-center shrink-0 font-bold text-white shadow-sm",
+            isCollapsed ? "w-8 h-8" : "w-10 h-10"
+          )}>
             {user?.profilePic ? (
               <img
                 src={user.profilePic}
@@ -213,7 +229,7 @@ const Sidebar = ({ className, role = "student" }) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-xs uppercase font-bold">
+              <span className={cn("uppercase font-bold", isCollapsed ? "text-xs" : "text-sm")}>
                 {displayName.charAt(0).toUpperCase()}
               </span>
             )}
@@ -221,22 +237,25 @@ const Sidebar = ({ className, role = "student" }) => {
           {/* Expanded Name & Role Details */}
           {!isCollapsed && (
             <div className="flex-1 flex flex-col min-w-0 text-left">
-              <span className="text-xs font-bold text-[var(--text-primary)] truncate">{displayName}</span>
-              <span className="text-[10px] text-[var(--text-muted)] capitalize mt-0.5 truncate">
+              <span className="text-sm font-bold text-[var(--text-primary)] truncate">{displayName}</span>
+              <span className="text-[11px] text-[var(--text-muted)] capitalize mt-0.5 truncate">
                 {user?.role || user?.accountType || "Student"}
               </span>
             </div>
           )}
         </div>
 
-        {/* Sidebar Collapse Toggle Button */}
+        {/* Spacing below Profile Card */}
+        <div className={cn(isCollapsed ? "h-4" : "h-5")} />
+
+        {/* Collapse Sidebar Button */}
         <button
           onClick={toggleSidebar}
           className={cn(
-            "group relative flex items-center text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-all duration-200 w-full cursor-pointer mt-2",
+            "group relative flex items-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all duration-200 w-full cursor-pointer bg-transparent",
             isCollapsed 
-              ? "w-10 h-10 justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]" 
-              : "gap-3 px-3 py-2.5 rounded-lg text-xs font-bold"
+              ? "w-10 h-10 justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] mx-auto" 
+              : "gap-3 px-3 py-1 text-xs font-bold"
           )}
           aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >

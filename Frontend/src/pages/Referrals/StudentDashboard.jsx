@@ -469,8 +469,7 @@ export function StudentDashboard() {
             />
             <OpportunitiesList
               opportunities={filteredOpportunities?.filter(opp => 
-                (opp.opportunityType === 'Referral' || !opp.opportunityType) && 
-                !appliedOpportunities.includes(opp._id)
+                (opp.opportunityType === 'Referral' || !opp.opportunityType)
               )}
               appliedOpportunities={appliedOpportunities}
               loading={loadingOpportunities}
@@ -528,8 +527,7 @@ export function StudentDashboard() {
             />
             <OpportunitiesList
               opportunities={filteredOpportunities?.filter(opp => 
-                opp.opportunityType === 'Job' && 
-                !appliedOpportunities.includes(opp._id)
+                opp.opportunityType === 'Job'
               )}
               appliedOpportunities={appliedOpportunities}
               loading={loadingOpportunities}

@@ -8,6 +8,12 @@ import { computeActivityStatus } from "../utils/bookingActivityHelper.js";
 import mongoose from "mongoose";
 import protect from "../middlewares/Attendance/authMiddleware.js";
 
+import Student from "../models/Referrals/StudentModel.js";
+import Application from "../models/Referrals/ApplicationModel.js";
+import expenseSettingsModel from "../models/Expenses/expenseSettingsModel.js";
+import billModel from "../models/Expenses/billModel.js";
+import { PersonalAttendanceService } from "../services/PersonalAttendanceService.js";
+
 const router = express.Router();
 
 router.use(protect);
@@ -112,6 +118,156 @@ router.get("/tutor-dashboard", catchAsync(async (req, res) => {
     data: {
       recentRequests,
       activityTimeline
+    }
+  });
+}));
+
+/**
+ * GET /api/analytics/dashboard-summary
+ * Aggregates all required live data for the student dashboard.
+ */
+router.get("/dashboard-summary", protect, catchAsync(async (req, res) => {
+  const userId = req.user._id || req.user.id;
+
+  // 1. Attendance stats
+  let attendanceStats = { percentage: 0, total: 0, present: 0, absent: 0, list: [] };
+  try {
+    const stats = await PersonalAttendanceService.getStats(req.user);
+    const list = await PersonalAttendanceService.getStudentAttendanceList(req.user);
+    if (stats && stats.overall) {
+      attendanceStats = {
+        percentage: stats.overall.percentage || 0,
+        total: stats.overall.total || 0,
+        present: stats.overall.present || 0,
+        absent: stats.overall.absent || 0,
+        list: list || []
+      };
+    }
+  } catch (err) {
+    console.error("Error fetching attendance stats for dashboard summary:", err);
+  }
+
+  // 2. Expenses summary & current month list
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+  const endOfMonth = new Date(startOfMonth);
+  endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+
+  let expenseSummary = {
+    monthlyBudget: 0,
+    totalSpent: 0,
+    remainingBudget: 0,
+    currency: "INR",
+    hasBudget: false
+  };
+  let expensesList = [];
+
+  try {
+    const settings = await expenseSettingsModel.findOne({ userId }) || {
+      monthlyBudget: 0,
+      savingsGoal: 0,
+      currency: "INR",
+    };
+
+    const monthlyExpenses = await expenseModel.find({
+      userId,
+      date: { $gte: startOfMonth, $lt: endOfMonth },
+    }).sort({ date: -1 });
+
+    expensesList = monthlyExpenses;
+
+    let totalSpent = 0;
+    monthlyExpenses.forEach((exp) => {
+      if (exp.type === "expense") {
+        totalSpent += exp.amount;
+      }
+    });
+
+    expenseSummary = {
+      monthlyBudget: settings.monthlyBudget,
+      totalSpent,
+      remainingBudget: settings.monthlyBudget - totalSpent,
+      currency: settings.currency,
+      hasBudget: settings.monthlyBudget > 0
+    };
+  } catch (err) {
+    console.error("Error fetching expenses stats for dashboard summary:", err);
+  }
+
+  // 3. Profile completeness (dynamic based on requested 8 fields)
+  let profile = { completeness: 0, remainingFields: [] };
+  try {
+    const student = await Student.findById(userId);
+    if (student) {
+      const fields = [
+        { name: "Name", isCompleted: !!(student.firstName || student.lastName) },
+        { name: "Email", isCompleted: !!student.email },
+        { name: "Phone", isCompleted: !!student.phoneNumber },
+        { name: "Profile Photo", isCompleted: !!student.image },
+        { name: "Department", isCompleted: !!student.branch },
+        { name: "Year", isCompleted: !!student.graduationYear },
+        { name: "Skills", isCompleted: !!(student.skills && student.skills.length > 0) },
+        { name: "Bio", isCompleted: !!student.bio },
+      ];
+      const completedCount = fields.filter(f => f.isCompleted).length;
+      const totalCount = fields.length;
+      const completeness = Math.round((completedCount / totalCount) * 100);
+      const missing = fields.filter(f => !f.isCompleted).map(f => f.name);
+
+      profile = {
+        completeness,
+        remainingFields: missing
+      };
+    }
+  } catch (err) {
+    console.error("Error fetching profile stats for dashboard summary:", err);
+  }
+
+  // 4. Referrals made
+  let referrals = { total: 0 };
+  try {
+    const apps = await Application.find({ student: userId })
+      .populate({
+        path: "opportunity",
+        select: "opportunityType"
+      });
+    const referralApps = apps.filter(app => app.opportunity && app.opportunity.opportunityType === "Referral");
+    referrals = {
+      total: referralApps.length
+    };
+  } catch (err) {
+    console.error("Error fetching referrals stats for dashboard summary:", err);
+  }
+
+  // 5. Bookings
+  let bookings = [];
+  try {
+    bookings = await Booking.find({ userId }).sort({ date: -1 });
+  } catch (err) {
+    console.error("Error fetching bookings for dashboard summary:", err);
+  }
+
+  // 6. Fetch Bills (for calendar due dates)
+  let bills = [];
+  try {
+    bills = await billModel.find({ userId, status: { $ne: "Paid" } });
+  } catch (err) {
+    console.error("Error fetching bills for dashboard summary:", err);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      attendance: attendanceStats,
+      expenses: {
+        ...expenseSummary,
+        list: expensesList
+      },
+      profile,
+      referrals,
+      bookings,
+      bills
     }
   });
 }));

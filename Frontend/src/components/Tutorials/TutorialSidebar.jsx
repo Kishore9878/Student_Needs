@@ -119,7 +119,13 @@ const TutorialSidebar = () => {
             )}
           </NavLink>
         ))}
+      </nav>
 
+      {/* Bottom Actions */}
+      <div className={cn(
+        "mt-auto border-t border-[var(--border-color)] shrink-0 flex flex-col p-3 bg-[var(--bg-primary)]/40",
+        isCollapsed ? "items-center" : ""
+      )}>
         {/* Logout */}
         <button
           onClick={() => {
@@ -130,7 +136,7 @@ const TutorialSidebar = () => {
             }
           }}
           className={cn(
-            "group relative flex items-center transition-all duration-200 cursor-pointer w-full text-[var(--danger)] hover:bg-[var(--danger)]/10",
+            "group relative flex items-center transition-all duration-200 cursor-pointer w-full text-[var(--danger)] hover:bg-[var(--danger)]/10 mb-3",
             isCollapsed 
               ? "w-10 h-10 justify-center rounded-lg" 
               : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold"
@@ -146,13 +152,7 @@ const TutorialSidebar = () => {
             </div>
           )}
         </button>
-      </nav>
 
-      {/* Bottom Actions */}
-      <div className={cn(
-        "mt-auto border-t border-[var(--border-color)] shrink-0 flex flex-col p-3 bg-[var(--bg-primary)]/40",
-        isCollapsed ? "items-center" : ""
-      )}>
         {/* User Card */}
         <div className={cn(
           "flex items-center rounded-lg border border-[var(--border-color)] transition-all duration-200 overflow-hidden bg-[var(--card-bg)] shadow-sm",
