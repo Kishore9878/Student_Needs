@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
@@ -8,18 +8,23 @@ export default function SocialSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { setUser } = useAuth();
+  const hasProcessedRef = useRef(false);
 
   useEffect(() => {
+    if (hasProcessedRef.current) return;
+
     const token = searchParams.get("token");
     const userParam = searchParams.get("user");
 
     if (!token || !userParam) {
+      hasProcessedRef.current = true;
       showToast("Authentication failed: Missing parameters", "error");
       navigate("/role-selection");
       return;
     }
 
     try {
+      hasProcessedRef.current = true;
       const decodedUser = JSON.parse(decodeURIComponent(userParam));
       const role = (decodedUser.role || decodedUser.accountType || "").toLowerCase();
 

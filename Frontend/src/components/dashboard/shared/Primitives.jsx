@@ -11,7 +11,7 @@ import { EmptyState as GlobalEmptyState } from "../../ui/EmptyState";
 export { MetricCard };
 export const StatCard = MetricCard;
 
-const MotionCard = motion(Card);
+const MotionCard = motion.create ? motion.create(Card) : motion(Card);
 
 // 1. PremiumCard Component
 export const PremiumCard = React.forwardRef(({

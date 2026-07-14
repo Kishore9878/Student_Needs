@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { attendanceApiClient, referralsApiClient, tutorsApiClient } from '@/services/apiClient.js';
 import { AUTH_ENDPOINTS } from '@/services/Referrals/Auth/config.js';
+import { showToast } from '@/components/Referrals/TransactionToast.jsx';
 
 const GlobalAuthContext = createContext();
 
@@ -63,6 +64,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(async () => {
+    // Show logout toast first
+    showToast("You have been successfully logged out.", "success");
+
     try { await tutorsApiClient.post("/logout"); } catch (_) {}
     setToken(null);
     setUser(null);
@@ -87,7 +91,11 @@ export const AuthProvider = ({ children }) => {
     }
 
     authInitPromise = null;
-    window.location.href = '/role-selection';
+    
+    // Delay redirect slightly so the toast is visible
+    setTimeout(() => {
+      window.location.href = '/role-selection';
+    }, 800);
   }, []);
 
   const fetchUser = useCallback(async () => {
