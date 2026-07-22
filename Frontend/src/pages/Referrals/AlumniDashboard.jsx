@@ -873,15 +873,23 @@ export function AlumniDashboard() {
         <div className="space-y-4 sm:space-y-6">
           {isAuthenticated && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              <div className="bg-card rounded-[var(--radius-md)] border border-border/50 flex flex-col min-h-[420px]">
-                <div style={{ padding: '24px 28px 0' }}>
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-foreground">
+              {/* Left Card: My Posted Jobs */}
+              <div 
+                className="bg-card border border-border/50 flex flex-col min-h-[420px]"
+                style={{ 
+                  borderRadius: "20px", 
+                  padding: "0px", 
+                  boxShadow: "var(--card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05))" 
+                }}
+              >
+                <div style={{ padding: '28px 28px 0px' }}>
+                  <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
+                    <h3 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                       {activeTab === 'jobs' ? 'My Posted Jobs' : 'My Posted Referrals'}
                     </h3>
                   </div>
                 </div>
-                <div className="flex-1 flex flex-col" style={{ padding: '16px 28px 24px' }}>
+                <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0px 28px 28px' }}>
                   <InteractiveJobsTable 
                     jobs={backendOpportunities.filter(opp => 
                       activeTab === 'jobs' 
@@ -900,55 +908,72 @@ export function AlumniDashboard() {
                   />
                 </div>
               </div>
-              <div className="bg-card rounded-[var(--radius-md)] border border-border/50 p-6 flex flex-col min-h-[420px]">
+
+              {/* Right Card: Applications for ... */}
+              <div 
+                className="bg-card border border-border/50 flex flex-col min-h-[420px]"
+                style={{ 
+                  borderRadius: "20px", 
+                  padding: "0px", 
+                  boxShadow: "var(--card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05))" 
+                }}
+              >
                 {selectedBackendOpportunity ? (
-                  <div className="h-full flex flex-col flex-1">
-                    <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 truncate">
-                      Applications for "{selectedBackendOpportunity.jobTitle}"
-                    </h3>
-                    {!Array.isArray(selectedOpportunityApplications) || selectedOpportunityApplications.length === 0 ? (
+                  <div className="h-full flex flex-col flex-1 min-h-0">
+                    <div style={{ padding: '28px 28px 0px' }}>
+                      <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
+                        <h3 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }} className="truncate">
+                          Applications for "{selectedBackendOpportunity.jobTitle}"
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0px 28px 28px' }}>
+                      {!Array.isArray(selectedOpportunityApplications) || selectedOpportunityApplications.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 bg-transparent" style={{ minHeight: '220px' }}>
+                          <div 
+                            className="w-16 h-16 rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0 border mb-4"
+                            style={{ backgroundColor: 'rgba(239, 246, 255, 0.5)', borderColor: '#dbeafe' }}
+                          >
+                            <Users className="w-6 h-6" />
+                          </div>
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+                            No Applications Yet
+                          </h3>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mx-auto w-[320px] sm:w-[450px] max-w-full">
+                            Candidates who apply for this opportunity will show up here.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex-1 min-h-0">
+                          <CandidateTable
+                            candidates={selectedOpportunityApplications}
+                            onActionClick={(app) => {
+                              loadStudentProfile(app.student?._id || app._id, app);
+                            }}
+                            actionLabel="Review"
+                            emptyMessage="No applications yet"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-full w-full flex flex-col flex-1 justify-center min-h-0">
+                    <div className="flex-1 flex flex-col justify-center min-h-0" style={{ padding: '28px 28px 28px' }}>
                       <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 bg-transparent">
                         <div 
                           className="w-16 h-16 rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0 border mb-4"
                           style={{ backgroundColor: 'rgba(239, 246, 255, 0.5)', borderColor: '#dbeafe' }}
                         >
-                          <Users className="w-6 h-6" />
+                          <FileText className="w-6 h-6" />
                         </div>
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
-                          No Applications Yet
+                          Select an Opportunity
                         </h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mx-auto w-[320px] sm:w-[450px] max-w-full">
-                          Candidates who apply for this opportunity will show up here.
+                          Select a job or referral opportunity from the list to view its pending applications and candidate reviews.
                         </p>
                       </div>
-                    ) : (
-                      <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
-                        <CandidateTable
-                          candidates={selectedOpportunityApplications}
-                          onActionClick={(app) => {
-                            loadStudentProfile(app.student?._id || app._id, app);
-                          }}
-                          actionLabel="Review"
-                          emptyMessage="No applications yet"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="h-full w-full flex flex-col flex-1 justify-center">
-                    <div className="flex flex-col items-center justify-center text-center p-6 w-full flex-1 bg-transparent">
-                      <div 
-                        className="w-16 h-16 rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0 border mb-4"
-                        style={{ backgroundColor: 'rgba(239, 246, 255, 0.5)', borderColor: '#dbeafe' }}
-                      >
-                        <FileText className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
-                        Select an Opportunity
-                      </h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mx-auto w-[320px] sm:w-[450px] max-w-full">
-                        Select a job or referral opportunity from the list to view its pending applications and candidate reviews.
-                      </p>
                     </div>
                   </div>
                 )}

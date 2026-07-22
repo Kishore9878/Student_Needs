@@ -77,45 +77,46 @@ export const InteractiveJobsTable = React.memo(({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-[var(--radius-sm)] border border-border overflow-x-auto table-responsive">
+      <div className="border border-border overflow-x-auto table-responsive" style={{ borderRadius: "16px" }}>
         <Table>
           <TableHeader>
-            <TableRow className="h-[48px] border-b border-border/40 hover:bg-transparent">
-              <TableHead className="w-[200px]">
-                <Button variant="ghost" onClick={() => requestSort('title')} className="-ml-4 h-8 data-[state=open]:bg-accent">
+            <TableRow className="border-b border-border/40 hover:bg-transparent" style={{ height: "60px" }}>
+              <TableHead style={{ paddingLeft: "24px", fontSize: "14px", fontWeight: "600", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
+                <Button variant="ghost" onClick={() => requestSort('title')} className="-ml-4 h-8 data-[state=open]:bg-accent font-semibold" style={{ fontSize: "14px", letterSpacing: "0.05em" }}>
                   Job Title <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Company</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>
-                <Button variant="ghost" onClick={() => requestSort('applicants')} className="-ml-4 h-8">
+              <TableHead style={{ paddingLeft: "16px", paddingRight: "16px", fontSize: "14px", fontWeight: "600", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>Company</TableHead>
+              <TableHead style={{ paddingLeft: "16px", paddingRight: "16px", fontSize: "14px", fontWeight: "600", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>Location</TableHead>
+              <TableHead style={{ paddingLeft: "16px", paddingRight: "16px", fontSize: "14px", fontWeight: "600", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
+                <Button variant="ghost" onClick={() => requestSort('applicants')} className="-ml-4 h-8 font-semibold" style={{ fontSize: "14px", letterSpacing: "0.05em" }}>
                   Applicants <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead style={{ paddingLeft: "16px", paddingRight: "16px", fontSize: "14px", fontWeight: "600", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>Status</TableHead>
+              <TableHead className="text-right" style={{ paddingRight: "24px", fontSize: "14px", fontWeight: "600", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedJobs?.map((job) => (
               <TableRow 
                 key={job.id || job._id}
-                className="h-[56px] border-b border-border/30 cursor-pointer hover:bg-secondary/40"
+                className="border-b border-border/30 cursor-pointer hover:bg-secondary/40"
+                style={{ height: "70px" }}
                 onClick={() => onRowClick && onRowClick(job)}
               >
-                <TableCell className="font-medium text-foreground">{job.title || job.jobTitle}</TableCell>
-                <TableCell>{job.company || job.postedBy?.company || "Unknown"}</TableCell>
-                <TableCell>{job.location || job.experienceLevel || "Remote"}</TableCell>
-                <TableCell>{job.applicants || job.referralsGiven || 0}</TableCell>
-                <TableCell>
+                <TableCell className="font-medium text-foreground" style={{ paddingLeft: "24px" }}>{job.title || job.jobTitle}</TableCell>
+                <TableCell style={{ paddingLeft: "16px", paddingRight: "16px" }}>{job.company || job.postedBy?.company || "Unknown"}</TableCell>
+                <TableCell style={{ paddingLeft: "16px", paddingRight: "16px" }}>{job.location || job.experienceLevel || "Remote"}</TableCell>
+                <TableCell style={{ paddingLeft: "16px", paddingRight: "16px" }}>{job.applicants || job.referralsGiven || 0}</TableCell>
+                <TableCell style={{ paddingLeft: "16px", paddingRight: "16px" }}>
                   <ApplicantStatusIndicator status={job.status || (job.isActive ? "Active" : "Closed")} />
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right" style={{ paddingRight: "24px" }}>
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="h-8 text-xs font-semibold"
+                    className="h-8 text-xs font-semibold hover:bg-primary hover:text-primary-foreground border-border/60"
                     onClick={(e) => {
                       e.stopPropagation();
                       onActionClick && onActionClick(job);

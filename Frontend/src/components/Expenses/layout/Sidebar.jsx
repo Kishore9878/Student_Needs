@@ -11,11 +11,11 @@ import {
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 
 const Sidebar = () => {
   const { isCollapsed, toggleSidebar, closeMobileMenu } = useSidebar();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const displayName = user?.username || user?.name || "User";
 
@@ -119,6 +119,33 @@ const Sidebar = () => {
         "mt-auto border-t border-[var(--border-color)] shrink-0 flex flex-col p-3 bg-[var(--bg-primary)]/40",
         isCollapsed ? "items-center" : ""
       )}>
+        {/* Logout */}
+        <button
+          onClick={() => {
+            if (logout) {
+              logout();
+            } else {
+              window.location.href = "/login";
+            }
+          }}
+          className={cn(
+            "group relative flex items-center transition-all duration-200 cursor-pointer w-full text-[var(--danger)] hover:bg-[var(--danger)]/10 mb-3",
+            isCollapsed 
+              ? "w-10 h-10 justify-center rounded-lg" 
+              : "gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold"
+          )}
+        >
+          <div className="flex-shrink-0 transition-transform group-hover:scale-105 duration-200 text-[var(--danger)]">
+            <LogOut className="w-5 h-5" />
+          </div>
+          {!isCollapsed && <span>Logout</span>}
+          {isCollapsed && (
+            <div className="absolute left-14 scale-0 rounded-[var(--radius-sm)] px-2 py-1 bg-[var(--card-bg)] text-[var(--danger)] border border-[var(--border-color)] text-xs font-semibold shadow-[var(--shadow-md)] transition-all group-hover:scale-100 whitespace-nowrap z-50 pointer-events-none">
+              Logout
+            </div>
+          )}
+        </button>
+
         {/* User Card */}
         <div className={cn(
           "flex items-center rounded-lg border border-[var(--border-color)] transition-all duration-200 overflow-hidden bg-[var(--card-bg)] shadow-sm",

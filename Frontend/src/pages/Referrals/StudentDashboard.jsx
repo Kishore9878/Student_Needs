@@ -361,30 +361,20 @@ export function StudentDashboard() {
       
       const chatId = response.data?.chat?._id;
       if (chatId) {
-        toast.success(
-          <div className="flex flex-col gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-              <span className="font-semibold text-[var(--text-primary)]">
-                Application Submitted Successfully
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                toast.dismiss();
-                navigate(`/referrals/chat?chatId=${chatId}`);
-              }}
-              className="mt-1 px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/95 text-xs font-semibold rounded-[var(--radius-sm)] shadow-[var(--shadow-sm)] transition-all text-center flex items-center justify-center gap-1.5 w-full sm:w-auto self-start font-medium"
-            >
-              Message Alumni
-            </button>
-          </div>,
-          { duration: 6000 }
-        );
+        showToast({
+          type: "success",
+          message: "Application Submitted Successfully",
+          description: "Your referral application has been submitted successfully.",
+          action: {
+            label: "Message Alumni",
+            onClick: () => navigate(`/referrals/chat?chatId=${chatId}`)
+          }
+        });
       } else {
         showToast({
           type: "success",
           message: "Application Submitted Successfully",
+          description: "Your referral application has been submitted successfully."
         });
       }
 
@@ -469,8 +459,7 @@ export function StudentDashboard() {
             />
             <OpportunitiesList
               opportunities={filteredOpportunities?.filter(opp => 
-                (opp.opportunityType === 'Referral' || !opp.opportunityType) && 
-                !appliedOpportunities.includes(opp._id)
+                (opp.opportunityType === 'Referral' || !opp.opportunityType)
               )}
               appliedOpportunities={appliedOpportunities}
               loading={loadingOpportunities}
@@ -528,8 +517,7 @@ export function StudentDashboard() {
             />
             <OpportunitiesList
               opportunities={filteredOpportunities?.filter(opp => 
-                opp.opportunityType === 'Job' && 
-                !appliedOpportunities.includes(opp._id)
+                opp.opportunityType === 'Job'
               )}
               appliedOpportunities={appliedOpportunities}
               loading={loadingOpportunities}

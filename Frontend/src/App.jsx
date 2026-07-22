@@ -862,22 +862,7 @@ function App() {
                                 TOASTERS
                 ====================================================== */}
 
-          <HotToaster
-            position="top-right"
-            toastOptions={{
-              duration: 3500,
-              style: {
-                background: "var(--bg-nav-container)",
-                color: "var(--text-primary)",
-                border: "1px solid var(--border-subtle)",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                transition: "var(--theme-transition)",
-              },
-            }}
-          />
           <NetworkFallback />
-          <Toaster />
           <Sonner />
 
           {/* ======================================================

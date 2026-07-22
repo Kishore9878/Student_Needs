@@ -7,6 +7,10 @@ const Toaster = ({ ...props }) => {
   return (
     <Sonner
       theme={theme}
+      position="bottom-right"
+      expand={true}
+      gap={12}
+      unstyled={true}
       className="toaster group"
       toastOptions={{
         classNames: {

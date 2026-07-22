@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "react-hot-toast": path.resolve(__dirname, "./src/utils/react-hot-toast-shim.js"),
     },
   },
   build: {

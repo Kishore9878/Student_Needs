@@ -22,6 +22,7 @@ import {
   MessageSquare,
   Award,
   BookOpen,
+  AlertCircle,
 } from "lucide-react";
 import { PieChart, Pie, Cell } from "recharts";
 import { useAuth } from "@/contexts/GlobalAuthContext.jsx";
@@ -79,13 +80,15 @@ const UnifiedDashboard = () => {
   const { user, isInitialized } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [attendanceSummary, setAttendanceSummary] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [opportunities, setOpportunities] = useState([]);
   const [profileCompleteness, setProfileCompleteness] = useState(null);
-
-  // Expense integration states
+  const [remainingFields, setRemainingFields] = useState([]);
+  const [referralsCount, setReferralsCount] = useState(0);
   const [bills, setBills] = useState([]);
   const [expenseSummary, setExpenseSummary] = useState(null);
   const [isQuickAddExpenseOpen, setIsQuickAddExpenseOpen] = useState(false);
@@ -94,9 +97,10 @@ const UnifiedDashboard = () => {
   // User details integration (Long name wrapping test safe)
   const displayName =
     user?.name ||
+    (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.firstName) ||
     user?.fullName ||
     user?.username ||
-    "Student";
+    "";
 
   const displayRole =
     user?.role ||
@@ -116,52 +120,31 @@ const UnifiedDashboard = () => {
 
   const load = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const expenseUser = JSON.parse(localStorage.getItem("User") || "null");
-      const expenseUserId = getUserId(expenseUser);
+      const response = await API.get("/analytics/dashboard-summary");
+      if (response.data?.success) {
+        const { attendance, expenses, profile, referrals, bookings: fetchedBookings, bills: fetchedBills } = response.data.data;
 
-      const [attendanceRes, expenseRes, bookingRes, opRes, profileRes, billsRes, summaryRes] =
-        await Promise.allSettled([
-          API.get(ATTENDANCE_PATHS.student),
-          expenseUserId
-            ? expensesApi.getUserExpenses(expenseUserId)
-            : Promise.resolve([]),
-          getBookings(),
-          opportunitiesApi.getOpportunities(),
-          studentProfileApi.getProfileStatus(),
-          expenseUserId ? expensesApi.getBills() : Promise.resolve([]),
-          expenseUserId ? expensesApi.getDashboardSummary() : Promise.resolve(null),
-        ]);
-
-      if (attendanceRes.status === "fulfilled") {
-        setAttendanceData(attendanceRes.value?.data || []);
-      }
-
-      if (expenseRes.status === "fulfilled") {
-        setExpenses(expenseRes.value || []);
-      }
-
-      if (bookingRes.status === "fulfilled") {
-        setBookings(Array.isArray(bookingRes.value) ? bookingRes.value : []);
-      }
-
-      if (opRes.status === "fulfilled" && opRes.value?.success) {
-        setOpportunities(opRes.value.data || []);
-      }
-
-      if (profileRes.status === "fulfilled" && profileRes.value?.success) {
-        setProfileCompleteness(profileRes.value.data?.completeness ?? null);
-      }
-
-      if (billsRes.status === "fulfilled") {
-        setBills(billsRes.value || []);
-      }
-
-      if (summaryRes.status === "fulfilled") {
-        setExpenseSummary(summaryRes.value || null);
+        setAttendanceData(attendance?.list || []);
+        setAttendanceSummary(attendance || null);
+        
+        // Filter out income from local expenses state to ensure proper metrics and chart categorization
+        const expenseList = (expenses?.list || []).filter(e => e.type !== "income");
+        setExpenses(expenseList);
+        
+        setBookings(fetchedBookings || []);
+        setProfileCompleteness(profile?.completeness ?? null);
+        setRemainingFields(profile?.remainingFields || []);
+        setReferralsCount(referrals?.total || 0);
+        setBills(fetchedBills || []);
+        setExpenseSummary(expenses || null);
+      } else {
+        setError(response.data?.message || "Failed to load dashboard summary data.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Failed to load dashboard summary:", err);
+      setError(err.response?.data?.message || err.message || "Failed to retrieve student dashboard statistics.");
     } finally {
       setTimeout(() => {
         setLoading(false);
@@ -175,14 +158,7 @@ const UnifiedDashboard = () => {
     }
   }, [isInitialized, user]);
 
-  const attendanceStats = useMemo(() => {
-    const total = attendanceData.length;
-    const present = attendanceData.filter(
-      (a) => (a.attendance || a.status) === "present",
-    ).length;
-    const percentage = total > 0 ? ((present / total) * 100).toFixed(1) : "0";
-    return { total, present, percentage };
-  }, [attendanceData]);
+
 
   const expenseChartData = useMemo(() => {
     const total = expenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
@@ -204,30 +180,36 @@ const UnifiedDashboard = () => {
   const upcomingClasses = useMemo(() => {
     const now = Date.now();
     return bookings
-      .filter(
-        (b) =>
-          b.date &&
-          parseTime(b.date) >= now &&
-          b.status !== "Cancelled",
-      )
-      .sort((a, b) => parseTime(a.date) - parseTime(b.date))
+      .filter((b) => {
+        if (!b.date) return false;
+        const dateTimeStr = b.time ? `${b.date}T${b.time}` : b.date;
+        return parseTime(dateTimeStr) >= now && b.status !== "Cancelled";
+      })
+      .sort((a, b) => {
+        const timeA = a.time ? `${a.date}T${a.time}` : a.date;
+        const timeB = b.time ? `${b.date}T${b.time}` : b.date;
+        return parseTime(timeA) - parseTime(timeB);
+      })
       .slice(0, 4)
-      .map((b) => ({
-        id: b._id,
-        title:
-          b.subject ||
-          b.tutorName ||
-          [b.tutor_firstname, b.tutor_lastname].filter(Boolean).join(" ") ||
-          "Tutorial Session",
-        date: new Date(b.date).toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        type: b.status || "Scheduled",
-        priority: "medium",
-      }));
+      .map((b) => {
+        const dateTimeStr = b.time ? `${b.date}T${b.time}` : b.date;
+        return {
+          id: b._id,
+          title:
+            b.subject ||
+            b.tutorName ||
+            [b.tutor_firstname, b.tutor_lastname].filter(Boolean).join(" ") ||
+            "Tutorial Session",
+          date: new Date(dateTimeStr).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          type: b.status || "Scheduled",
+          priority: "medium",
+        };
+      });
   }, [bookings]);
 
   const recentActivity = useMemo(() => {
@@ -385,13 +367,7 @@ const UnifiedDashboard = () => {
     };
 
     if (!expenses || expenses.length === 0) {
-      return [
-        { name: "Books", amount: 1200, percentage: "28.2%", color: "#3b82f6" },
-        { name: "Food", amount: 1080, percentage: "25.4%", color: "#8b5cf6" },
-        { name: "Transport", amount: 720, percentage: "16.9%", color: "#14b8a6" },
-        { name: "Shopping", amount: 680, percentage: "16.0%", color: "#ec4899" },
-        { name: "Others", amount: 577.01, percentage: "13.5%", color: "#f59e0b" },
-      ];
+      return [];
     }
 
     const total = expenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
@@ -430,35 +406,7 @@ const UnifiedDashboard = () => {
 
   const activityCards = useMemo(() => {
     if (!recentActivity || recentActivity.length === 0) {
-      return [
-        {
-          title: "Attendance marked",
-          desc: "DBMS class attendance marked present",
-          time: "2h ago",
-          dotColor: "bg-emerald-500",
-          iconBg: "bg-emerald-500/10",
-          iconColor: "text-emerald-500",
-          icon: CheckCircle,
-        },
-        {
-          title: "Expense added",
-          desc: "Food expense of ₹250 added",
-          time: "5h ago",
-          dotColor: "bg-cyan-500",
-          iconBg: "bg-cyan-500/10",
-          iconColor: "text-cyan-500",
-          icon: Wallet,
-        },
-        {
-          title: "Tutor session booked",
-          desc: "CS-301 session with Dr. Marcus",
-          time: "1d ago",
-          dotColor: "bg-indigo-500",
-          iconBg: "bg-indigo-500/10",
-          iconColor: "text-indigo-500",
-          icon: GraduationCap,
-        },
-      ];
+      return [];
     }
 
     return recentActivity.slice(0, 3).map((act, idx) => {
@@ -526,24 +474,94 @@ const UnifiedDashboard = () => {
     return <DashboardWideSkeleton />;
   }
 
+  if (error) {
+    return (
+      <div 
+        style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          alignItems: "center", 
+          justifyContent: "center", 
+          minHeight: "80vh", 
+          padding: "32px", 
+          boxSizing: "border-box" 
+        }}
+      >
+        <div 
+          style={{ 
+            background: "var(--card-bg, #ffffff)", 
+            border: "1px solid var(--border-color, rgba(0,0,0,0.08))", 
+            borderRadius: "20px", 
+            padding: "40px", 
+            maxWidth: "480px", 
+            width: "100%", 
+            textAlign: "center",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+          }}
+        >
+          <div 
+            style={{ 
+              width: "64px", 
+              height: "64px", 
+              borderRadius: "50%", 
+              background: "#FEE2E2", 
+              color: "#EF4444", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              margin: "0 auto 24px auto" 
+            }}
+          >
+            <AlertCircle size={32} />
+          </div>
+          <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", margin: "0 0 12px 0" }}>
+            Failed to load dashboard
+          </h2>
+          <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.6, margin: "0 0 24px 0" }}>
+            {error}
+          </p>
+          <button 
+            onClick={load}
+            style={{
+              background: "var(--accent, #6366F1)",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "12px",
+              padding: "12px 24px",
+              fontSize: "14px",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "opacity 0.2s"
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = 0.9}
+            onMouseOut={(e) => e.currentTarget.style.opacity = 1}
+          >
+            Retry Loading
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ── Currency symbol (always correct via Intl) ──────────────────
   const currencySymbol = getSymbol(expenseSummary?.currency || "INR");
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const firstName = displayName.split(" ")[0];
+  const isNameLoading = !isInitialized || !user || !displayName;
+  const firstName = displayName ? displayName.split(" ")[0] : "";
 
   // ── Stat card definitions (declarative, no logic) ────────────────
   const statCards = [
     {
       id: "attendance",
       label: "Class Attendance",
-      value: attendanceStats.percentage > 0 ? `${attendanceStats.percentage}%` : "94.2%",
+      value: attendanceSummary && attendanceSummary.total > 0 ? `${attendanceSummary.percentage}%` : "0%",
       subtitle: "This semester",
-      status: attendanceStats.total > 0
-        ? `${attendanceStats.present} attended · ${attendanceStats.total - attendanceStats.present} missed`
-        : "27 attended · 3 missed",
-      progress: attendanceStats.percentage > 0 ? Number(attendanceStats.percentage) : 94.2,
+      status: attendanceSummary && attendanceSummary.total > 0
+        ? `${attendanceSummary.present} attended · ${attendanceSummary.absent} missed`
+        : "No classes recorded",
+      progress: attendanceSummary && attendanceSummary.total > 0 ? Number(attendanceSummary.percentage) : 0,
       iconBg: "#EFF6FF",
       iconColor: "#3B82F6",
       barColor: "#3B82F6",
@@ -554,14 +572,14 @@ const UnifiedDashboard = () => {
       label: "Total Spending",
       value: expenseSummary?.totalSpent !== undefined
         ? `${currencySymbol}${expenseSummary.totalSpent.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-        : "₹4,257",
+        : `${currencySymbol}0`,
       subtitle: "This month",
-      status: expenseSummary?.remainingBudget !== undefined && expenseSummary?.monthlyBudget !== undefined
+      status: expenseSummary?.hasBudget
         ? `${currencySymbol}${expenseSummary.remainingBudget.toLocaleString()} left of ${currencySymbol}${expenseSummary.monthlyBudget.toLocaleString()}`
-        : "₹1,743 left of ₹6,000",
-      progress: expenseSummary?.totalSpent && expenseSummary?.monthlyBudget
+        : "No budget set",
+      progress: expenseSummary?.hasBudget && expenseSummary?.monthlyBudget
         ? Math.min((expenseSummary.totalSpent / expenseSummary.monthlyBudget) * 100, 100)
-        : 70.9,
+        : 0,
       iconBg: "#F5F3FF",
       iconColor: "#8B5CF6",
       barColor: "#8B5CF6",
@@ -570,12 +588,12 @@ const UnifiedDashboard = () => {
     {
       id: "profile",
       label: "Profile Progress",
-      value: profileCompleteness !== null ? `${profileCompleteness}%` : "100%",
+      value: profileCompleteness !== null ? `${profileCompleteness}%` : "0%",
       subtitle: "Completion",
       status: profileCompleteness !== null && profileCompleteness < 100
-        ? `${100 - profileCompleteness}% tasks remaining`
+        ? `${remainingFields.length > 0 ? remainingFields.slice(0, 2).join(", ") + (remainingFields.length > 2 ? "..." : "") : `${100 - profileCompleteness}% tasks`} remaining`
         : "All tasks completed",
-      progress: profileCompleteness !== null ? profileCompleteness : 100,
+      progress: profileCompleteness !== null ? profileCompleteness : 0,
       iconBg: "#ECFDF5",
       iconColor: "#10B981",
       barColor: "#10B981",
@@ -584,10 +602,14 @@ const UnifiedDashboard = () => {
     {
       id: "referrals",
       label: "Referrals Made",
-      value: opportunities.length > 0 ? String(opportunities.length) : "8",
+      value: String(referralsCount),
       subtitle: "Opportunities",
-      status: (opportunities.length || 8) >= 8 ? "Top tier advocate" : `${opportunities.length || 8} tracked`,
-      progress: Math.min((opportunities.length || 8) * 10, 100),
+      status: referralsCount === 0
+        ? "No referrals yet"
+        : referralsCount >= 8
+          ? "Top tier advocate"
+          : `${referralsCount} tracked`,
+      progress: referralsCount > 0 ? Math.min(referralsCount * 12.5, 100) : 0,
       iconBg: "#FFFBEB",
       iconColor: "#F59E0B",
       barColor: "#F59E0B",
@@ -621,7 +643,11 @@ const UnifiedDashboard = () => {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
         <div>
           <h1 style={{ fontSize: "36px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.15, margin: 0 }}>
-            {greeting}, <span style={{ color: "var(--accent)" }}>{firstName}</span> 👋
+            {isNameLoading ? (
+              <span>{greeting}...</span>
+            ) : (
+              <>{greeting}, <span style={{ color: "var(--accent)" }}>{firstName}</span> 👋</>
+            )}
           </h1>
           <p style={{ fontSize: "15px", color: "var(--text-muted)", marginTop: "8px", fontWeight: 500 }}>
             Here's your academic overview for today.
@@ -873,28 +899,32 @@ const UnifiedDashboard = () => {
               </button>
             </div>
             <div className="dash-card-body">
-              {(upcomingClasses.length > 0 ? upcomingClasses : [{
-                id: "mock", title: "CS-301 Algorithms with Dr. Marcus",
-                date: "17 Jun, 05:30 PM", type: "Online"
-              }]).map((item) => (
-                <div key={item.id} className="class-item">
-                  <div className="class-icon">
-                    <CalendarIcon size={16} color="var(--accent)" />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {item.title}
-                    </div>
-                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px", display: "flex", alignItems: "center", gap: "5px", fontWeight: 500 }}>
-                      <Clock size={11} />
-                      {item.date}
-                    </div>
-                  </div>
-                  <button className="class-arrow" onClick={() => navigate("/tutorials")}>
-                    <ArrowRight size={13} />
-                  </button>
+              {upcomingClasses.length === 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 16px", textAlign: "center" }}>
+                  <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-muted)" }}>No upcoming classes</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>Schedule a tutorial session to get started</p>
                 </div>
-              ))}
+              ) : (
+                upcomingClasses.map((item) => (
+                  <div key={item.id} className="class-item">
+                    <div className="class-icon">
+                      <CalendarIcon size={16} color="var(--accent)" />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {item.title}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px", display: "flex", alignItems: "center", gap: "5px", fontWeight: 500 }}>
+                        <Clock size={11} />
+                        {item.date}
+                      </div>
+                    </div>
+                    <button className="class-arrow" onClick={() => navigate("/tutorials")}>
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -970,28 +1000,35 @@ const UnifiedDashboard = () => {
               </button>
             </div>
             <div className="dash-card-body">
-              <div className="timeline-line">
-                {activityCards.map((card, idx) => {
-                  const Icon = card.icon;
-                  return (
-                    <div key={idx} className="timeline-item">
-                      <div className="timeline-dot">
-                        <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: card.dotColor.replace("bg-","").includes("indigo") ? "#6366F1" : card.dotColor.includes("emerald") ? "#10B981" : card.dotColor.includes("cyan") ? "#06B6D4" : card.dotColor.includes("pink") ? "#EC4899" : "#64748B", display: "block" }} />
-                      </div>
-                      <div style={{ width: "34px", height: "34px", borderRadius: "10px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-secondary)", border: "1px solid var(--border-color)" }}>
-                        <Icon size={15} color="var(--text-muted)" />
-                      </div>
-                      <div className="timeline-content">
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.3 }}>{card.title}</div>
-                          <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "320px", fontWeight: 500 }}>{card.desc}</div>
+              {activityCards.length === 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 16px", textAlign: "center" }}>
+                  <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-muted)" }}>No recent activity</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>Your latest actions will show up here</p>
+                </div>
+              ) : (
+                <div className="timeline-line">
+                  {activityCards.map((card, idx) => {
+                    const Icon = card.icon;
+                    return (
+                      <div key={idx} className="timeline-item">
+                        <div className="timeline-dot">
+                          <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: card.dotColor.replace("bg-","").includes("indigo") ? "#6366F1" : card.dotColor.includes("emerald") ? "#10B981" : card.dotColor.includes("cyan") ? "#06B6D4" : card.dotColor.includes("pink") ? "#EC4899" : "#64748B", display: "block" }} />
                         </div>
-                        <span style={{ fontSize: "11px", color: "var(--text-muted)", flexShrink: 0, fontWeight: 600, whiteSpace: "nowrap" }}>{card.time}</span>
+                        <div style={{ width: "34px", height: "34px", borderRadius: "10px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-secondary)", border: "1px solid var(--border-color)" }}>
+                          <Icon size={15} color="var(--text-muted)" />
+                        </div>
+                        <div className="timeline-content">
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.3 }}>{card.title}</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "320px", fontWeight: 500 }}>{card.desc}</div>
+                          </div>
+                          <span style={{ fontSize: "11px", color: "var(--text-muted)", flexShrink: 0, fontWeight: 600, whiteSpace: "nowrap" }}>{card.time}</span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1011,41 +1048,53 @@ const UnifiedDashboard = () => {
               </button>
             </div>
             <div className="dash-card-body">
-              {/* Donut chart centered */}
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
-                <div style={{ position: "relative", width: "160px", height: "160px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 1 }}>
-                    <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Total</span>
-                    <span style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", marginTop: "4px", lineHeight: 1 }}>
-                      {expenseSummary?.totalSpent !== undefined
-                        ? `${currencySymbol}${expenseSummary.totalSpent.toLocaleString()}`
-                        : "₹4,257"}
-                    </span>
+              {donutData.length === 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 16px", textAlign: "center", minHeight: "220px" }}>
+                  <div style={{ width: "80px", height: "80px", borderRadius: "50%", border: "3px dashed var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
+                    <Wallet size={24} color="var(--text-muted)" />
                   </div>
-                  <PieChart width={160} height={160} style={{ overflow: "visible" }}>
-                    <Pie data={donutData} cx="50%" cy="50%" innerRadius={50} outerRadius={72} paddingAngle={3} dataKey="amount">
-                      {donutData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
+                  <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-muted)" }}>No expenses tracked</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>Add an expense to see your spending breakdown</p>
                 </div>
-              </div>
-              {/* Legend */}
-              <div>
-                {donutData.map((item, index) => (
-                  <div key={index} className="legend-row">
-                    <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: item.color, flexShrink: 0 }} />
-                    <span style={{ flex: 1, fontSize: "13px", color: "var(--text-muted)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</span>
-                    <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", flexShrink: 0, whiteSpace: "nowrap" }}>
-                      {currencySymbol}{item.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                    </span>
-                    <span style={{ fontSize: "11px", color: "var(--text-muted)", width: "38px", textAlign: "right", flexShrink: 0, fontWeight: 600 }}>
-                      {item.percentage}
-                    </span>
+              ) : (
+                <>
+                  {/* Donut chart centered */}
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+                    <div style={{ position: "relative", width: "160px", height: "160px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 1 }}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Total</span>
+                        <span style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", marginTop: "4px", lineHeight: 1 }}>
+                          {expenseSummary?.totalSpent !== undefined
+                            ? `${currencySymbol}${expenseSummary.totalSpent.toLocaleString()}`
+                            : `${currencySymbol}0`}
+                        </span>
+                      </div>
+                      <PieChart width={160} height={160} style={{ overflow: "visible" }}>
+                        <Pie data={donutData} cx="50%" cy="50%" innerRadius={50} outerRadius={72} paddingAngle={3} dataKey="amount">
+                          {donutData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </div>
                   </div>
-                ))}
-              </div>
+                  {/* Legend */}
+                  <div>
+                    {donutData.map((item, index) => (
+                      <div key={index} className="legend-row">
+                        <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: item.color, flexShrink: 0 }} />
+                        <span style={{ flex: 1, fontSize: "13px", color: "var(--text-muted)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</span>
+                        <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", flexShrink: 0, whiteSpace: "nowrap" }}>
+                          {currencySymbol}{item.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </span>
+                        <span style={{ fontSize: "11px", color: "var(--text-muted)", width: "38px", textAlign: "right", flexShrink: 0, fontWeight: 600 }}>
+                          {item.percentage}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
